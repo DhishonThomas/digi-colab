@@ -99,7 +99,7 @@ function LoginForm() {
             <div className="">Don't Have An Account?</div>
           <a
             className="text-right text-[#688086] text-[16px] font-[700]"
-            href="/register"
+            href="/sign-up"
           >
             sign up
           </a>

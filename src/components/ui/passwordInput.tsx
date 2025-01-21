@@ -4,7 +4,7 @@ import React, { useState } from "react";
 
 type PasswordInputProps = {
   placeholder: string;
-  value: string;
+  value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
