@@ -1,0 +1,27 @@
+[
+    {
+        "title":"Dashboard",
+        "icon":"/icons/sidebar/icon-home.svg",
+        "path": "/admin/dashboard"
+    },
+    {
+        "title":"Candidates",
+        "icon":"/icons/sidebar/icon-users.svg",
+        "path": "#"
+    },
+    {
+        "title":"Analytics Section",
+        "icon":"/icons/sidebar/icon-graph.svg",
+        "path": "#"
+    },
+    {
+        "title":"Job Listing",
+        "icon":"/icons/sidebar/icon-job.svg",
+        "path": "#"
+    },
+    {
+        "title":"Profile",
+        "icon":"/icons/sidebar/icon-profile.svg",
+        "path": "#"
+    }
+]

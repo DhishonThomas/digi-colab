@@ -30,6 +30,7 @@ function LoginForm() {
   const searchParams=useSearchParams();
 
   const onSubmit: SubmitHandler<LoginFormData> = async (data) => {
+    router.push("/admin/dashboard")
   };
 
   return (
