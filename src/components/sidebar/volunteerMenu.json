@@ -5,23 +5,28 @@
         "path": "/admin/dashboard"
     },
     {
-        "title":"Candidates",
+        "title":"Opportunities",
         "icon":"/icons/sidebar/icon-users.svg",
         "path": "#"
     },
     {
-        "title":"Analytics Section",
+        "title":"Schedule",
         "icon":"/icons/sidebar/icon-graph.svg",
         "path": "#"
     },
     {
-        "title":"Job Listing",
+        "title":"Log Hours",
         "icon":"/icons/sidebar/icon-job.svg",
         "path": "#"
     },
     {
         "title":"Profile",
         "icon":"/icons/sidebar/icon-profile.svg",
+        "path": "#"
+    },
+    {
+        "title":"Settings",
+        "icon":"/icons/sidebar/icon-settings.svg",
         "path": "#"
     }
 ]

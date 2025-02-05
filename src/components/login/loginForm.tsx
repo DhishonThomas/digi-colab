@@ -1,3 +1,4 @@
+"use client"
 import React from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -5,6 +6,7 @@ import InputText from "../ui/inputText";
 import login_icon from '@/../public/icons/arrow_top_right.svg'
 import PasswordInput from "../ui/passwordInput";
 import Image from "next/image";
+import Link from "next/link";
 
 
 // Define the form data type
@@ -28,9 +30,16 @@ function LoginForm() {
   });
 
   const searchParams=useSearchParams();
+  const accountType=searchParams.get("accountType")
 
   const onSubmit: SubmitHandler<LoginFormData> = async (data) => {
+    if(accountType=="admin"){
     router.push("/admin/dashboard")
+    }else if(accountType=="volunteer"){
+      router.push("/volunteer/dashboard")
+    }else{
+      router.push("/admin/dashboard") //change to  /dashboard
+    }
   };
 
   return (
@@ -96,15 +105,15 @@ function LoginForm() {
         <Image alt="login banner" src={login_icon} />
       </button>
       
-      <div className="flex items-center text-[12px] gap-3">
+      {accountType!="admin"&&<div className="flex items-center text-[12px] gap-3">
             <div className="">Don't Have An Account?</div>
-          <a
+          <Link
             className="text-right text-[#688086] text-[16px] font-[700]"
-            href="/sign-up"
+            href={accountType=="volunteer"?`/volunteer/sign-up`:"/sign-up"}
           >
             sign up
-          </a>
-          </div>
+          </Link>
+          </div>}
     </form>
   );
 }

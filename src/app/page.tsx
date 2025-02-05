@@ -1,21 +1,11 @@
 "use client"
 import React, { Suspense, useState } from 'react';
 import Image from 'next/image';
-import Select, { SingleValue } from 'react-select';
 import login_banner from '@/../public/images/login_banner.png'
 import LoginForm from '@/components/login/loginForm';
 
-const options = [
-  { value: 'english', label: 'EN' },
-  { value: 'arabic', label: 'AR' },
-];
 
 function Login() {
-  const [selectedOption, setSelectedOption] = useState<string | null>("english");
-
-  const handleChange = (newValue: SingleValue<{ value: string; label: string }>) => {
-    setSelectedOption(newValue ? newValue.value : null);
-  };
 
   return (
     <main className=" bg-[url('/images/background.png')] bg-center bg-no-repeat bg-cover w-full">
