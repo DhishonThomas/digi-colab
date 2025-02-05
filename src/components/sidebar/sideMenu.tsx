@@ -26,7 +26,7 @@ export const SideMenu = ({
 
   return (
     <div
-      className={`h-[100vh] flex flex-col bg-[#E4E4E4] px-[10px] transition-all duration-500 sidebar-scroll`}
+      className={`min-h-[100vh] flex flex-col flex-1 bg-[#E4E4E4] px-[10px] transition-all duration-500 sidebar-scroll`}
     >
 
       <div className=" relative flex items-center justify-center w-full mt-[24px] mb-[20px]">

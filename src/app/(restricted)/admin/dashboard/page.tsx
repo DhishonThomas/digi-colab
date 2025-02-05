@@ -1,6 +1,8 @@
 import DashboardCard from "@/components/common/dashboardCard"
 import JobStatistics from "./components/jobStatistics"
 import JobStatus from "./components/jobStatus"
+import CandidateSource from "./components/candidateSource"
+import ScheduleTable from "./components/scheduleTable"
 
 
 const overView = [
@@ -38,13 +40,21 @@ export default function page() {
                     )}
                 </ul>
             </div>
-            <div className="mt-5">
-                <ul className="grid grid-cols-1 lg:grid-cols-4 gap-[20px]">
-                        <li className="col-span-3 max-h-[285px]">
+            <div className="mt-5 flex flex-col gap-[20px]">
+                <ul className="grid h-full items-stretch grid-cols-1 lg:grid-cols-4 gap-[20px]">
+                        <li className="col-span-3  h-full flex">
                             <JobStatistics/>
                         </li>
-                        <li className="">
+                        <li className=" h-full flex">
                             <JobStatus />
+                        </li>
+                </ul>
+                <ul className="grid h-full items-stretch grid-cols-1 lg:grid-cols-4 gap-[20px]">
+                        <li className=" h-full flex">
+                            <CandidateSource />
+                        </li>
+                        <li className="col-span-3  h-full flex">
+                            <ScheduleTable/>
                         </li>
                 </ul>
             </div>

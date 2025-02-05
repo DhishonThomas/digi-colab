@@ -77,11 +77,15 @@ export const data:ChartData<"bar", string[], string> = {
       label: 'Dataset 1',
       data: dataset1.map((data) => data),
       backgroundColor: '#D9D9D9',
+      barPercentage: 0.8,
+      categoryPercentage: 0.8,
     },
     {
       label: 'Dataset 2',
       data: dataset2.map((data) => data),
       backgroundColor: '#EDECEC',
+      barPercentage: 0.8,
+      categoryPercentage: 0.8,
       borderRadius: {
         topLeft: 100,
         topRight: 100,

@@ -42,9 +42,9 @@ type Props = {
 
 const JobStatus = ({ }: Props) => {
     return (
-        <div className='min-h-[113px] w-full rounded-[10px] shadow-[1.22px_2.44px_7.32px_0px_rgba(6,44,58,0.25)] p-[20px] flex flex-col gap-2'>
+        <div className='min-h-[285px] bg-white h-full w-full rounded-[10px] shadow-[1.22px_2.44px_7.32px_0px_rgba(6,44,58,0.25)] p-[20px] flex flex-col justify-between gap-2'>
             <div className="mb-[44px]">
-                <h3 className='font-[700] text-[18px] text-center'>Jobs Applied Status</h3>
+                <h3 className='font-[700] text-[18px] xl:text-[22px] text-center'>Jobs Applied Status</h3>
             </div>
             <div className="flex items-end justify-between">
                 <div className="w-40">
@@ -68,7 +68,7 @@ const JobStatus = ({ }: Props) => {
                     </div>
                 </div>
             </div>
-            <div className='cursor-pointer text-[#0048FF] text-[14px] font-[500] mt-[22px]'>
+            <div className='cursor-pointer text-[#0048FF] text-[14px] xl:text-[16px] font-[500] mt-[22px]'>
                 View All Applications
             </div>
         </div>

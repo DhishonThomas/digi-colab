@@ -18,7 +18,7 @@ export const SharedLayout = ({ children }: Props) => {
 
     return (
         <div
-            className="flex w-full gap-8 pe-8"
+            className="flex h-full w-full gap-8 pe-8"
         >
             <SideMenu
             />

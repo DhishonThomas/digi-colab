@@ -57,7 +57,7 @@ export const Header: React.FC<Props> = ({
       <h3 className="text-[26px] font-[500] leading-[39px]">
         <span className="text-[#B56365]">Welcome,</span> User
       </h3>
-      <div className="shadow-[0_0px_100px_rgba(0,0,0,0.1)]  rounded-[50px] p-[10px] flex items-center justify-between gap-[21px]">
+      <div className="shadow-[0_0px_100px_rgba(0,0,0,0.1)] bg-[#fff]  rounded-[50px] p-[10px] flex items-center justify-between gap-[21px]">
         <div className="flex items-center w-full gap-[10px] p-[10px] bg-[#E9E9E9] rounded-[50px] xl:w-[304px]">
           <button type="button" className="h-5">
             <Image alt="icon" src={'/icons/icon-search.svg'} width={20} height={20} />
