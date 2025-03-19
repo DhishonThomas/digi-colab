@@ -1,8 +1,7 @@
 import axios from "axios";
 import { VOLUNTEER_URL } from "../constants";
-import Cookies from "js-cookie";
-
-
+import store from "@/store/store";
+import { logout } from "@/store/slices/volunteer";
 
 const volunteerApi = axios.create({
   baseURL: VOLUNTEER_URL, 
@@ -10,25 +9,38 @@ const volunteerApi = axios.create({
 });
 
 // Request Interceptor
-volunteerApi.interceptors.request.use((config) => {
-  const token = Cookies.get("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+
+volunteerApi.interceptors.request.use(
+    (config) => {
+      const { token } = store.getState().volunteer;
+  
+      if (token) {
+        config.headers["Authorization"] = `Bearer ${token}`;
+      }
+  
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+
 
 // Response Interceptor
 volunteerApi.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response.status === 401) {
-      Cookies.remove("token");
-      window.location.href = "/login"; // Redirect to login if unauthorized
+    (response) => {
+      return response;
+    },
+  
+    (error) => {
+      if (error.response && error.response.status === 401) {
+        store.dispatch(logout());
+            window.location.href = "/volunteer/login";
+        
+      }
+  
+      return Promise.reject(new Error("Session expired. Please log in again."));
     }
-    return Promise.reject(error);
-  }
-);
+  );
 
 export default volunteerApi;
-
