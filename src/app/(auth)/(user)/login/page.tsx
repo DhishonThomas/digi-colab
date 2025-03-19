@@ -9,25 +9,42 @@ import { USER_URL } from '@/utils/constants';
 
 function Login() {
 
-  const handleLogin=async(data:{email:string,password:string})=>{
 
-console.log("form data",data)
+  const [errorMessage,setErrorMessage]=useState<string|null>(null)
+
+  const handleLogin = async (data: { email: string; password: string }) => {
+    console.log("form data", data);
+    console.log(`${USER_URL}/login`);
   
-  const login=await axios.post(`${USER_URL}/login`,{
-    email:data.email,
-    password:data.password
-  })
-const token=login.data.token
+    try {
+      const login = await axios.post(`${USER_URL}/login`, {
+        email: data.email,
+        password: data.password,
+      });
+  
+      const token = login.data.token;
+      console.log("Token:", token);
+      console.log("Response Data:", login.data);
 
-console.log(token, login.data)
-  }
+      setErrorMessage(null); 
+    } catch (error: any) {
+      if (error.response) {
+        console.error("Error Response:", error.response.data.message);
+        setErrorMessage("Invalid email or password");
+      } else {
+        setErrorMessage("Something went wrong. Please try again.");
+      }
+    
+    }
+  };
+  
 
   return (
     <main className=" bg-[url('/images/background.png')] bg-center bg-no-repeat bg-cover w-full">
     <div className="flex w-full min-h-[100vh] justify-center gap-[173px] container py-[140px]">
       <div className="w-full max-w-[310px]">
         <Suspense>
-        <LoginForm onSubmit={handleLogin}/>
+        <LoginForm onSubmit={handleLogin} errorMessage={errorMessage}/>
         </Suspense>
       </div>
       <div className="  relative hidden md:block">

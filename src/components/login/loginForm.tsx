@@ -14,10 +14,11 @@ interface LoginFormData {
 }
 
 interface LoginFormProps {
-  onSubmit: (data: LoginFormData) => void; // Parent function to handle data
+  onSubmit: (data: LoginFormData) => void; 
+  errorMessage?:string|null
 }
 
-function LoginForm({ onSubmit }: LoginFormProps) {
+function LoginForm({ onSubmit,errorMessage }: LoginFormProps) {
   const {
     control,
     handleSubmit,
@@ -73,6 +74,11 @@ function LoginForm({ onSubmit }: LoginFormProps) {
           )}
         </div>
       </div>
+              {/* Error Message */}
+      
+      {errorMessage && (
+        <p className="text-red-500 text-sm text-center mb-4">{errorMessage}</p>
+      )}
 
       <button
         type="submit"

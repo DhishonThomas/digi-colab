@@ -1,4 +1,4 @@
-const MAIN_URL=process.env.SERVER_URL
+const MAIN_URL=process.env.NEXT_PUBLIC_SERVER_URL
 
 //Main
 export const ADMIN_URL=`${MAIN_URL}/admin`
