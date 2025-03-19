@@ -1,5 +1,5 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import { loadState,saveState } from "./localStorage";
+import { loadState,saveState } from "./cookieStorage";
 import adminReducer from "./slices/adminSlice";
 import userReducer from "./slices/userSlice";
 import volunteerReducer from "./slices/volunteer";
@@ -10,7 +10,7 @@ user:userReducer,
 volunteer:volunteerReducer,
 })
 
-const persistedState=loadState()
+const persistedState=loadState()//here we laod data from cookies.
 
 const store=configureStore({
     reducer:rootReducer,
