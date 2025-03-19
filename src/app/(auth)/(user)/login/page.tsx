@@ -3,19 +3,23 @@ import React, { Suspense, useState } from 'react';
 import Image from 'next/image';
 import login_banner from '@/../public/images/login_banner.png'
 import LoginForm from '@/components/login/loginForm';
+import axios from 'axios';
+import { USER_URL } from '@/utils/constants';
 
 
 function Login() {
 
   const handleLogin=async(data:{email:string,password:string})=>{
 
-console.log("fome data",data)
+console.log("form data",data)
+  
+  const login=await axios.post(`${USER_URL}/login`,{
+    email:data.email,
+    password:data.password
+  })
+const token=login.data.token
 
-try {
-  
-} catch (error) {
-  
-}
+console.log(token, login.data)
   }
 
   return (
