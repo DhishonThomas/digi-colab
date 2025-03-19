@@ -5,13 +5,17 @@ import login_banner from '@/../public/images/login_banner.png'
 import LoginForm from '@/components/login/loginForm';
 import axios from 'axios';
 import { USER_URL } from '@/utils/constants';
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '@/store/slices/userSlice';
+import { RootState } from '@/store/store';
+import { useRouter } from 'next/navigation';
 
 
 function Login() {
 
-
+  const dispatch=useDispatch()
   const [errorMessage,setErrorMessage]=useState<string|null>(null)
-
+  const router=useRouter()
   const handleLogin = async (data: { email: string; password: string }) => {
     console.log("form data", data);
     console.log(`${USER_URL}/login`);
@@ -26,6 +30,11 @@ function Login() {
       console.log("Token:", token);
       console.log("Response Data:", login.data);
 
+      dispatch(loginSuccess({
+        user:login.data.user,
+        token:login.data.token
+      }))
+      router.push("/dashboard")
       setErrorMessage(null); 
     } catch (error: any) {
       if (error.response) {
