@@ -1,13 +1,11 @@
-"use client"
+"use client";
 import React from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import { useRouter, useSearchParams } from "next/navigation";
 import InputText from "../ui/inputText";
-import login_icon from '@/../public/icons/arrow_top_right.svg'
+import login_icon from "@/../public/icons/arrow_top_right.svg";
 import PasswordInput from "../ui/passwordInput";
 import Image from "next/image";
 import Link from "next/link";
-
 
 // Define the form data type
 interface LoginFormData {
@@ -15,13 +13,15 @@ interface LoginFormData {
   password: string;
 }
 
-function LoginForm() {
-  const router = useRouter();
+interface LoginFormProps {
+  onSubmit: (data: LoginFormData) => void; // Parent function to handle data
+}
+
+function LoginForm({ onSubmit }: LoginFormProps) {
   const {
     control,
     handleSubmit,
     formState: { errors },
-    setError,
   } = useForm<LoginFormData>({
     defaultValues: {
       email: "",
@@ -29,23 +29,10 @@ function LoginForm() {
     },
   });
 
-  const searchParams=useSearchParams();
-  const accountType=searchParams.get("accountType")
-
-  const onSubmit: SubmitHandler<LoginFormData> = async (data) => {
-    if(accountType=="admin"){
-    router.push("/admin/dashboard")
-    }else if(accountType=="volunteer"){
-      router.push("/volunteer/dashboard")
-    }else{
-      router.push("/admin/dashboard") //change to  /dashboard
-    }
-  };
-
   return (
     <form
       className="flex flex-col items-center"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(onSubmit)} // Calls the parent function on submit
     >
       <div className="flex flex-col gap-2 mb-[67px]">
         <h1 className="text-text-primary text-[36px] leading-[40px] md:leading-[56px] font-semibold">
@@ -54,12 +41,11 @@ function LoginForm() {
       </div>
 
       <div className="flex flex-col gap-4 md:gap-6 mb-[45px]">
-        {/* Username / Email Field */}
+        {/* Email Field */}
         <div className="flex flex-col gap-2 sm:gap-[13px]">
           <Controller
             name="email"
             control={control}
-            // rules={{ required: "Email is required" }}
             render={({ field }) => (
               <InputText placeholder="EMAIL" {...field} />
             )}
@@ -74,26 +60,17 @@ function LoginForm() {
           <Controller
             name="password"
             control={control}
-            // rules={{ required: "Password is required" }}
             render={({ field }) => (
-              <PasswordInput placeholder="PASSWORD" {...field} />
+              <PasswordInput
+                placeholder="Enter Password"
+                value={field.value || ""}
+                onChange={field.onChange}
+              />
             )}
           />
           {errors.password && (
             <p className="text-red-500 text-xs">{errors.password.message}</p>
           )}
-          <div className="flex justify-between text-[12px]">
-            <div className="font-[500]">
-                <input className="" type="checkbox" />
-                <span className="ms-1">Remember Me</span>
-            </div>
-          <a
-            className="text-right"
-            href="#"
-          >
-            Forgot password?
-          </a>
-          </div>
         </div>
       </div>
 
@@ -104,16 +81,6 @@ function LoginForm() {
         <span>Login</span>
         <Image alt="login banner" src={login_icon} />
       </button>
-      
-      {accountType!="admin"&&<div className="flex items-center text-[12px] gap-3">
-            <div className="">Don't Have An Account?</div>
-          <Link
-            className="text-right text-[#688086] text-[16px] font-[700]"
-            href={accountType=="volunteer"?`/volunteer/sign-up`:"/sign-up"}
-          >
-            sign up
-          </Link>
-          </div>}
     </form>
   );
 }
