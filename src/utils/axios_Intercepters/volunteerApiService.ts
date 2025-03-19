@@ -1,8 +1,8 @@
 import axios from "axios";
-import { ADMIN_URL } from "../constants";
+import { VOLUNTEER_URL } from "../constants";
 
 const API = axios.create({
-  baseURL: ADMIN_URL, 
+  baseURL: VOLUNTEER_URL, 
   headers: { "Content-Type": "application/json" },
 });
 
