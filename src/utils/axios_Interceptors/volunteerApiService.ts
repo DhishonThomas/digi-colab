@@ -32,7 +32,7 @@ volunteerApi.interceptors.response.use(
   },
 
   (error) => {
-    if (error.response && error.response.status === 401) {
+    if (error.response && error.response.status === 401||error.response.status===400) {
       store.dispatch(logout());
       window.location.href = "/volunteer/login";
     }

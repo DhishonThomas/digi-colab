@@ -1,10 +1,10 @@
 import axios from "axios";
-import { VOLUNTEER_URL } from "../constants";
+import { USER_URL} from "../constants";
 import store from "@/store/store";
 import { logout } from "@/store/slices/userSlice";
 
 const userApi = axios.create({
-  baseURL: VOLUNTEER_URL,
+  baseURL: USER_URL,
   headers: { "Content-Type": "application/json" },
 });
 
@@ -32,7 +32,7 @@ userApi.interceptors.response.use(
   },
 
   (error) => {
-    if (error.response && error.response.status === 401) {
+    if (error.response && error.response.status === 401||error.response.status===400) {
       store.dispatch(logout());
       window.location.href = "/login";
     }

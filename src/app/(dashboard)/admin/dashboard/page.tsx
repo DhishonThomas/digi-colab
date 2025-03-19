@@ -1,8 +1,10 @@
+"use client"
 import DashboardCard from "@/components/common/dashboardCard"
 import JobStatistics from "./components/jobStatistics"
 import JobStatus from "./components/jobStatus"
 import CandidateSource from "./components/candidateSource"
 import ScheduleTable from "./components/scheduleTable"
+import useAdminAuth from "@/app/hooks/useAdminAuth"
 
 
 const overView = [
@@ -28,6 +30,11 @@ const overView = [
     },
 ]
 export default function page() {
+
+    const {loading}=useAdminAuth()
+
+    if(loading)return ( <div>Loading....</div> )
+
     return (
         <div>
             <h3 className="text-[#333333] font-[600] text-[22px] ">Dashboard</h3>

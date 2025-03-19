@@ -31,7 +31,7 @@ adminApi.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response && error.response.status === 401) {
+    if (error.response && error.response.status === 401||error.response.status===400) {
       store.dispatch(logout());
 
       window.location.href = "/admin/login";

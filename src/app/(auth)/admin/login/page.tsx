@@ -6,7 +6,6 @@ import LoginForm from '@/components/login/loginForm';
 import axios from 'axios';
 import { ADMIN_LOGIN } from '@/utils/constants';
 import { useDispatch } from 'react-redux';
-import { loginSuccess } from '@/store/slices/userSlice';
 import { RootState } from '@/store/store';
 import { useRouter } from 'next/navigation';
 import { loginAdmin } from '@/store/slices/adminSlice';
