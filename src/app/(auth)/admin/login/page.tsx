@@ -4,20 +4,25 @@ import Image from 'next/image';
 import login_banner from '@/../public/images/login_banner.png'
 import LoginForm from '@/components/login/loginForm';
 import axios from 'axios';
-import { ADMIN_URL } from '@/utils/constants';
+import { ADMIN_LOGIN } from '@/utils/constants';
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '@/store/slices/userSlice';
+import { RootState } from '@/store/store';
+import { useRouter } from 'next/navigation';
+import { loginAdmin } from '@/store/slices/adminSlice';
 
 
 function Login() {
 
-
+  const dispatch=useDispatch()
   const [errorMessage,setErrorMessage]=useState<string|null>(null)
-
+  const router=useRouter()
   const handleLogin = async (data: { email: string; password: string }) => {
     console.log("form data", data);
-    console.log(`${ADMIN_URL}/login`);
+    console.log(`${ADMIN_LOGIN}/login`);
   
     try {
-      const login = await axios.post(`${ADMIN_URL}/login`, {
+      const login = await axios.post(ADMIN_LOGIN, {
         email: data.email,
         password: data.password,
       });
@@ -26,6 +31,11 @@ function Login() {
       console.log("Token:", token);
       console.log("Response Data:", login.data);
 
+      dispatch(loginAdmin({
+        admin:login.data.admin,
+        token:login.data.token
+      }))
+      router.push("/admin/dashboard")
       setErrorMessage(null); 
     } catch (error: any) {
       if (error.response) {

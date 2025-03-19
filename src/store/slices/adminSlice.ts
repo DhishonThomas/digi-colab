@@ -16,9 +16,9 @@ const authSlice=createSlice({
     name:'admin',
     initialState,
     reducers:{
-        loginSuccess:(state,action:PayloadAction<{user:any; token:string}>)=>{
+        loginAdmin:(state,action:PayloadAction<{admin:any; token:string}>)=>{
             state.isAuthenticated=true;
-            state.admin=action.payload.user;
+            state.admin=action.payload.admin;
             state.token=action.payload.token;
         },
         logout:(state)=>{
@@ -31,6 +31,6 @@ const authSlice=createSlice({
 
 const adminReducer=authSlice.reducer
 
-export const {loginSuccess,logout}=authSlice.actions
+export const {loginAdmin,logout}=authSlice.actions
 
 export default adminReducer;
