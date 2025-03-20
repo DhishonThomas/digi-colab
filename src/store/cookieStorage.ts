@@ -1,30 +1,47 @@
 import Cookies from "js-cookie";
 
-// Load state from cookies
+// Check if running in a browser
+const isClient = typeof window !== "undefined";
+
+// Load state from storage
 export const loadState = () => {
   try {
+    if (!isClient) return {}; // Prevent SSR errors
+
+    // Try loading from cookies first
     const serializedState = Cookies.get("reduxState");
-    if (!serializedState) return {}; // Return an empty object instead of undefined
-    return JSON.parse(serializedState);
+
+    if (serializedState) {
+      return JSON.parse(serializedState);
+    }
+
+    // Fallback: Try loading from localStorage
+    const localState = localStorage.getItem("reduxState");
+    return localState ? JSON.parse(localState) : {};
   } catch (error) {
     console.error("Could not load the state", error);
     return {};
   }
 };
 
-
-// Save state to cookies
+// Save state to storage
 export const saveState = (state: any) => {
   try {
+    if (!isClient) return; // Prevent SSR errors
+
     const serializedState = JSON.stringify(state);
-    Cookies.set("reduxState", serializedState, { 
-      expires: 7, 
-      secure: true, // Ensure cookies are only sent over HTTPS
-      sameSite: "None", // Required for cross-origin requests
-      path: "/", // Ensure the cookie is available for all requests
-    }); 
+
+    // Save to Cookies
+    Cookies.set("reduxState", serializedState, {
+      expires: 7, // 7-day persistence
+      secure: process.env.NODE_ENV === "production", // Secure only in production
+      sameSite: "Lax", // More cross-browser compatibility
+      path: "/",
+    });
+
+    // Also save to localStorage as a fallback
+    localStorage.setItem("reduxState", serializedState);
   } catch (error) {
     console.error("Could not save the state", error);
   }
 };
-
