@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import InputText from "../ui/inputText";
 import login_icon from "@/../public/icons/arrow_top_right.svg";
 import PasswordInput from "../ui/passwordInput";
@@ -103,7 +103,7 @@ if(pathName.startsWith("/admin")){
             <div className="">Don't Have An Account?</div>
           <Link
             className="text-right text-[#688086] text-[16px] font-[700]"
-            href={accountType=="volunteer"?`/volunteer/sign-up`:"/sign-up"}
+            href={accountType=="volunteer"?`/volunteer/register`:"/register"}
           >
             sign up
           </Link>

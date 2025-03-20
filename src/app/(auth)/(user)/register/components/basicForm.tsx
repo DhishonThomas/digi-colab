@@ -69,7 +69,7 @@ function BasicForm({switchTab}:any) {
           name="phone"
           type="text"
           placeholder="PHONE NUMBER" />
-          <div className="flex gap-6 justify-center px-7">
+          {/* <div className="flex gap-6 justify-center px-7">
             <div className="flex">
             <FormInput
               name=""
@@ -91,7 +91,8 @@ function BasicForm({switchTab}:any) {
               type="text"
               placeholder="-" /></div>
   
-          </div></div>
+          </div> */}
+          </div>
       </div>
 
       <button
