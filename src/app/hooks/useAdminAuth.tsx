@@ -18,9 +18,9 @@ const token=useSelector((store:RootState)=>store.admin.token)
       try {
         const response = await adminApi.get("/me");
         console.log("Admin Data:", response.data);
+        alert("dd")
 
         if (!response.data.status) {
-    
           router.push("/admin/login"); 
         }
       } catch (error) {

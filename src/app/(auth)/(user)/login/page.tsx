@@ -7,7 +7,6 @@ import axios from 'axios';
 import { USER_LOGIN } from '@/utils/constants';
 import { useDispatch } from 'react-redux';
 import { loginSuccess } from '@/store/slices/userSlice';
-import { RootState } from '@/store/store';
 import { useRouter } from 'next/navigation';
 
 

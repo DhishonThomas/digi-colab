@@ -6,11 +6,11 @@ import { useEffect, useState } from "react"
 
 export default function page() {
 
-    const {loading}=useUserAuth()
+    // const {loading}=useUserAuth()
 
-    if(loading){
-        return( <div>Loading....</div> )
-    }
+    // if(loading){
+    //     return( <div>Loading....</div> )
+    // }
     return (
         <div>
             <h3 className="text-[#333333] font-[600] text-[22px] ">Dashboard</h3>

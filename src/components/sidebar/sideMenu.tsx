@@ -7,7 +7,6 @@ import { usePathname } from "next/navigation";
 import userMenu from "./userMenu.json";
 import volunteerMenu from "./volunteerMenu.json";
 import adminMenu from "./adminMenu.json";
-import menu from "./data.json";
 import Link from "next/link";
 import Skelton from "./skelton";
 

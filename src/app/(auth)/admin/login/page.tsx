@@ -18,7 +18,6 @@ function Login() {
   const router=useRouter()
   const handleLogin = async (data: { email: string; password: string }) => {
     console.log("form data", data);
-    console.log(`${ADMIN_LOGIN}/login`);
   
     try {
       const login = await axios.post(ADMIN_LOGIN, {

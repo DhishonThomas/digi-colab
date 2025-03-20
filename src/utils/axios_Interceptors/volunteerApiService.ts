@@ -5,39 +5,28 @@ import { logout } from "@/store/slices/volunteer";
 
 const volunteerApi = axios.create({
   baseURL: VOLUNTEER_URL,
-  headers: { "Content-Type": "application/json" },
+  withCredentials: true, 
 });
 
 // Request Interceptor
-
 volunteerApi.interceptors.request.use(
   (config) => {
-    const { token } = store.getState().volunteer;
-
-    if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`;
-    }
-
+    console.log("Volunteer API Request Config:", config.headers);
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 // Response Interceptor
 volunteerApi.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-
+  (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401||error.response.status===400) {
+    if (error.response && (error.response.status === 401 || error.response.status === 400)) {
+      console.log("Volunteer session expired:", error.response);
       store.dispatch(logout());
       window.location.href = "/volunteer/login";
     }
-
-    return Promise.reject(new Error("Session expired. Please log in again."));
+    return Promise.reject(error);
   }
 );
 

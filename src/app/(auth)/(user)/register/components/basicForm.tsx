@@ -69,29 +69,6 @@ function BasicForm({switchTab}:any) {
           name="phone"
           type="text"
           placeholder="PHONE NUMBER" />
-          {/* <div className="flex gap-6 justify-center px-7">
-            <div className="flex">
-            <FormInput
-              name=""
-              type="text"
-              placeholder="-" /></div>
-            <div className="flex">
-            <FormInput
-              name=""
-              type="text"
-              placeholder="-" /></div>
-            <div className="flex">
-            <FormInput
-              name=""
-              type="text"
-              placeholder="-" /></div>
-            <div className="flex">
-            <FormInput
-              name=""
-              type="text"
-              placeholder="-" /></div>
-  
-          </div> */}
           </div>
       </div>
 
