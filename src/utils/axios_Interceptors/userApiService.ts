@@ -1,32 +1,43 @@
 import axios from "axios";
-import { USER_URL } from "../constants";
+import { USER_URL} from "../constants";
 import store from "@/store/store";
 import { logout } from "@/store/slices/userSlice";
 
 const userApi = axios.create({
   baseURL: USER_URL,
-  withCredentials: true, 
+  headers: { "Content-Type": "application/json" },
 });
 
 // Request Interceptor
+
 userApi.interceptors.request.use(
   (config) => {
-    console.log("User API Request Config:", config.headers);
+    const { token } = store.getState().user;
+
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+    }
+
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    return Promise.reject(error);
+  }
 );
 
 // Response Interceptor
 userApi.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    return response;
+  },
+
   (error) => {
-    if (error.response && (error.response.status === 401 || error.response.status === 400)) {
-      console.log("User session expired:", error.response);
+    if (error.response && error.response.status === 401||error.response.status===400) {
       store.dispatch(logout());
       window.location.href = "/login";
     }
-    return Promise.reject(error);
+
+    return Promise.reject(new Error("Session expired. Please log in again."));
   }
 );
 

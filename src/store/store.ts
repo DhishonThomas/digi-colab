@@ -17,13 +17,13 @@ const store=configureStore({
     preloadedState:persistedState,
 })
 
-store.subscribe(()=>{
-saveState({
-    admin:store.getState().admin,
-    user:store.getState().user,
-    volunteer:store.getState().volunteer,
-})
-})
+store.subscribe(() => {
+  const state = store.getState();
+  if (state.admin || state.user || state.volunteer) {
+    saveState(state);
+  }
+});
+
 
 export type RootState=ReturnType<typeof store.getState>;
 

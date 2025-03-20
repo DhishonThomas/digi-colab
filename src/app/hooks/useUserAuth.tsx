@@ -21,7 +21,7 @@ console.log(token)
         const response = await userApi.get("/me");
         console.log("User Data:", response.data);
 
-        if (!response.data.status) {
+        if (!response.data.success) {
         
           router.push("/login");
         }

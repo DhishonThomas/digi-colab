@@ -5,13 +5,19 @@ import { logout } from "@/store/slices/adminSlice";
 
 const adminApi = axios.create({
   baseURL: ADMIN_URL,
-  withCredentials: true,
 });
 
-// Request Interceptor 
+// Request Interceptor
+
 adminApi.interceptors.request.use(
   (config) => {
-    console.log("Config Headers:", config.headers);
+    const { token } = store.getState().admin;
+console.log(token,"this is the token)****")
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+      console.log("config>>headers",config.headers)
+    }
+
     return config;
   },
   (error) => {
@@ -21,16 +27,19 @@ adminApi.interceptors.request.use(
 
 // Response Interceptor
 adminApi.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    return response;
+  },
   (error) => {
-    if (error.response && (error.response.status === 401 || error.response.status === 400)) {
-      console.log("Unauthorized error:", error.response);
-      
+    if (error.response && error.response.status === 401||error.response.status===400) {
+     console.log("error response",error.response)
+     
       store.dispatch(logout());
+
       window.location.href = "/admin/login";
     }
 
-    return Promise.reject(error);
+    return Promise.reject(new Error("Session expired. Please log in again."));
   }
 );
 

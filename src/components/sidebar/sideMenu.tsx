@@ -9,6 +9,12 @@ import volunteerMenu from "./volunteerMenu.json";
 import adminMenu from "./adminMenu.json";
 import Link from "next/link";
 import Skelton from "./skelton";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { useRouter } from "next/navigation"; // ✅ Correct
+import { logout as adminLogout } from "@/store/slices/adminSlice";
+import { logout as volunteerLogout } from "@/store/slices/volunteer";
+import { logout as userLogout } from "@/store/slices/userSlice";
 
 type Props = {
 };
@@ -22,6 +28,24 @@ export const SideMenu = ({
   //const {setUserProfile} = useUserProfile()||{}
 
   // console.log(activeLink)
+  const admin=useSelector((state:RootState)=>state.admin)
+  const user=useSelector((state:RootState)=>state.user)
+  const volunteer=useSelector((state:RootState)=>state.volunteer)
+  const dispatch=useDispatch()
+  const router=useRouter()
+const handleLogout=()=>{
+
+  if(pathname.startsWith("/admin")&&admin.token){
+    dispatch(adminLogout())
+    router.push("/admin/login")
+  }else if(pathname.startsWith("/volunteer")&&volunteer.token){
+    dispatch(volunteerLogout())
+    router.push("/volunteer/login")
+  }else if(pathname.startsWith("/")&&user.token){
+    dispatch(userLogout())
+    router.push("/login")
+  }
+}
 
   return (
     <div
@@ -64,9 +88,8 @@ export const SideMenu = ({
         </div>
       )}
           
-          <Link
-                href={`/`}
-
+          <button
+              onClick={handleLogout}
                 className={`mb-[30px] flex text-[#C16D70] hover:font-[700] justify-start items-center text-[16px] w-[208px] h-[30px] px-4 gap-[10px]  "font-[700] rounded-[5px] opacity-100`}
               >
                 <div className="text-[25px] xl:text-[26px]">
@@ -75,7 +98,7 @@ export const SideMenu = ({
                 <span >
                   Sign Out
                 </span>
-              </Link>
+              </button>
     </div>
   );
 };

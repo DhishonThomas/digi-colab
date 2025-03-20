@@ -21,7 +21,7 @@ if(!token){
         const response = await volunteerApi.get("/me");
         console.log("Volunteer Data:", response.data);
 
-        if (!response.data.status) {
+        if (!response.data.success) {
       
           router.push("/volunteer/login"); 
         }
