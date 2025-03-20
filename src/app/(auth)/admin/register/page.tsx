@@ -1,12 +1,8 @@
 "use client"
 import React, { Suspense, useState } from 'react';
-import Image from 'next/image';
-import Select, { SingleValue } from 'react-select';
-import login_banner from '@/../public/images/login_banner.png'
-import LoginForm from '@/components/login/loginForm';
 import BasicForm from './components/basicForm';
-import AccountForm from './components/accountForm';
 import VerificationForm from './components/verificationForm';
+import AccountForm from './components/accountForm';
 
 const options = [
     { value: 'english', label: 'EN' },
