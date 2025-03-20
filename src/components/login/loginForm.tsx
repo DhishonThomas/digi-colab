@@ -6,6 +6,7 @@ import login_icon from "@/../public/icons/arrow_top_right.svg";
 import PasswordInput from "../ui/passwordInput";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 // Define the form data type
 interface LoginFormData {
@@ -29,6 +30,16 @@ function LoginForm({ onSubmit,errorMessage }: LoginFormProps) {
       password: "",
     },
   });
+
+const pathName=usePathname()
+let accountType=""
+
+if(pathName.startsWith("/admin")){
+  accountType="admin"
+}
+
+
+
 
   return (
     <form
@@ -87,6 +98,16 @@ function LoginForm({ onSubmit,errorMessage }: LoginFormProps) {
         <span>Login</span>
         <Image alt="login banner" src={login_icon} />
       </button>
+
+      {accountType!="admin"&&<div className="flex items-center text-[12px] gap-3">
+            <div className="">Don't Have An Account?</div>
+          <Link
+            className="text-right text-[#688086] text-[16px] font-[700]"
+            href={accountType=="volunteer"?`/volunteer/sign-up`:"/sign-up"}
+          >
+            sign up
+          </Link>
+          </div>}
     </form>
   );
 }

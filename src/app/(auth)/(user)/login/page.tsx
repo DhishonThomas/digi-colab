@@ -52,7 +52,7 @@ function Login() {
     <div className="flex w-full min-h-[100vh] justify-center gap-[173px] container py-[140px]">
       <div className="w-full max-w-[310px]">
         <Suspense>
-        <LoginForm onSubmit={handleLogin} errorMessage={errorMessage}/>
+          <LoginForm onSubmit={handleLogin} errorMessage={errorMessage}/>        
         </Suspense>
       </div>
       <div className="  relative hidden md:block">
