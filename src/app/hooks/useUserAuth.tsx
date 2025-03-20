@@ -18,7 +18,7 @@ console.log(token)
     }
     async function checkUserAuth() {
       try {
-        const response = await userApi.get("/user/me");
+        const response = await userApi.get("/me");
         console.log("User Data:", response.data);
 
         if (!response.data.status) {

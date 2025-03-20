@@ -16,7 +16,7 @@ const token=useSelector((store:RootState)=>store.admin.token)
     }
     async function checkAdminAuth() {
       try {
-        const response = await adminApi.get("/admin/me");
+        const response = await adminApi.get("/me");
         console.log("Admin Data:", response.data);
 
         if (!response.data.status) {

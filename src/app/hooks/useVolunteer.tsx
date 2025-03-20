@@ -18,7 +18,7 @@ if(!token){
 }
     async function checkVolunteerAuth() {
       try {
-        const response = await volunteerApi.get("/volunteer/me");
+        const response = await volunteerApi.get("/me");
         console.log("Volunteer Data:", response.data);
 
         if (!response.data.status) {
