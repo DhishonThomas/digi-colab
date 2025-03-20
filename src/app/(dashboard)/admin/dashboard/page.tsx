@@ -31,9 +31,9 @@ const overView = [
 ]
 export default function page() {
 
-    // const {loading}=useAdminAuth()
+    const {loading}=useAdminAuth()
 
-    // if(loading)return ( <div>Loading....</div> )
+    if(loading)return ( <div>Loading....</div> )
 
     return (
         <div>

@@ -33,9 +33,10 @@ const overView = [
 export default function page() {
 
 
-    // const {loading}=useVolunteerAuth()
+    const {loading}=useVolunteerAuth()
 
-    // if(loading)return( <div>Loading... </div> )
+    if(loading)return( <div>Loading... </div> )
+        
     return (
         <div>
             <h3 className="text-[#333333] font-[600] text-[22px] ">Quick Status</h3>
