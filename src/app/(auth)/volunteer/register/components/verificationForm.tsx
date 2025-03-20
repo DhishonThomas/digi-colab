@@ -16,7 +16,7 @@ interface SignUpData {
   phone: string;
 }
 
-function BasicForm({switchTab}:any) {
+function VerificationForm({switchTab}:any) {
   const router = useRouter();
   const {
     control,
@@ -32,7 +32,7 @@ function BasicForm({switchTab}:any) {
   const searchParams = useSearchParams();
 
   const onSubmit: SubmitHandler<SignUpData> = async (data) => {
-    switchTab&&switchTab({index:1,value:"verification"})
+    switchTab&&switchTab({index:2,value:"account"})
   };
 
   return (
@@ -46,30 +46,23 @@ function BasicForm({switchTab}:any) {
         <FormInput
           name="name"
           type="text"
-          placeholder="NAME" />
+          placeholder="CAPTURE IMAGE" />
         <FormInput
-          name="guardian"
+          name="email"
           type="text"
-          placeholder="NAME OF FATHER/MOTHER" />
+          placeholder="UNDERTAKING DOCUMENT" />
         <FormInput
-          name="address"
+          name="email"
           type="text"
-          placeholder="CURRENT ADDRESS" />
+          placeholder="POLICE VERIFICATION" />
         <FormInput
-          name="dob"
+          name="email"
           type="text"
-          placeholder="DOB" />
+          placeholder="BANK DOCUMENT" />
         <FormInput
-          name="gender"
+          name="email"
           type="text"
-          placeholder="GENDER" />
-
-        <div className="flex flex-col gap-[10px]">
-        <FormInput
-          name="phone"
-          type="text"
-          placeholder="PHONE NUMBER" />
-          </div>
+          placeholder="EDUCATION QUALIFICATION" />
       </div>
 
       <button
@@ -83,4 +76,4 @@ function BasicForm({switchTab}:any) {
   );
 }
 
-export default BasicForm;
+export default VerificationForm;

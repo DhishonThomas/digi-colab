@@ -2,7 +2,7 @@ import React from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { useRouter, useSearchParams } from "next/navigation";
 import InputText from "@/components/ui/inputText";
-import right_arrow from '@/../public/icons/arrow_right.svg'
+import check_icon from '@/../public/icons/check.svg'
 import PasswordInput from "@/components/ui/passwordInput";
 import Image from "next/image";
 import FormInput from "@/components/ui/formInput";
@@ -16,7 +16,7 @@ interface SignUpData {
   phone: string;
 }
 
-function BasicForm({switchTab}:any) {
+function AccountForm({switchTab}:any) {
   const router = useRouter();
   const {
     control,
@@ -32,7 +32,7 @@ function BasicForm({switchTab}:any) {
   const searchParams = useSearchParams();
 
   const onSubmit: SubmitHandler<SignUpData> = async (data) => {
-    switchTab&&switchTab({index:1,value:"verification"})
+    router.push("/")
   };
 
   return (
@@ -40,47 +40,49 @@ function BasicForm({switchTab}:any) {
       className="flex flex-col items-center"
       onSubmit={handleSubmit(onSubmit)}
     >
-
       <div className="flex flex-col gap-4 md:gap-6 mb-[40px]">
-        {/* Username / Email Field */}
-        <FormInput
-          name="name"
-          type="text"
-          placeholder="NAME" />
-        <FormInput
-          name="guardian"
-          type="text"
-          placeholder="NAME OF FATHER/MOTHER" />
-        <FormInput
-          name="address"
-          type="text"
-          placeholder="CURRENT ADDRESS" />
-        <FormInput
-          name="dob"
-          type="text"
-          placeholder="DOB" />
-        <FormInput
-          name="gender"
-          type="text"
-          placeholder="GENDER" />
-
         <div className="flex flex-col gap-[10px]">
         <FormInput
-          name="phone"
+          name="EMAIL"
           type="text"
-          placeholder="PHONE NUMBER" />
-          </div>
+          placeholder="EMAIL" />
+          <div className="flex gap-6 justify-center px-7">
+            <div className="flex">
+            <FormInput
+              name=""
+              type="text"
+              placeholder="-" /></div>
+            <div className="flex">
+            <FormInput
+              name=""
+              type="text"
+              placeholder="-" /></div>
+            <div className="flex">
+            <FormInput
+              name=""
+              type="text"
+              placeholder="-" /></div>
+            <div className="flex">
+            <FormInput
+              name=""
+              type="text"
+              placeholder="-" /></div>
+  
+          </div></div>
+          <PasswordInput placeholder="ENTER PASSWORD" />
+          <PasswordInput placeholder="CONFIRM PASSWORD"  />
       </div>
 
+      
       <button
         type="submit"
         className="flex items-center justify-center gap-[34px] text-white bg-[#688086] rounded-[8px] py-[10px] px-[54px] w-[fit-content] m-auto mb-[10px]"
       >
-        <span>Next</span>
-        <Image alt="login banner" src={right_arrow} />
+        <span>Register</span>
+        <Image alt="login banner" src={check_icon} />
       </button>
     </form>
   );
 }
 
-export default BasicForm;
+export default AccountForm;
