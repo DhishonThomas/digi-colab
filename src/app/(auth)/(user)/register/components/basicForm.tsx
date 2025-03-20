@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
@@ -16,24 +16,23 @@ interface SignUpData {
   phone: string;
 }
 
-function BasicForm({ switchTab }: any) {
+function BasicForm({ switchTab , formData,updateFormData }: any) {
   const router = useRouter();
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<SignUpData>({
-    defaultValues: {
-      name: "",
-      guardian: "",
-      address: "",
-      dob: "",
-      gender: "",
-      phone: "",
-    },
+    defaultValues: formData,
   });
 
+useEffect(()=>{
+  reset(formData)
+},[formData,reset])
+
   const onSubmit: SubmitHandler<SignUpData> = async (data) => {
+    updateFormData(data)
     console.log("Form Data:", data);
 
     switchTab && switchTab({ index: 1, value: "verification" });
