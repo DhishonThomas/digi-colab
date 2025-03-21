@@ -28,18 +28,16 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
 
   const [errors, setErrors] = useState<{ [key: string]: boolean }>({});
 
-  const fileRefs: any = {
-    capture: useRef<HTMLInputElement>(null),
-    undertaking: useRef<HTMLInputElement>(null),
-    police_verification: useRef<HTMLInputElement>(null),
-    bank: useRef<HTMLInputElement>(null),
-    education: useRef<HTMLInputElement>(null),
+  const fileRefs:any = {
+    capture: useRef(null),
+    undertaking: useRef(null),
+    police_verification: useRef(null),
+    bank: useRef(null),
+    education: useRef(null),
   };
 
   const handleFileClick = (ref: React.RefObject<HTMLInputElement>) => {
-    if (ref.current) {
-      ref.current.click();
-    }
+    ref.current?.click();
   };
 
   const handleFileChange = (field: keyof SignUpData, file: File | null) => {
@@ -50,12 +48,11 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
       return newFiles;
     });
 
-    // Remove error if file is uploaded
     setErrors((prev) => ({ ...prev, [field]: !file }));
   };
 
   const handleDownload = () => {
-    const pdfUrl = "/pdf/9_Police_Verification.pdf"; // Correct Next.js path
+    const pdfUrl = "/pdf/9_Police_Verification.pdf";
     const link = document.createElement("a");
     link.href = pdfUrl;
     link.download = "Police_Verification_Form.pdf";
@@ -72,33 +69,27 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
   }, []);
 
   const onSubmit: SubmitHandler<SignUpData> = async () => {
-    // Checking for missing files
-    const missingFields = Object.entries(uploadedFiles).reduce((acc, [key, value]) => {
-      if (!value) acc[key] = true;
+    const missingFields = Object.keys(uploadedFiles).reduce((acc, key) => {
+      if (!uploadedFiles[key as keyof SignUpData]) {
+        acc[key] = true;
+      }
       return acc;
     }, {} as { [key: string]: boolean });
-
-    // If any file is missing, prevent submission
+  
     if (Object.keys(missingFields).length > 0) {
-      setErrors(missingFields);
+      setErrors(missingFields); 
       return;
     }
-
-    // Proceed only if "police_verification" file is uploaded
-    if (!uploadedFiles.police_verification) {
-      setErrors((prev) => ({ ...prev, police_verification: true }));
-      return;
-    }
-
-    
+  
     switchTab && switchTab({ index: 2, value: "account" });
   };
+  
 
   return (
     <form className="flex flex-col items-center" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-4 md:gap-6 mb-[40px] w-full max-w-md">
         {Object.keys(uploadedFiles)
-          .filter((key) => key !== "police_verification") // Remove "police_verification" from loop
+          .filter((key) => key !== "police_verification")
           .map((key) => (
             <div key={key} className="flex flex-col">
               <div
@@ -106,8 +97,8 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
                   errors[key] ? "border border-red-500" : ""
                 }`}
               >
-                <span>{key.toUpperCase().replace("_", " ")}</span>
-                <button type="button" onClick={() => handleFileClick(fileRefs[key])}>
+                <span>{key.replace(/_/g, " ").toUpperCase()}</span>
+                <button type="button" onClick={() => handleFileClick(fileRefs[key as keyof SignUpData])}>
                   {uploadedFiles[key as keyof SignUpData] ? (
                     <Image alt="Uploaded" src={check_icon} width={20} height={20} />
                   ) : (
@@ -116,16 +107,18 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
                 </button>
               </div>
               <input
-                ref={fileRefs[key]}
+                ref={fileRefs[key as keyof SignUpData]}
                 type="file"
                 className="hidden"
                 onChange={(e) => handleFileChange(key as keyof SignUpData, e.target.files?.[0] || null)}
               />
-              {errors[key] && <p className="text-red-500 text-xs">Please upload {key.replace("_", " ")}.</p>}
+              {errors[key] && (
+                <p className="text-red-500 text-xs">Please upload {key.replace(/_/g, " ")}.</p>
+              )}
             </div>
           ))}
 
-        {/* Police Verification - Special Case with Download Button */}
+        {/* Police Verification with Download Button */}
         <div className="flex flex-col">
           <div className="flex justify-between items-center bg-gray-100 rounded-lg py-3 px-4">
             <span>POLICE VERIFICATION</span>
@@ -142,18 +135,21 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
               </button>
             </div>
           </div>
-
           <input
             ref={fileRefs.police_verification}
             type="file"
             className="hidden"
             onChange={(e) => handleFileChange("police_verification", e.target.files?.[0] || null)}
           />
-          {errors.police_verification && <p className="text-red-500 text-xs">Police verification is required.</p>}
+          {errors.police_verification && (
+            <p className="text-red-500 text-xs">Police verification is required.</p>
+          )}
         </div>
 
         {/* Submit Button */}
-        <button type="submit" className="bg-[#688086] text-white rounded-lg py-2 px-5">Next</button>
+        <button type="submit" className="bg-[#688086] text-white rounded-lg py-2 px-5">
+          Next
+        </button>
       </div>
     </form>
   );

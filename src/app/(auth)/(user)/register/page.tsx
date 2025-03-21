@@ -22,7 +22,7 @@ type FormData = {
   files: {
     capture?: File | null;
     undertaking?: File | null;
-    police?: File | null;
+    police_verification?: File | null;
     bank?: File | null;
     education?: File | null;
   };
@@ -44,7 +44,7 @@ function Page() {
     files: {
       capture: null,
       undertaking: null,
-      police: null,
+      police_verification: null,
       bank: null,
       education: null,
     },
