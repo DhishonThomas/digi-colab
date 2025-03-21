@@ -1,12 +1,16 @@
 const MAIN_URL=process.env.NEXT_PUBLIC_SERVER_URL
 
 //Main
-export const ADMIN_URL=`${MAIN_URL}/admin`
-export const USER_URL=`${MAIN_URL}/user`
-export const VOLUNTEER_URL=`${MAIN_URL}/volunteer`
+export const ADMIN_URL=`${MAIN_URL}/admin`;
+export const USER_URL=`${MAIN_URL}/user`;
+export const VOLUNTEER_URL=`${MAIN_URL}/volunteer`;
 
 //Login 
-export const USER_LOGIN=`${USER_URL}/login`
-export const ADMIN_LOGIN=`${ADMIN_URL}/login`
-export const VOLUNTEER_LOGIN=`${VOLUNTEER_URL}/login`
+export const USER_LOGIN=`${USER_URL}/login`;
+export const ADMIN_LOGIN=`${ADMIN_URL}/login`;
+export const VOLUNTEER_LOGIN=`${VOLUNTEER_URL}/login`;
+
+//Send-Email-Otp
+export const USER_OTP=`${USER_URL}/send-email-otp`;
+export const VOLUNTEER_OTP=`${VOLUNTEER_URL}/send-email-otp`;
 
