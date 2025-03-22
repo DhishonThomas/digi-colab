@@ -3,6 +3,8 @@ import React, { Suspense, useEffect, useState } from "react";
 import BasicForm from "./components/basicForm";
 import AccountForm from "./components/accountForm";
 import VerificationForm from "./components/verificationForm";
+import axios from "axios";
+import { USER_REGISTER } from "@/utils/constants";
 
 type Tab = "basic" | "verification" | "account";
 
@@ -14,6 +16,8 @@ const tabs = [
 
 type FormData = {
   name: string;
+  email:string;
+  password:string;
   guardian: string;
   address: string;
   dob: string;
@@ -36,6 +40,8 @@ function Page() {
 
   const [formData, setFormData] = useState<FormData>({
     name: "",
+    email:"",
+    password:"",
     guardian: "",
     address: "",
     dob: "",
@@ -105,13 +111,47 @@ function Page() {
     }
   };
 
-  const handleFinalSubmit = () => {
-    console.log("Final Submitted Data:", formData);
-    alert("Form submitted successfully!");
-    localStorage.removeItem("formData");
-    localStorage.removeItem("activeTab");
-    localStorage.removeItem("completedForms");
+  const handleFinalSubmit = async () => {
+    const finalData = {
+      name: formData.name,
+      email: formData.email,
+      phone: formData.phone,
+      password: formData.password,
+      guardian: formData.guardian,
+      address: formData.address,
+      dob: formData.dob,
+      gender: formData.gender,
+      files: {
+        image: formData.files.capture,
+        undertaking: formData.files.undertaking,
+        policeVerification: formData.files.police_verification,
+        educationQualification: formData.files.education,
+      }
+
+    
+
+    };
+
+    
+  
+    // Convert to FormData for file handling
+    const formDataToSend = new FormData();
+    Object.entries(finalData).forEach(([key, value]) => {
+      if (typeof value === "object" && value !== null) {
+        Object.entries(value).forEach(([fileKey, fileValue]:any) => {
+          if (fileValue) formDataToSend.append(fileKey, fileValue);
+        });
+      } else {
+        formDataToSend.append(key, value as string);
+      }
+    });
+  
+    console.log("Submitting Data:", finalData);
+  
+  return finalData
+
   };
+  
 
   return (
     <main className="bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat">
@@ -179,7 +219,7 @@ const TabDispatcher = ({
     case "verification":
       return <VerificationForm switchTab={() => { markFormCompleted("verification"); switchTab({ index: 2, value: "account" }); }} formData={formData} updateFormData={updateFormData} />;
     case "account":
-      return <AccountForm switchTab={switchTab} handleFinalSubmit={handleFinalSubmit} />;
+      return <AccountForm switchTab={switchTab} handleFinalSubmit={handleFinalSubmit} updateFormData={updateFormData} />;
     default:
       return <></>;
   }

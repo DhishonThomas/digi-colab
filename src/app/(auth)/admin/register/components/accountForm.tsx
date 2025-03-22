@@ -10,10 +10,9 @@ import FormInput from "@/components/ui/formInput";
 
 // Define the form data type
 interface SignUpData {
-  name: string;
   email: string;
-  aadhaar: string;
-  phone: string;
+  password:string;
+  confirm_password:string
 }
 
 function AccountForm({switchTab}:any) {
@@ -26,6 +25,8 @@ function AccountForm({switchTab}:any) {
   } = useForm<SignUpData>({
     defaultValues: {
       email: "",
+      password:"",
+      confirm_password:""
     },
   });
 
@@ -69,9 +70,29 @@ function AccountForm({switchTab}:any) {
               placeholder="-" /></div>
   
           </div></div>
-          <PasswordInput placeholder="ENTER PASSWORD" />
-          <PasswordInput placeholder="CONFIRM PASSWORD"  />
-      </div>
+          <Controller
+            name="password"
+            control={control}
+            render={({ field }) => (
+              <PasswordInput
+                placeholder="Enter Password"
+                value={field.value || ""}
+                onChange={field.onChange}
+              />
+            )}
+          />         
+          
+          <Controller
+            name="confirm_password"
+            control={control}
+            render={({ field }) => (
+              <PasswordInput
+                placeholder="Confirm Password"
+                value={field.value || ""}
+                onChange={field.onChange}
+              />
+            )}
+          />         </div>
 
       
       <button
