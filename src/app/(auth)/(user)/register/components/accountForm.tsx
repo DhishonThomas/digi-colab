@@ -37,10 +37,12 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
   const [otpVerified, setOtpVerified] = useState(false);
   const [timer, setTimer] = useState(0);
   const [otpMessage, setOtpMessage] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [passwordVisible, setPasswordVisible] = useState(false);
-  const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
-
+  const [loading, setLoading] = useState({
+    sendOtp:false,
+    verifyOtp:false,
+    register:false
+  });
+  const [resendOtp,setResendOtp]=useState(false)
   // 🔹 Watch Form Values
   const email = watch("email", "");
   const password = watch("password", "");
@@ -71,7 +73,7 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
     }
 
     clearErrors("email"); // ✅ Clears email error if valid
-    setLoading(true);
+    setLoading((prev:any)=>({...prev,sendOtp:true}));
 
     try {
       const response = await axios.post(USER_SEND_OTP, { email });
@@ -80,13 +82,14 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
         setOtpSent(true);
         setOtpMessage("✅ OTP sent successfully!");
         setTimer(60);
+        setResendOtp(true)
       } else {
         setOtpMessage(response.data.message || "Failed to send OTP.");
       }
     } catch (error: any) {
       setOtpMessage(error.response?.data?.message || "Failed to send OTP. Please try again.");
     } finally {
-      setLoading(false);
+      setLoading((prev:any)=>({...prev,sendOtp:false}));
     }
   };
 
@@ -97,16 +100,16 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
       return;
     }
 
-    setLoading(true);
+    setLoading((prev:any)=>({...prev,verifyOtp:true}));
 
     try {
       const response = await axios.post(USER_VERIFY_OTP, { email, otp });
-
+console.log(email,otp, response.data)
       if (response.data.success) {
         setOtpVerified(true);
         setOtpMessage("✅ OTP verified successfully!");
         clearErrors("otp"); // ✅ Clears OTP error on success
-
+        setResendOtp(false)
         // Remove timer and resend OTP button after successful verification
         setTimer(0);
         setOtpSent(false);
@@ -116,7 +119,7 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
     } catch (error) {
       setError("otp", { type: "manual", message: "Invalid OTP. Please try again." });
     } finally {
-      setLoading(false);
+      setLoading((prev:any)=>({...prev,verifyOtp:false}));
     }
   };
 
@@ -137,7 +140,7 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
       console.error("updateFormData function is missing");
     }
   
-    setLoading(true);
+    setLoading((prev:any)=>({...prev,register:true}));
   
    handleFinalSubmit()
   };
@@ -157,14 +160,14 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
           error={errors.email}
         />
 
-        {!otpSent && (
+        {(!otpSent&&!otpVerified) && (
           <button
             type="button"
             onClick={sendOtp}
             className="bg-[#688086] text-white font-semibold py-2 px-4 rounded-lg"
-            disabled={loading}
+            disabled={loading.sendOtp}
           >
-            {loading ? "Sending..." : "Send OTP"}
+            {loading.sendOtp ? "Sending..." : "Send OTP"}
           </button>
         )}
 
@@ -186,15 +189,26 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
               type="button"
               onClick={verifyOtp}
               className="bg-[#688086] text-white font-semibold py-2 px-4 rounded-lg"
-              disabled={loading || otpVerified}
+              disabled={loading.verifyOtp || otpVerified}
             >
-              {loading ? "Verifying..." : "Verify OTP"}
+              {loading.verifyOtp ? "Verifying..." : "Verify OTP"}
             </button>
 
             {timer > 0 && <p className="text-gray-500 text-xs">Resend OTP in {timer}s</p>}
+
           </>
         )}
-
+{(timer==0&&resendOtp)&&
+ <button
+ type="button"
+ onClick={sendOtp}
+ className=" text-blue-600 font-semibold py-2 px-4 rounded-lg"
+ disabled={loading.sendOtp || otpVerified}
+>
+ {loading.sendOtp ? "Resending..." : "Resend OTP"}
+</button>
+}
+{otpVerified&&<div className="flex flex-col gap-4 md:gap-6 mb-6 w-full max-w-md"> 
 <Controller
             name="password"
             control={control}
@@ -221,10 +235,12 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
         <button
           type="submit"
           className="bg-[#688086] text-white font-semibold rounded-lg py-2 px-6"
-          disabled={!otpVerified || loading}
+          disabled={!otpVerified || loading.register}
         >
-          {loading ? "Registering..." : "Register"}
+          {loading.register ? "Registering..." : "Register"}
         </button>
+</div>
+}
       </div>
     </form>
   );

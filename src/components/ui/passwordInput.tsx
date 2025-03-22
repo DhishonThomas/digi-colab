@@ -35,9 +35,19 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
         className="absolute right-[20px] top-[12px] md:top-[17px]"
       >
         {showPassword ? (
-          <Image alt="hide" src={"/icons/lock_closed.svg"} width={16} height={16} />
+          <Image
+            alt="show"
+            src={"/icons/lock_open.svg"}
+            width={16}
+            height={16}
+          />
         ) : (
-          <Image alt="show" src={"/icons/lock_open.svg"}width={16} height={16} />
+          <Image
+            alt="hide"
+            src={"/icons/lock_closed.svg"}
+            width={16}
+            height={16}
+          />
         )}
       </button>
     </div>

@@ -5,6 +5,8 @@ import Image from "next/image";
 import right_arrow from "@/../public/icons/arrow_right.svg";
 import FormInput from "@/components/ui/formInput";
 import { validateAddress, validateDOB, validateGender, validateGuardian, validateName, validatePhone } from "@/utils/validators";
+import axios from "axios";
+import { GET_VOLUNTEERS } from "@/utils/constants";
 
 // Define the form data type
 interface SignUpData {
@@ -14,6 +16,7 @@ interface SignUpData {
   dob: string;
   gender: string;
   phone: string;
+  volunteer:string;
 }
 
 function BasicForm({ switchTab , formData,updateFormData }: any) {
@@ -27,9 +30,33 @@ function BasicForm({ switchTab , formData,updateFormData }: any) {
     defaultValues: formData,
   });
 
+  const [block, setBlock] = useState(false);
+  const [volunteers, setVolunteers] = useState<{ _id: string; name: string }[]>([]);
+  const [loading, setLoading] = useState(true);
+
+
 useEffect(()=>{
   reset(formData)
 },[formData,reset])
+
+useEffect(() => {
+  const fetchVolunteers = async () => {
+    try {
+      const response = await axios.get(GET_VOLUNTEERS);
+      if (response.data.success) {
+        setVolunteers(response.data.volunteers);
+      } else {
+        console.error("Error fetching volunteers:", response.data.message);
+      }
+    } catch (error) {
+      console.error("API error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchVolunteers();
+}, []);
 
   const onSubmit: SubmitHandler<SignUpData> = async (data) => {
     updateFormData(data)
@@ -37,7 +64,7 @@ useEffect(()=>{
 
     switchTab && switchTab({ index: 1, value: "verification" });
   };
-const [block,setBlock]=useState(false)
+
   return (
     <form
       className="flex flex-col items-center"
@@ -171,8 +198,35 @@ const [block,setBlock]=useState(false)
           }}
           error={errors.phone}
         />
-      </div>
-
+       {/* Volunteer Selection Dropdown (Styled Like Other Inputs) */}
+             
+       <Controller
+          name="volunteer"
+          control={control}
+          rules={{ required: "Volunteer selection is required" }}
+          render={({ field }) => (
+            <select
+              {...field}
+              className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-3 px-5 bg-[#413C340D] ${
+                errors.volunteer ? "border-red-500" : ""
+              }`}
+            >
+              <option value="">SELECT A VOLUNTEER</option>
+              {loading ? (
+                <option disabled>Loading...</option>
+              ) : (
+                volunteers.map((volunteer) => (
+                  <option key={volunteer._id} value={volunteer.name}>
+                    {volunteer.name}
+                  </option>
+                ))
+              )}
+            </select>
+          )}
+        />
+        {errors.volunteer && <p className="text-red-500 text-xs mt-1">{errors.volunteer.message}</p>}
+      </div>    
+        
       <button
         disabled={block}
         type="submit"

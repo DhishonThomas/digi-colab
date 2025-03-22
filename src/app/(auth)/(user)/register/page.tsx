@@ -23,6 +23,7 @@ type FormData = {
   dob: string;
   gender: string;
   phone: string;
+  volunteer:string;
   files: {
     capture?: File | null;
     undertaking?: File | null;
@@ -47,6 +48,7 @@ function Page() {
     dob: "",
     gender: "",
     phone: "",
+    volunteer:"",
     files: {
       capture: null,
       undertaking: null,

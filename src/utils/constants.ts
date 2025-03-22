@@ -21,3 +21,4 @@ export const VOLUNTEER_VERIFY_OTP=`${VOLUNTEER_URL}/verify-email-otp`
 //Register
 export const USER_REGISTER=`${USER_URL}/register`
 export const VOLUNTEER_REGISTER=`${VOLUNTEER_URL}/register`
+export const GET_VOLUNTEERS=`${USER_URL}/volunteers`
