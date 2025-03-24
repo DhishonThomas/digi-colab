@@ -37,6 +37,7 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
   const [otpVerified, setOtpVerified] = useState(false);
   const [timer, setTimer] = useState(0);
   const [otpMessage, setOtpMessage] = useState("");
+  const [submitError,setSubmitError]=useState("")
   const [loading, setLoading] = useState({
     sendOtp:false,
     verifyOtp:false,
@@ -142,7 +143,11 @@ console.log(email,otp, response.data)
   
     setLoading((prev:any)=>({...prev,register:true}));
   
-   handleFinalSubmit()
+ const finalData= await handleFinalSubmit(email,password,setLoading,setSubmitError)
+
+
+
+ console.log("finalData>>>",finalData)
   };
   
 
@@ -239,6 +244,8 @@ console.log(email,otp, response.data)
         >
           {loading.register ? "Registering..." : "Register"}
         </button>
+
+        {submitError&& <p className="text-red-600 font-bold m-4">{submitError}</p> }
 </div>
 }
       </div>

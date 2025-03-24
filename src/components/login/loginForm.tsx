@@ -107,7 +107,17 @@ if(pathName.startsWith("/admin")){
           >
             sign up
           </Link>
-          </div>}
+          <div className="">Forget Password?</div>
+          <Link
+            className="text-right text-[#688086] text-[16px] font-[700]"
+            href={accountType=="volunteer"?`/volunteer/forget-password`:"/forget-password"}
+          >
+            Forget
+          </Link>
+          </div>
+          
+          
+          }
     </form>
   );
 }

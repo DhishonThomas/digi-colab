@@ -20,16 +20,21 @@ type FormData = {
   password:string;
   guardian: string;
   address: string;
+  currentAddress:string;
   dob: string;
   gender: string;
   phone: string;
-  volunteer:string;
+  volunteerName:string;
+  bankAccNumber:string;
+  bankName: string;
+  ifsc: string;
+  pwdCategory: string;
+  entrepreneurshipInterest: string;
   files: {
-    capture?: File | null;
+    image?: File | null;
     undertaking?: File | null;
-    police_verification?: File | null;
-    bank?: File | null;
-    education?: File | null;
+    policeVerification?: File | null;
+    educationQualification?: File | null;
   };
 };
 
@@ -39,22 +44,27 @@ function Page() {
     value: "basic",
   });
 
-  const [formData, setFormData] = useState<FormData>({
+  const [data, setData] = useState<FormData>({
     name: "",
     email:"",
     password:"",
     guardian: "",
     address: "",
+    currentAddress:"",
     dob: "",
     gender: "",
     phone: "",
-    volunteer:"",
+    volunteerName:"",
+    bankAccNumber:"",
+    bankName: "",
+    ifsc: "",
+    pwdCategory: "",
+    entrepreneurshipInterest: "",
     files: {
-      capture: null,
+      image: null,
       undertaking: null,
-      police_verification: null,
-      bank: null,
-      education: null,
+      policeVerification: null,
+      educationQualification: null,
     },
   });
 
@@ -68,7 +78,7 @@ function Page() {
   useEffect(() => {
     const savedData = localStorage.getItem("formData");
     if (savedData) {
-      setFormData(JSON.parse(savedData));
+      setData(JSON.parse(savedData));
     }
     const savedTab = localStorage.getItem("activeTab");
     if (savedTab) {
@@ -82,8 +92,8 @@ function Page() {
 
   // Save data on form change
   useEffect(() => {
-    localStorage.setItem("formData", JSON.stringify(formData));
-  }, [formData]);
+    localStorage.setItem("formData", JSON.stringify(data));
+  }, [data]);
 
   useEffect(() => {
     localStorage.setItem("activeTab", JSON.stringify(activeTab));
@@ -95,12 +105,35 @@ function Page() {
 
   // Upadationg the parent form..
   const updateFormData = (newData: Partial<FormData>) => {
-    setFormData((prev) => ({
+    setData((prev) => ({
       ...prev,
       ...newData,
       files: { ...prev.files, ...newData.files },
     }));
   };
+
+  useEffect(() => {
+    const hasFiles = Object.values(data.files).some(file => file !== null);
+  
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (hasFiles) {
+        event.preventDefault();
+        event.returnValue = "You have uploaded a file. Are you sure you want to leave?";
+      }
+    };
+  
+    if (hasFiles) {
+      window.addEventListener("beforeunload", handleBeforeUnload);
+    } else {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    }
+  
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [data.files]); // Runs whenever files change
+  
+
 
   const markFormCompleted = (formName: Tab) => {
     setCompletedForms((prev:any) => ({ ...prev, [formName]: true }));
@@ -112,57 +145,69 @@ function Page() {
       setActiveTab({ index, value });
     }
   };
+  const handleFinalSubmit = async (
+    email: string,
+    password: string,
+    handleLoading: (loading: boolean) => void,
+    handleError: (message: string) => void
+  ) => {
+    handleLoading(true);
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("guardian", data.guardian);
+    formData.append("address", data.address);
+    formData.append("currentAddress", data.currentAddress);
+    formData.append("dob", data.dob);
+    formData.append("gender", data.gender);
+    formData.append("phone", data.phone);
+    formData.append("volunteerName", data.volunteerName);
+    formData.append("bankAccNumber", data.bankAccNumber);
+    formData.append("bankName", data.bankName);
+    formData.append("ifsc", data.ifsc);
+    formData.append("pwdCategory", data.pwdCategory);
+    formData.append("entrepreneurshipInterest", data.entrepreneurshipInterest);
+      // Append only files
 
-  const handleFinalSubmit = async () => {
-    const finalData = {
-      name: formData.name,
-      email: formData.email,
-      phone: formData.phone,
-      password: formData.password,
-      guardian: formData.guardian,
-      address: formData.address,
-      dob: formData.dob,
-      gender: formData.gender,
-      files: {
-        image: formData.files.capture,
-        undertaking: formData.files.undertaking,
-        policeVerification: formData.files.police_verification,
-        educationQualification: formData.files.education,
-      }
-
-    
-
-    };
-
-    
-  
-    // Convert to FormData for file handling
-    const formDataToSend = new FormData();
-    Object.entries(finalData).forEach(([key, value]) => {
-      if (typeof value === "object" && value !== null) {
-        Object.entries(value).forEach(([fileKey, fileValue]:any) => {
-          if (fileValue) formDataToSend.append(fileKey, fileValue);
-        });
-      } else {
-        formDataToSend.append(key, value as string);
+    Object.entries(data.files).forEach(([key, file]) => {
+      if (file) {
+        formData.append(key, file as File);
       }
     });
   
-    console.log("Submitting Data:", finalData);
+    for (const pair of formData.entries()) {
+      console.log(pair[0] + ": ", pair[1]);
+    }
+      
+    try {
+      const response = await axios.post(USER_REGISTER, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
   
-  return finalData
-
+      console.log("Response:", response.data);
+  
+      if (response.data.success) {
+        // Redirect to login or handle success
+        // router.replace("/login")
+      }
+    } catch (error) {
+      handleError("Please provide correct details.");
+      console.error(error);
+    } finally {
+      handleLoading(false);
+    }
   };
   
 
   return (
     <main className="bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat">
       <div className="flex w-full min-h-[100vh] justify-center gap-[173px] container py-[140px]">
-        <div className="w-full max-w-[310px]">
+        <div className="w-full max-w-[510px]">
           <h1 className="text-text-primary text-[36px] font-semibold text-center mb-6">
             Register
           </h1>
-          <div className="flex items-center justify-center mb-[44px] gap-[65px]">
+          <div className="flex items-center justify-center mb-[24px] gap-[65px]">
             {tabs.map((tab:any, i) => (
               <div
                 key={i}
@@ -186,7 +231,7 @@ function Page() {
             <TabDispatcher
               switchTab={setActiveTab}
               activeTab={activeTab.value}
-              formData={formData}
+              formData={data}
               updateFormData={updateFormData}
               handleFinalSubmit={handleFinalSubmit}
               markFormCompleted={markFormCompleted}
@@ -212,7 +257,7 @@ const TabDispatcher = ({
   updateFormData: (data: Partial<FormData>) => void;
   activeTab: string;
   switchTab: any;
-  handleFinalSubmit: () => void;
+  handleFinalSubmit: (email:string,password:string,handleLoading:()=>void,handleError:()=>void) => Promise<any>;
   markFormCompleted: (formName: Tab) => void;
 }) => {
   switch (activeTab) {

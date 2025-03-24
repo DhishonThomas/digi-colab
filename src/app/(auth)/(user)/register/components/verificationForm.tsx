@@ -6,11 +6,10 @@ import check_icon from "@/../public/icons/check_green.svg";
 import download_icon from "@/../public/icons/download.svg";
 
 interface SignUpData {
-  capture: File | null;
+  image: File | null;
   undertaking: File | null;
-  police_verification: File | null;
-  bank: File | null;
-  education: File | null;
+  policeVerification: File | null;
+  educationQualification: File | null;
 }
 
 function VerificationForm({ switchTab, updateFormData, formData }: any) {
@@ -18,22 +17,20 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
 
   const [uploadedFiles, setUploadedFiles] = useState<SignUpData>(
     formData.files || {
-      capture: null,
+      image: null,
       undertaking: null,
-      police_verification: null,
-      bank: null,
-      education: null,
+      policeVerification: null,
+      educationQualification: null,
     }
   );
 
   const [errors, setErrors] = useState<{ [key: string]: boolean }>({});
 
   const fileRefs:any = {
-    capture: useRef(null),
+    image: useRef(null),
     undertaking: useRef(null),
-    police_verification: useRef(null),
-    bank: useRef(null),
-    education: useRef(null),
+    policeVerification: useRef(null),
+    educationQualification: useRef(null),
   };
 
   const handleFileClick = (ref: React.RefObject<HTMLInputElement>) => {
@@ -43,8 +40,10 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
   const handleFileChange = (field: keyof SignUpData, file: File | null) => {
     setUploadedFiles((prev) => {
       const newFiles = { ...prev, [field]: file };
+      
       updateFormData({ files: newFiles });
       localStorage.setItem("uploadedFiles", JSON.stringify(newFiles));
+      console.log("this is file updloaddk>>",newFiles)
       return newFiles;
     });
 
@@ -80,7 +79,7 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
       setErrors(missingFields); 
       return;
     }
-  
+  console.log("uploaded files>>>",uploadedFiles)
     switchTab && switchTab({ index: 2, value: "account" });
   };
   
@@ -89,7 +88,7 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
     <form className="flex flex-col items-center" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-4 md:gap-6 mb-[40px] w-full max-w-md">
         {Object.keys(uploadedFiles)
-          .filter((key) => key !== "police_verification")
+          .filter((key) => key !== "policeVerification")
           .map((key) => (
             <div key={key} className="flex flex-col">
               <div
@@ -126,8 +125,8 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
               <button type="button" onClick={handleDownload}>
                 <Image alt="Download" src={download_icon} width={20} height={20} />
               </button>
-              <button type="button" onClick={() => handleFileClick(fileRefs.police_verification)}>
-                {uploadedFiles.police_verification ? (
+              <button type="button" onClick={() => handleFileClick(fileRefs.policeVerification)}>
+                {uploadedFiles.policeVerification ? (
                   <Image alt="Uploaded" src={check_icon} width={20} height={20} />
                 ) : (
                   <Image alt="Upload" src={upload_icon} width={20} height={20} />
@@ -136,12 +135,12 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
             </div>
           </div>
           <input
-            ref={fileRefs.police_verification}
+            ref={fileRefs.policeVerification}
             type="file"
             className="hidden"
-            onChange={(e) => handleFileChange("police_verification", e.target.files?.[0] || null)}
+            onChange={(e) => handleFileChange("policeVerification", e.target.files?.[0] || null)}
           />
-          {errors.police_verification && (
+          {errors.policeVerification && (
             <p className="text-red-500 text-xs">Police verification is required.</p>
           )}
         </div>
