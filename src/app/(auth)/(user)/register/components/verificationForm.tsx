@@ -240,12 +240,13 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
 
         {/* Submit Button */}
         <button
-          type="submit"
-          className="bg-[#688086] text-white rounded-lg py-2 px-5"
-        >
-          <span>Next</span>
-          <Image alt="login banner" src={right_arrow} />
-        </button>
+  type="submit"
+  className="flex items-center justify-center gap-2 bg-[#688086] text-white rounded-lg py-2 px-6 w-full"
+>
+  <span>Next</span>
+  <Image alt="Next arrow" src={right_arrow} width={20} height={20} />
+</button>
+
       </div>
     </form>
   );
