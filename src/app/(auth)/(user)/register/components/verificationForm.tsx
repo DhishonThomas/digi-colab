@@ -5,16 +5,19 @@ import upload_icon from "@/../public/icons/upload.svg";
 import check_icon from "@/../public/icons/check_green.svg";
 import download_icon from "@/../public/icons/download.svg";
 import right_arrow from "@/../public/icons/arrow_right.svg";
+
 interface SignUpData {
   image: File | null;
   undertaking: File | null;
   policeVerification: File | null;
   educationQualification: File | null;
-  bankPassbook:File|null;
-  pwdCertificate:File|null;
-  bplCertificate:File|null;
-
+  bankPassbook: File | null;
+  pwdCertificate: File | null;
+  bplCertificate: File | null;
 }
+
+const MAX_FILE_SIZE_MB = 5;
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/jpg"];
 
 function VerificationForm({ switchTab, updateFormData, formData }: any) {
   const { handleSubmit } = useForm<SignUpData>();
@@ -25,39 +28,61 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
       undertaking: null,
       policeVerification: null,
       educationQualification: null,
-      bankPassbook:null,
-      pwdCertificate:null,
-      bplCertificate:null,
+      bankPassbook: null,
+      pwdCertificate: null,
+      bplCertificate: null,
     }
   );
 
-  const [errors, setErrors] = useState<{ [key: string]: boolean }>({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [touchedFields, setTouchedFields] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const [blockSubmit, setBlockSubmit] = useState<{ [key: string]: boolean }>(
+    {}
+  ); // Track form validation per field
 
   const fileRefs: any = {
     image: useRef(null),
     undertaking: useRef(null),
     policeVerification: useRef(null),
     educationQualification: useRef(null),
-    bankPassbook:useRef(null),
-    pwdCertificate:useRef(null),
-    bplCertificate:useRef(null),
+    bankPassbook: useRef(null),
+    pwdCertificate: useRef(null),
+    bplCertificate: useRef(null),
   };
 
   const handleFileClick = (ref: React.RefObject<HTMLInputElement>) => {
     ref.current?.click();
   };
 
+  const validateFile = (field: keyof SignUpData, file: File | null) => {
+    let errorMsg = "";
+
+    if (!file) {
+      errorMsg = "File is required.";
+    } else if (field === "image" && !ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      errorMsg = "Only JPG, JPEG, or PNG files are allowed.";
+    } else if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+      errorMsg = `File size must be under ${MAX_FILE_SIZE_MB}MB.`;
+    }
+
+    setBlockSubmit((prev) => ({ ...prev, [field]: !errorMsg }));
+    return errorMsg;
+  };
+
   const handleFileChange = (field: keyof SignUpData, file: File | null) => {
+    const errorMsg = validateFile(field, file);
+
     setUploadedFiles((prev) => {
       const newFiles = { ...prev, [field]: file };
-
       updateFormData({ files: newFiles });
       localStorage.setItem("uploadedFiles", JSON.stringify(newFiles));
-      console.log("this is file updloaddk>>", newFiles);
       return newFiles;
     });
 
-    setErrors((prev) => ({ ...prev, [field]: !file }));
+    setErrors((prev) => ({ ...prev, [field]: errorMsg }));
+    setTouchedFields((prev) => ({ ...prev, [field]: true })); // Mark field as touched
   };
 
   const handleDownload = () => {
@@ -69,37 +94,69 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
     link.click();
     document.body.removeChild(link);
   };
+  const checkForErrors = () => {
+    const newErrors: { [key: string]: string } = {};
+    const newBlockSubmit: { [key: string]: boolean } = {};
 
-  // useEffect(() => {
-  //   const savedFiles = localStorage.getItem("uploadedFiles");
-  //   if (savedFiles) {
-  //     setUploadedFiles(JSON.parse(savedFiles));
-  //   }
-  // }, []);
+    Object.keys(uploadedFiles).forEach((key) => {
+      const file = uploadedFiles[key as keyof SignUpData];
+      const isPwdRequired =
+        key === "pwdCertificate" && formData.pwdCategory === "Yes";
+      const isBplRequired =
+        key === "bplCertificate" && formData.entrepreneurshipInterest === "Yes";
+
+      let errorMsg = "";
+
+      // File validation conditions
+      if (
+        (!file && isPwdRequired) ||
+        (!file && isBplRequired) ||
+        (!file && key !== "pwdCertificate" && key !== "bplCertificate")
+      ) {
+        errorMsg = "This file is required.";
+      } else if (
+        file &&
+        key === "image" &&
+        !ALLOWED_IMAGE_TYPES.includes(file.type)
+      ) {
+        errorMsg = "Only JPG, JPEG, or PNG files are allowed.";
+      } else if (file && file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+        errorMsg = `File size must be under ${MAX_FILE_SIZE_MB}MB.`;
+      }
+
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+        newBlockSubmit[key] = false;
+      } else {
+        newBlockSubmit[key] = true;
+      }
+    });
+
+    setErrors(newErrors);
+    setBlockSubmit(newBlockSubmit);
+  };
 
   const onSubmit: SubmitHandler<SignUpData> = async () => {
-    alert("dksjf")
-    const missingFields = Object.keys(uploadedFiles).reduce((acc, key) => {
-   
+    // Mark all fields as touched
+    setTouchedFields(
+      Object.keys(uploadedFiles).reduce(
+        (acc, key) => ({ ...acc, [key]: true }),
+        {}
+      )
+    );
 
-const fileExists=uploadedFiles[key as keyof SignUpData]
+    checkForErrors(); // Revalidate all fields before submission
 
-const isPwdRequired=key==="pwdCertificate"&&formData.pwdCategory==="Yes";
-const isBplRequired=key==="bplCertificate"&&formData.entrepreneurshipInterest==="Yes"
-
-
-if((!fileExists && isPwdRequired)||(!fileExists&&isBplRequired)|| (!fileExists && key !== "pwdCertificate" && key !== "bplCertificate")){
-  acc[key] = true;
-
-}
-      return acc;
-    }, {} as { [key: string]: boolean });
-
-    if (Object.keys(missingFields).length > 0) {
-      setErrors(missingFields);
+    // Prevent submission if any field is invalid
+    if (
+      Object.values(blockSubmit).some((status) => status === false) ||
+      Object.keys(blockSubmit).length < 1
+    ) {
+      console.log("Form contains errors, submission blocked.");
       return;
     }
-    console.log("uploaded files>>>", uploadedFiles);
+
+    console.log("Uploaded files:", uploadedFiles);
     switchTab && switchTab({ index: 2, value: "account" });
   };
 
@@ -110,78 +167,81 @@ if((!fileExists && isPwdRequired)||(!fileExists&&isBplRequired)|| (!fileExists &
     >
       <div className="flex flex-col gap-4 md:gap-6 mb-[40px] w-full max-w-md">
         {Object.keys(uploadedFiles)
-        .filter((key)=>
-          !(formData.pwdCategory === "No" && key == "pwdCertificate")&&
-        !(formData.entrepreneurshipInterest === "No" && key=="bplCertificate"))
-        .map((key) => (
-          <div key={key} className="flex flex-col">
-            <div
-              className={`flex justify-between items-center bg-gray-100 rounded-lg py-3 px-4 cursor-pointer ${
-                errors[key] ? "border border-red-500" : ""
-              }`}
-            >
-              <span>{key.replace(/_/g, " ").toUpperCase()}</span>
+          .filter(
+            (key) =>
+              !(formData.pwdCategory === "No" && key === "pwdCertificate") &&
+              !(
+                formData.entrepreneurshipInterest === "No" &&
+                key === "bplCertificate"
+              )
+          )
+          .map((key) => (
+            <div key={key} className="flex flex-col">
+              <div
+                className={`flex justify-between items-center bg-gray-100 rounded-lg py-3 px-4 cursor-pointer ${
+                  errors[key] && touchedFields[key]
+                    ? "border border-red-500"
+                    : ""
+                }`}
+              >
+                <span>{key.replace(/_/g, " ").toUpperCase()}</span>
 
-              <div className="flex gap-3">
-                {key === "policeVerification" && (
-                  <button type="button" onClick={handleDownload}>
-                    <Image
-                      alt="Download"
-                      src={download_icon}
-                      width={20}
-                      height={20}
-                    />
-                  </button>
-                )}
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleFileClick(fileRefs[key as keyof SignUpData])
-                  }
-                >
-                  {uploadedFiles[key as keyof SignUpData] ? (
-                    <Image
-                      alt="Uploaded"
-                      src={check_icon}
-                      width={20}
-                      height={20}
-                    />
-                  ) : (
-                    <Image
-                      alt="Upload"
-                      src={upload_icon}
-                      width={20}
-                      height={20}
-                    />
+                <div className="flex gap-3">
+                  {key === "policeVerification" && (
+                    <button type="button" onClick={handleDownload}>
+                      <Image
+                        alt="Download"
+                        src={download_icon}
+                        width={20}
+                        height={20}
+                      />
+                    </button>
                   )}
-                </button>
-              </div>
-            </div>
 
-            <input
-              ref={fileRefs[key as keyof SignUpData]}
-              type="file"
-              className="hidden"
-              onChange={(e) =>
-                handleFileChange(
-                  key as keyof SignUpData,
-                  e.target.files?.[0] || null
-                )
-              }
-            />
-            {errors[key] && (
-              <p className="text-red-500 text-xs">
-                Please upload {key.replace(/_/g, " ")}.
-              </p>
-            )}
-          </div>
-        ))}
+                  <button
+                    type="button"
+                    onClick={() => handleFileClick(fileRefs[key])}
+                  >
+                    {uploadedFiles[key as keyof SignUpData] ? (
+                      <Image
+                        alt="Uploaded"
+                        src={check_icon}
+                        width={20}
+                        height={20}
+                      />
+                    ) : (
+                      <Image
+                        alt="Upload"
+                        src={upload_icon}
+                        width={20}
+                        height={20}
+                      />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              <input
+                ref={fileRefs[key]}
+                type="file"
+                className="hidden"
+                onChange={(e) =>
+                  handleFileChange(
+                    key as keyof SignUpData,
+                    e.target.files?.[0] || null
+                  )
+                }
+              />
+              {errors[key] && touchedFields[key] && (
+                <p className="text-red-500 text-xs">{errors[key]}</p>
+              )}
+            </div>
+          ))}
+
         {/* Submit Button */}
         <button
           type="submit"
           className="bg-[#688086] text-white rounded-lg py-2 px-5"
-
         >
           <span>Next</span>
           <Image alt="login banner" src={right_arrow} />

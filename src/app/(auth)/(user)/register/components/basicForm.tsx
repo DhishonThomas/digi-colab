@@ -10,13 +10,10 @@ import {
   validateBankName,
   validateCurrentAddress,
   validateDOB,
-  validateEntrepreneurshipInterest,
-  validateGender,
   validateGuardian,
   validateIFSC,
   validateName,
   validatePhone,
-  validatePwdCategory,
 } from "@/utils/validators";
 import axios from "axios";
 import { GET_VOLUNTEERS } from "@/utils/constants";
@@ -140,7 +137,7 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
           <FormInput
             name="address"
             type="text"
-            placeholder="CURRENT ADDRESS"
+            placeholder="ADDRESS"
             control={control}
             rules={{
               required: "Address is required",
