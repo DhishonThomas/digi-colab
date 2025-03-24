@@ -91,308 +91,305 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
       onSubmit={handleSubmit(onSubmit)}
     >
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+        <div className="flex flex-col gap-4">
+          {/* Name Field */}
+          <FormInput
+            name="name"
+            type="text"
+            placeholder="NAME"
+            control={control}
+            rules={{
+              required: "Name is required",
+              validate: (value: any) => {
+                let nameValidate = validateName(value);
+                if (nameValidate) {
+                  setBlock(true);
+                  return nameValidate;
+                } else {
+                  setBlock(false);
+                  return true;
+                }
+              },
+            }}
+            error={errors.name}
+          />
 
-<div className="flex flex-col gap-4">
-  {/* Name Field */}
-  <FormInput
-          name="name"
-          type="text"
-          placeholder="NAME"
-          control={control}
-          rules={{
-            required: "Name is required",
-            validate: (value: any) => {
-              let nameValidate = validateName(value);
-              if (nameValidate) {
-                setBlock(true);
-                return nameValidate;
-              } else {
-                setBlock(false);
-                return true;
-              }
-            },
-          }}
-          error={errors.name}
-        />
+          {/* Guardian Field */}
+          <FormInput
+            name="guardian"
+            type="text"
+            placeholder="NAME OF FATHER/MOTHER"
+            control={control}
+            rules={{
+              required: "Guardian name is required",
+              validate: (value: any) => {
+                let guardianValidate = validateGuardian(value);
+                if (guardianValidate) {
+                  setBlock(true);
+                  return guardianValidate;
+                } else {
+                  setBlock(false);
+                  return true;
+                }
+              },
+            }}
+            error={errors.guardian}
+          />
 
-        {/* Guardian Field */}
-        <FormInput
-          name="guardian"
-          type="text"
-          placeholder="NAME OF FATHER/MOTHER"
-          control={control}
-          rules={{
-            required: "Guardian name is required",
-            validate: (value: any) => {
-              let guardianValidate = validateGuardian(value);
-              if (guardianValidate) {
-                setBlock(true);
-                return guardianValidate;
-              } else {
-                setBlock(false);
-                return true;
-              }
-            },
-          }}
-          error={errors.guardian}
-        />
+          {/* Address Field */}
+          <FormInput
+            name="address"
+            type="text"
+            placeholder="CURRENT ADDRESS"
+            control={control}
+            rules={{
+              required: "Address is required",
+              validate: (value: any) => {
+                let addressValidate = validateAddress(value);
+                if (addressValidate) {
+                  setBlock(true);
+                  return addressValidate;
+                } else {
+                  setBlock(false);
+                  return true;
+                }
+              },
+            }}
+            error={errors.address}
+          />
 
-        {/* Address Field */}
-        <FormInput
-          name="address"
-          type="text"
-          placeholder="CURRENT ADDRESS"
-          control={control}
-          rules={{
-            required: "Address is required",
-            validate: (value: any) => {
-              let addressValidate = validateAddress(value);
-              if (addressValidate) {
-                setBlock(true);
-                return addressValidate;
-              } else {
-                setBlock(false);
-                return true;
-              }
-            },
-          }}
-          error={errors.address}
-        />
+          {/* Current Address Field */}
+          <FormInput
+            name="currentAddress"
+            type="text"
+            placeholder="CURRENT ADDRESS"
+            control={control}
+            rules={{
+              required: "Current Address is required",
+              validate: (value: any) => {
+                let currentAddressValidate = validateCurrentAddress(value);
+                if (currentAddressValidate) {
+                  setBlock(true);
+                  return currentAddressValidate;
+                } else {
+                  setBlock(false);
+                  return true;
+                }
+              },
+            }}
+            error={errors.currentAddress}
+          />
 
-        {/* Current Address Field */}
-        <FormInput
-          name="currentAddress"
-          type="text"
-          placeholder="CURRENT ADDRESS"
-          control={control}
-          rules={{
-            required: "Current Address is required",
-            validate: (value: any) => {
-              let currentAddressValidate = validateCurrentAddress(value);
-              if (currentAddressValidate) {
-                setBlock(true);
-                return currentAddressValidate;
-              } else {
-                setBlock(false);
-                return true;
-              }
-            },
-          }}
-          error={errors.currentAddress}
-        />
+          {/* Date of Birth Field */}
+          <FormInput
+            name="dob"
+            type="date"
+            placeholder="DOB"
+            control={control}
+            rules={{
+              required: "Date of Birth is required",
+              validate: (value: any) => {
+                let dobValidate = validateDOB(value);
+                if (dobValidate) {
+                  setBlock(true);
+                  return dobValidate;
+                } else {
+                  setBlock(false);
+                  return true;
+                }
+              },
+            }}
+            error={errors.dob}
+          />
 
-        {/* Date of Birth Field */}
-        <FormInput
-          name="dob"
-          type="date"
-          placeholder="DOB"
-          control={control}
-          rules={{
-            required: "Date of Birth is required",
-            validate: (value: any) => {
-              let dobValidate = validateDOB(value);
-              if (dobValidate) {
-                setBlock(true);
-                return dobValidate;
-              } else {
-                setBlock(false);
-                return true;
-              }
-            },
-          }}
-          error={errors.dob}
-        />
+          {/* Gender Field */}
+          <FormInput
+            name="gender"
+            type="text"
+            placeholder="GENDER"
+            control={control}
+            rules={{
+              required: "Gender is required",
+              validate: (value: any) => {
+                let genderValidate = validateGender(value);
+                if (genderValidate) {
+                  setBlock(true);
+                  return genderValidate;
+                } else {
+                  setBlock(false);
+                  return true;
+                }
+              },
+            }}
+            error={errors.gender}
+          />
+        </div>
+        <div className="flex flex-col gap-4">
+          {/* Phone Number Field */}
+          <FormInput
+            name="phone"
+            type="text"
+            placeholder="PHONE NUMBER"
+            control={control}
+            rules={{
+              required: "Phone number is required",
+              validate: (value: any) => {
+                let phoneValidate = validatePhone(value);
+                if (phoneValidate) {
+                  setBlock(true);
+                  return phoneValidate;
+                } else {
+                  setBlock(false);
+                  return true;
+                }
+              },
+            }}
+            error={errors.phone}
+          />
+          {/* Volunteer Selection Dropdown (Styled Like Other Inputs) */}
 
-        {/* Gender Field */}
-        <FormInput
-          name="gender"
-          type="text"
-          placeholder="GENDER"
-          control={control}
-          rules={{
-            required: "Gender is required",
-            validate: (value: any) => {
-              let genderValidate = validateGender(value);
-              if (genderValidate) {
-                setBlock(true);
-                return genderValidate;
-              } else {
-                setBlock(false);
-                return true;
-              }
-            },
-          }}
-          error={errors.gender}
-        />
-
-</div>
-<div className="flex flex-col gap-4">
-    {/* Phone Number Field */}
-        <FormInput
-          name="phone"
-          type="text"
-          placeholder="PHONE NUMBER"
-          control={control}
-          rules={{
-            required: "Phone number is required",
-            validate: (value: any) => {
-              let phoneValidate = validatePhone(value);
-              if (phoneValidate) {
-                setBlock(true);
-                return phoneValidate;
-              } else {
-                setBlock(false);
-                return true;
-              }
-            },
-          }}
-          error={errors.phone}
-        />
-        {/* Volunteer Selection Dropdown (Styled Like Other Inputs) */}
-
-        <Controller
-          name="volunteer"
-          control={control}
-          rules={{ required: "Volunteer selection is required" }}
-          render={({ field }) => (
-            <select
-              {...field}
-              className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-3 px-5 bg-[#413C340D] ${
-                errors.volunteer ? "border-red-500" : ""
-              }`}
-            >
-              <option value="">SELECT A VOLUNTEER</option>
-              {loading ? (
-                <option disabled>Loading...</option>
-              ) : (
-                volunteers.map((volunteer) => (
-                  <option key={volunteer._id} value={volunteer.name}>
-                    {volunteer.name}
-                  </option>
-                ))
-              )}
-            </select>
+          <Controller
+            name="volunteer"
+            control={control}
+            rules={{ required: "Volunteer selection is required" }}
+            render={({ field }) => (
+              <select
+                {...field}
+                className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-3 px-5 bg-[#413C340D] ${
+                  errors.volunteer ? "border-red-500" : ""
+                }`}
+              >
+                <option value="">SELECT A VOLUNTEER</option>
+                {loading ? (
+                  <option disabled>Loading...</option>
+                ) : (
+                  volunteers.map((volunteer) => (
+                    <option key={volunteer._id} value={volunteer.name}>
+                      {volunteer.name}
+                    </option>
+                  ))
+                )}
+              </select>
+            )}
+          />
+          {errors.volunteer && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.volunteer.message}
+            </p>
           )}
-        />
-        {errors.volunteer && (
-          <p className="text-red-500 text-xs mt-1">
-            {errors.volunteer.message}
-          </p>
-        )}
 
-        {/* Bank Account Number */}
-        <FormInput
-          name="bankAccNumber"
-          type="text"
-          placeholder="BANK ACCOUNT NUMBER"
-          control={control}
-          rules={{
-            required: "Bank Account Number is required",
-            validate: (value: any) => {
-              let bankAccValidate = validateBankAccNumber(value);
-              if (bankAccValidate) {
-                setBlock(true);
-                return bankAccValidate;
-              } else {
-                setBlock(false);
-                return true;
-              }
-            },
-          }}
-          error={errors.bankAccNumber}
-        />
+          {/* Bank Account Number */}
+          <FormInput
+            name="bankAccNumber"
+            type="text"
+            placeholder="BANK ACCOUNT NUMBER"
+            control={control}
+            rules={{
+              required: "Bank Account Number is required",
+              validate: (value: any) => {
+                let bankAccValidate = validateBankAccNumber(value);
+                if (bankAccValidate) {
+                  setBlock(true);
+                  return bankAccValidate;
+                } else {
+                  setBlock(false);
+                  return true;
+                }
+              },
+            }}
+            error={errors.bankAccNumber}
+          />
 
-        {/* Bank Name */}
-        <FormInput
-          name="bankName"
-          type="text"
-          placeholder="BANK NAME"
-          control={control}
-          rules={{
-            required: "Bank Name is required",
-            validate: (value: any) => {
-              let bankNameValidate = validateBankName(value);
-              if (bankNameValidate) {
-                setBlock(true);
-                return bankNameValidate;
-              } else {
-                setBlock(false);
-                return true;
-              }
-            },
-          }}
-          error={errors.bankName}
-        />
+          {/* Bank Name */}
+          <FormInput
+            name="bankName"
+            type="text"
+            placeholder="BANK NAME"
+            control={control}
+            rules={{
+              required: "Bank Name is required",
+              validate: (value: any) => {
+                let bankNameValidate = validateBankName(value);
+                if (bankNameValidate) {
+                  setBlock(true);
+                  return bankNameValidate;
+                } else {
+                  setBlock(false);
+                  return true;
+                }
+              },
+            }}
+            error={errors.bankName}
+          />
 
-        {/* IFSC Code */}
-        <FormInput
-          name="ifsc"
-          type="text"
-          placeholder="IFSC CODE"
-          control={control}
-          rules={{
-            required: "IFSC Code is required",
-            validate: (value: any) => {
-              let ifscValidate = validateIFSC(value);
-              if (ifscValidate) {
-                setBlock(true);
-                return ifscValidate;
-              } else {
-                setBlock(false);
-                return true;
-              }
-            },
-          }}
-          error={errors.ifsc}
-        />
+          {/* IFSC Code */}
+          <FormInput
+            name="ifsc"
+            type="text"
+            placeholder="IFSC CODE"
+            control={control}
+            rules={{
+              required: "IFSC Code is required",
+              validate: (value: any) => {
+                let ifscValidate = validateIFSC(value);
+                if (ifscValidate) {
+                  setBlock(true);
+                  return ifscValidate;
+                } else {
+                  setBlock(false);
+                  return true;
+                }
+              },
+            }}
+            error={errors.ifsc}
+          />
 
-        {/* PWD Category */}
-        <FormInput
-          name="pwdCategory"
-          type="text"
-          placeholder="PWD CATEGORY (YES/NO)"
-          control={control}
-          rules={{
-            required: "PWD Category is required",
-            validate: (value: any) => {
-              let pwdValidate = validatePwdCategory(value);
-              if (pwdValidate) {
-                setBlock(true);
-                return pwdValidate;
-              } else {
-                setBlock(false);
-                return true;
-              }
-            },
-          }}
-          error={errors.pwdCategory}
-        />
+{/* PWD Category */}
+<Controller
+  name="pwdCategory"
+  control={control}
+  rules={{ required: "PWD Category is required" }}
+  render={({ field }) => (
+    <select
+      {...field}
+      className={`w-full border rounded-lg px-4 py-3 bg-white ${
+        errors.pwdCategory ? "border-red-500" : ""
+      }`}
+    >
+      <option value="">Select PWD Category</option>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select>
+  )}
+/>
+{errors.pwdCategory && (
+  <p className="text-red-500 text-xs mt-1">{errors.pwdCategory.message}</p>
+)}
 
-        {/* Entrepreneurship Interest */}
-        <FormInput
-          name="entrepreneurshipInterest"
-          type="text"
-          placeholder="ENTREPRENEURSHIP INTEREST (YES/NO)"
-          control={control}
-          rules={{
-            required: "This field is required",
-            validate: (value: any) => {
-              let entrepreneurshipValidate =
-                validateEntrepreneurshipInterest(value);
-              if (entrepreneurshipValidate) {
-                setBlock(true);
-                return entrepreneurshipValidate;
-              } else {
-                setBlock(false);
-                return true;
-              }
-            },
-          }}
-          error={errors.entrepreneurshipInterest}
-        />
-</div>
-      
-    
+{/* Entrepreneurship Interest */}
+<Controller
+  name="entrepreneurshipInterest"
+  control={control}
+  rules={{ required: "Entrepreneurship Interest is required" }}
+  render={({ field }) => (
+    <select
+      {...field}
+      className={`w-full border rounded-lg px-4 py-3 bg-white ${
+        errors.entrepreneurshipInterest ? "border-red-500" : ""
+      }`}
+    >
+      <option value="">Select Entrepreneurship Interest</option>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select>
+  )}
+/>
+{errors.entrepreneurshipInterest && (
+  <p className="text-red-500 text-xs mt-1">
+    {errors.entrepreneurshipInterest.message}
+  </p>
+)}
+        </div>
       </div>
 
       <button

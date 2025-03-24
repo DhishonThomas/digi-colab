@@ -4,7 +4,11 @@ import { useRouter } from "next/navigation";
 import axios from "axios"; // Import Axios for API requests
 import FormInput from "@/components/ui/formInput";
 import PasswordInput from "@/components/ui/passwordInput";
-import { USER_SEND_OTP, USER_VERIFY_OTP, USER_REGISTER } from "@/utils/constants"; // Ensure correct imports
+import {
+  USER_SEND_OTP,
+  USER_VERIFY_OTP,
+  USER_REGISTER,
+} from "@/utils/constants"; // Ensure correct imports
 
 interface SignUpData {
   email: string;
@@ -37,13 +41,13 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
   const [otpVerified, setOtpVerified] = useState(false);
   const [timer, setTimer] = useState(0);
   const [otpMessage, setOtpMessage] = useState("");
-  const [submitError,setSubmitError]=useState("")
+  const [submitError, setSubmitError] = useState("");
   const [loading, setLoading] = useState({
-    sendOtp:false,
-    verifyOtp:false,
-    register:false
+    sendOtp: false,
+    verifyOtp: false,
+    register: false,
   });
-  const [resendOtp,setResendOtp]=useState(false)
+  const [resendOtp, setResendOtp] = useState(false);
   // 🔹 Watch Form Values
   const email = watch("email", "");
   const password = watch("password", "");
@@ -60,12 +64,16 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
   }, [timer]);
 
   // ✅ Validate Email Format
-  const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isValidEmail = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   // 🔹 API Call: Send OTP
   const sendOtp = async () => {
     if (!email) {
-      setError("email", { type: "manual", message: "Please enter your email address." });
+      setError("email", {
+        type: "manual",
+        message: "Please enter your email address.",
+      });
       return;
     }
     if (!isValidEmail(email)) {
@@ -73,8 +81,8 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
       return;
     }
 
-    clearErrors("email"); // ✅ Clears email error if valid
-    setLoading((prev:any)=>({...prev,sendOtp:true}));
+    clearErrors("email");
+    setLoading((prev: any) => ({ ...prev, sendOtp: true }));
 
     try {
       const response = await axios.post(USER_SEND_OTP, { email });
@@ -83,78 +91,99 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
         setOtpSent(true);
         setOtpMessage("✅ OTP sent successfully!");
         setTimer(60);
-        setResendOtp(true)
+        setResendOtp(true);
       } else {
         setOtpMessage(response.data.message || "Failed to send OTP.");
       }
     } catch (error: any) {
-      setOtpMessage(error.response?.data?.message || "Failed to send OTP. Please try again.");
+      setOtpMessage(
+        error.response?.data?.message || "Failed to send OTP. Please try again."
+      );
     } finally {
-      setLoading((prev:any)=>({...prev,sendOtp:false}));
+      setLoading((prev: any) => ({ ...prev, sendOtp: false }));
     }
   };
 
   // 🔹 API Call: Verify OTP
   const verifyOtp = async () => {
     if (!otp) {
-      setError("otp", { type: "manual", message: "Please enter the OTP sent to your email." });
+      setError("otp", {
+        type: "manual",
+        message: "Please enter the OTP sent to your email.",
+      });
       return;
     }
 
-    setLoading((prev:any)=>({...prev,verifyOtp:true}));
+    setLoading((prev: any) => ({ ...prev, verifyOtp: true }));
 
     try {
       const response = await axios.post(USER_VERIFY_OTP, { email, otp });
-console.log(email,otp, response.data)
+      console.log(email, otp, response.data);
       if (response.data.success) {
         setOtpVerified(true);
         setOtpMessage("✅ OTP verified successfully!");
         clearErrors("otp"); // ✅ Clears OTP error on success
-        setResendOtp(false)
+        setResendOtp(false);
         // Remove timer and resend OTP button after successful verification
         setTimer(0);
         setOtpSent(false);
       } else {
-        setError("otp", { type: "manual", message: response.data.message || "Invalid OTP. Try again." });
+        setError("otp", {
+          type: "manual",
+          message: response.data.message || "Invalid OTP. Try again.",
+        });
       }
     } catch (error) {
-      setError("otp", { type: "manual", message: "Invalid OTP. Please try again." });
+      setError("otp", {
+        type: "manual",
+        message: "Invalid OTP. Please try again.",
+      });
     } finally {
-      setLoading((prev:any)=>({...prev,verifyOtp:false}));
+      setLoading((prev: any) => ({ ...prev, verifyOtp: false }));
     }
   };
 
   // 🔹 Final Form Submission
   const onSubmit: SubmitHandler<SignUpData> = async (data) => {
     if (!otpVerified) {
-      setError("otp", { type: "manual", message: "Please verify the OTP before proceeding." });
+      setError("otp", {
+        type: "manual",
+        message: "Please verify the OTP before proceeding.",
+      });
       return;
     }
     if (password !== confirmPassword) {
-      setError("confirm_password", { type: "manual", message: "Passwords do not match." });
+      setError("confirm_password", {
+        type: "manual",
+        message: "Passwords do not match.",
+      });
       return;
     }
-  
+
     if (updateFormData) {
       updateFormData({ email, password });
     } else {
       console.error("updateFormData function is missing");
     }
-  
-    setLoading((prev:any)=>({...prev,register:true}));
-  
- const finalData= await handleFinalSubmit(email,password,setLoading,setSubmitError)
 
+    setLoading((prev: any) => ({ ...prev, register: true }));
 
+    const finalData = await handleFinalSubmit(
+      email,
+      password,
+      setLoading,
+      setSubmitError
+    );
 
- console.log("finalData>>>",finalData)
+    console.log("finalData>>>", finalData);
   };
-  
 
   return (
-    <form className="flex flex-col items-center" onSubmit={handleSubmit(onSubmit)}>
+    <form
+      className="flex flex-col items-center"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div className="flex flex-col gap-4 md:gap-6 mb-6 w-full max-w-md">
-        
         <FormInput
           label="Email"
           name="email"
@@ -165,7 +194,7 @@ console.log(email,otp, response.data)
           error={errors.email}
         />
 
-        {(!otpSent&&!otpVerified) && (
+        {!otpSent && !otpVerified && (
           <button
             type="button"
             onClick={sendOtp}
@@ -199,55 +228,59 @@ console.log(email,otp, response.data)
               {loading.verifyOtp ? "Verifying..." : "Verify OTP"}
             </button>
 
-            {timer > 0 && <p className="text-gray-500 text-xs">Resend OTP in {timer}s</p>}
-
+            {timer > 0 && (
+              <p className="text-gray-500 text-xs">Resend OTP in {timer}s</p>
+            )}
           </>
         )}
-{(timer==0&&resendOtp)&&
- <button
- type="button"
- onClick={sendOtp}
- className=" text-blue-600 font-semibold py-2 px-4 rounded-lg"
- disabled={loading.sendOtp || otpVerified}
->
- {loading.sendOtp ? "Resending..." : "Resend OTP"}
-</button>
-}
-{otpVerified&&<div className="flex flex-col gap-4 md:gap-6 mb-6 w-full max-w-md"> 
-<Controller
-            name="password"
-            control={control}
-            render={({ field }) => (
-              <PasswordInput
-                placeholder="Enter Password"
-                value={field.value || ""}
-                onChange={field.onChange}
-              />
-            )}
-          />         
-          
-          <Controller
-            name="confirm_password"
-            control={control}
-            render={({ field }) => (
-              <PasswordInput
-                placeholder="Confirm Password"
-                value={field.value || ""}
-                onChange={field.onChange}
-              />
-            )}
-          /> 
-        <button
-          type="submit"
-          className="bg-[#688086] text-white font-semibold rounded-lg py-2 px-6"
-          disabled={!otpVerified || loading.register}
-        >
-          {loading.register ? "Registering..." : "Register"}
-        </button>
+        {timer == 0 && resendOtp && (
+          <button
+            type="button"
+            onClick={sendOtp}
+            className=" text-blue-600 font-semibold py-2 px-4 rounded-lg"
+            disabled={loading.sendOtp || otpVerified}
+          >
+            {loading.sendOtp ? "Resending..." : "Resend OTP"}
+          </button>
+        )}
+        {otpVerified && (
+          <div className="flex flex-col gap-4 md:gap-6 mb-6 w-full max-w-md">
+            <Controller
+              name="password"
+              control={control}
+              render={({ field }) => (
+                <PasswordInput
+                  placeholder="Enter Password"
+                  value={field.value || ""}
+                  onChange={field.onChange}
+                />
+              )}
+            />
 
-        {submitError&& <p className="text-red-600 font-bold m-4">{submitError}</p> }
-</div>
-}
+            <Controller
+              name="confirm_password"
+              control={control}
+              render={({ field }) => (
+                <PasswordInput
+                  placeholder="Confirm Password"
+                  value={field.value || ""}
+                  onChange={field.onChange}
+                />
+              )}
+            />
+            <button
+              type="submit"
+              className="bg-[#688086] text-white font-semibold rounded-lg py-2 px-6"
+              disabled={!otpVerified || loading.register}
+            >
+              {loading.register ? "Registering..." : "Register"}
+            </button>
+
+            {submitError && (
+              <p className="text-red-600 font-bold m-4">{submitError}</p>
+            )}
+          </div>
+        )}
       </div>
     </form>
   );
