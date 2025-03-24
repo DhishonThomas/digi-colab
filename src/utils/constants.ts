@@ -1,5 +1,8 @@
 const MAIN_URL=process.env.NEXT_PUBLIC_SERVER_URL
 
+//Captcha - google 
+export const CAPTCHA_API=process.env.NEXT_PUBLIC_CAPTCHA_API
+
 //Main
 export const ADMIN_URL=`${MAIN_URL}/admin`;
 export const USER_URL=`${MAIN_URL}/user`;

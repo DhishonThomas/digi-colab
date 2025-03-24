@@ -33,7 +33,18 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
       bplCertificate: null,
     }
   );
-
+  useEffect(() => {
+    setUploadedFiles(formData.files || {
+      image: null,
+      undertaking: null,
+      policeVerification: null,
+      educationQualification: null,
+      bankPassbook: null,
+      pwdCertificate: null,
+      bplCertificate: null,
+    });
+  }, [formData]);
+  
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [touchedFields, setTouchedFields] = useState<{
     [key: string]: boolean;
