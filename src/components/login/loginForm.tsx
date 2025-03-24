@@ -99,25 +99,32 @@ if(pathName.startsWith("/admin")){
         <Image alt="login banner" src={login_icon} />
       </button>
 
-      {accountType!="admin"&&<div className="flex items-center text-[12px] gap-3">
-            <div className="">Don't Have An Account?</div>
-          <Link
-            className="text-right text-[#688086] text-[16px] font-[700]"
-            href={accountType=="volunteer"?`/volunteer/register`:"/register"}
-          >
-            sign up
-          </Link>
-          <div className="">Forget Password?</div>
-          <Link
-            className="text-right text-[#688086] text-[16px] font-[700]"
-            href={accountType=="volunteer"?`/volunteer/forget-password`:"/forget-password"}
-          >
-            Forget
-          </Link>
-          </div>
-          
-          
-          }
+      {accountType !== "admin" && (
+  <div className="flex flex-col items-center text-[14px] gap-6">
+    {/* Sign Up Section */}
+    <div className="flex gap-2">
+      <span>Don't Have An Account?</span>
+      <Link
+        className="text-[#688086] text-[14px] font-[700]"
+        href={accountType == "volunteer" ? `/volunteer/register` : "/register"}
+      >
+        Sign Up
+      </Link>
+    </div>
+    {/* Forget Password Section */}
+    <div className="flex gap-2">
+      <span>Forget Password?</span>
+      <Link
+        className="text-[#688086] text-[14px] font-[700]"
+        href={accountType == "volunteer" ? `/volunteer/forget-password` : "/forget-password"}
+      >
+        Reset
+      </Link>
+    </div>
+  </div>
+)}
+
+
     </form>
   );
 }
