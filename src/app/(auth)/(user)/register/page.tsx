@@ -14,7 +14,7 @@ const tabs = [
   { label: "ACCOUNT CREATION", value: "account" },
 ];
 
-type FormData = {
+export type FormData = {
   name: string;
   email:string;
   password:string;
@@ -35,6 +35,9 @@ type FormData = {
     undertaking?: File | null;
     policeVerification?: File | null;
     educationQualification?: File | null;
+    bankPassbook?: File|null,
+    pwdCertificate?: File|null,
+    bplCertificate?: File|null,
   };
 };
 
@@ -65,6 +68,9 @@ function Page() {
       undertaking: null,
       policeVerification: null,
       educationQualification: null,
+      bankPassbook:null,
+      pwdCertificate:null,
+      bplCertificate:null,
     },
   });
 
@@ -92,9 +98,10 @@ function Page() {
 
   // Save data on form change
   useEffect(() => {
-    localStorage.setItem("formData", JSON.stringify(data));
+    const { files, ...textData } = data; // Exclude the `files` field
+    localStorage.setItem("formData", JSON.stringify(textData));
   }, [data]);
-
+  
   useEffect(() => {
     localStorage.setItem("activeTab", JSON.stringify(activeTab));
   }, [activeTab]);
@@ -111,28 +118,6 @@ function Page() {
       files: { ...prev.files, ...newData.files },
     }));
   };
-
-  useEffect(() => {
-    const hasFiles = Object.values(data.files).some(file => file !== null);
-  
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      if (hasFiles) {
-        event.preventDefault();
-        event.returnValue = "You have uploaded a file. Are you sure you want to leave?";
-      }
-    };
-  
-    if (hasFiles) {
-      window.addEventListener("beforeunload", handleBeforeUnload);
-    } else {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    }
-  
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
-  }, [data.files]); // Runs whenever files change
-  
 
 
   const markFormCompleted = (formName: Tab) => {

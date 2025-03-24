@@ -30,7 +30,7 @@ interface SignUpData {
   dob: string;
   gender: string;
   phone: string;
-  volunteer: string;
+  volunteerName: string;
   bankAccNumber: string;
   bankName: string;
   ifsc: string;
@@ -203,26 +203,28 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
           />
 
           {/* Gender Field */}
-          <FormInput
-            name="gender"
-            type="text"
-            placeholder="GENDER"
-            control={control}
-            rules={{
-              required: "Gender is required",
-              validate: (value: any) => {
-                let genderValidate = validateGender(value);
-                if (genderValidate) {
-                  setBlock(true);
-                  return genderValidate;
-                } else {
-                  setBlock(false);
-                  return true;
-                }
-              },
-            }}
-            error={errors.gender}
-          />
+          <Controller
+  name="gender"
+  control={control}
+  rules={{ required: "Gender is required" }}
+  render={({ field }) => (
+    <select
+      {...field}
+      className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-3 px-5 bg-[#413C340D] ${
+        errors.gender ? "border-red-500" : ""
+      }`}
+    >
+      <option value="">SELECT GENDER</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+      <option value="Other">Other</option>
+    </select>
+  )}
+/>
+{errors.gender && (
+  <p className="text-red-500 text-xs mt-1">{errors.gender.message}</p>
+)}
+
         </div>
         <div className="flex flex-col gap-4">
           {/* Phone Number Field */}
@@ -249,14 +251,14 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
           {/* Volunteer Selection Dropdown (Styled Like Other Inputs) */}
 
           <Controller
-            name="volunteer"
+            name="volunteerName"
             control={control}
             rules={{ required: "Volunteer selection is required" }}
             render={({ field }) => (
               <select
                 {...field}
                 className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-3 px-5 bg-[#413C340D] ${
-                  errors.volunteer ? "border-red-500" : ""
+                  errors.volunteerName ? "border-red-500" : ""
                 }`}
               >
                 <option value="">SELECT A VOLUNTEER</option>
@@ -272,9 +274,9 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
               </select>
             )}
           />
-          {errors.volunteer && (
+          {errors.volunteerName && (
             <p className="text-red-500 text-xs mt-1">
-              {errors.volunteer.message}
+              {errors.volunteerName.message}
             </p>
           )}
 
