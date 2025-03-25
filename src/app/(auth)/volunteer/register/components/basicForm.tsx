@@ -1,78 +1,398 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { useRouter, useSearchParams } from "next/navigation";
-import InputText from "@/components/ui/inputText";
-import right_arrow from '@/../public/icons/arrow_right.svg'
-import PasswordInput from "@/components/ui/passwordInput";
 import Image from "next/image";
+import right_arrow from "@/../public/icons/arrow_right.svg";
 import FormInput from "@/components/ui/formInput";
-
+import {
+  validateAddress,
+  validateBankAccNumber,
+  validateBankName,
+  validateCurrentAddress,
+  validateDOB,
+  validateGuardian,
+  validateIFSC,
+  validateName,
+  validatePhone,
+} from "@/utils/validators";
+import axios from "axios";
+import { GET_VOLUNTEERS } from "@/utils/constants";
 
 // Define the form data type
 interface SignUpData {
   name: string;
-  email: string;
-  aadhaar: string;
+  guardian: string;
+  address: string;
+  currentAddress: string;
+  dob: string;
+  gender: string;
   phone: string;
+  volunteerName: string;
+  bankAccNumber: string;
+  bankName: string;
+  ifsc: string;
+  pwdCategory: string;
+  entrepreneurshipInterest: string;
 }
 
-function BasicForm({switchTab}:any) {
+function BasicForm({ switchTab, formData, updateFormData }: any) {
   const router = useRouter();
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors },
-    setError,
   } = useForm<SignUpData>({
-    defaultValues: {
-      email: "",
-    },
+    defaultValues: formData,
   });
 
-  const searchParams = useSearchParams();
+  const [block, setBlock] = useState(false);
+  const [volunteers, setVolunteers] = useState<{ _id: string; name: string }[]>(
+    []
+  );
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    reset(formData);
+  }, [formData, reset]);
+
+  useEffect(() => {
+    const fetchVolunteers = async () => {
+      try {
+        const response = await axios.get(GET_VOLUNTEERS);
+        if (response.data.success) {
+          setVolunteers(response.data.volunteers);
+        } else {
+          console.error("Error fetching volunteers:", response.data.message);
+        }
+      } catch (error) {
+        console.error("API error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchVolunteers();
+  }, []);
 
   const onSubmit: SubmitHandler<SignUpData> = async (data) => {
-    switchTab&&switchTab({index:1,value:"verification"})
+    updateFormData(data);
+    console.log("Form Data:", data);
+
+    switchTab && switchTab({ index: 1, value: "verification" });
   };
 
   return (
     <form
-      className="flex flex-col items-center"
+      className="w-full max-w-3xl mx-auto"
       onSubmit={handleSubmit(onSubmit)}
     >
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+        <div className="flex flex-col gap-4">
+          {/* Name Field */}
+          <FormInput
+            name="name"
+            type="text"
+            placeholder="NAME"
+            control={control}
+            rules={{
+              required: "Name is required",
+              validate: (value: any) => {
+                let nameValidate = validateName(value);
+                if (nameValidate) {
+                  setBlock(true);
+                  return nameValidate;
+                } else {
+                  setBlock(false);
+                  return true;
+                }
+              },
+            }}
+            error={errors.name}
+          />
 
-      <div className="flex flex-col gap-4 md:gap-6 mb-[40px]">
-        {/* Username / Email Field */}
-        <FormInput
-          name="name"
-          type="text"
-          placeholder="NAME" />
-        <FormInput
-          name="guardian"
-          type="text"
-          placeholder="NAME OF FATHER/MOTHER" />
-        <FormInput
-          name="address"
-          type="text"
-          placeholder="CURRENT ADDRESS" />
-        <FormInput
-          name="dob"
-          type="text"
-          placeholder="DOB" />
-        <FormInput
-          name="gender"
-          type="text"
-          placeholder="GENDER" />
+          {/* Guardian Field */}
+          <FormInput
+            name="guardian"
+            type="text"
+            placeholder="NAME OF FATHER/MOTHER"
+            control={control}
+            rules={{
+              required: "Guardian name is required",
+              validate: (value: any) => {
+                let guardianValidate = validateGuardian(value);
+                if (guardianValidate) {
+                  setBlock(true);
+                  return guardianValidate;
+                } else {
+                  setBlock(false);
+                  return true;
+                }
+              },
+            }}
+            error={errors.guardian}
+          />
 
-        <div className="flex flex-col gap-[10px]">
-        <FormInput
-          name="phone"
-          type="text"
-          placeholder="PHONE NUMBER" />
-          </div>
+          {/* Address Field */}
+          <FormInput
+            name="address"
+            type="text"
+            placeholder="ADDRESS"
+            control={control}
+            rules={{
+              required: "Address is required",
+              validate: (value: any) => {
+                let addressValidate = validateAddress(value);
+                if (addressValidate) {
+                  setBlock(true);
+                  return addressValidate;
+                } else {
+                  setBlock(false);
+                  return true;
+                }
+              },
+            }}
+            error={errors.address}
+          />
+
+          {/* Current Address Field */}
+          <FormInput
+            name="currentAddress"
+            type="text"
+            placeholder="CURRENT ADDRESS"
+            control={control}
+            rules={{
+              required: "Current Address is required",
+              validate: (value: any) => {
+                let currentAddressValidate = validateCurrentAddress(value);
+                if (currentAddressValidate) {
+                  setBlock(true);
+                  return currentAddressValidate;
+                } else {
+                  setBlock(false);
+                  return true;
+                }
+              },
+            }}
+            error={errors.currentAddress}
+          />
+
+          {/* Date of Birth Field */}
+          <FormInput
+            name="dob"
+            type="date"
+            placeholder="DOB"
+            control={control}
+            rules={{
+              required: "Date of Birth is required",
+              validate: (value: any) => {
+                let dobValidate = validateDOB(value);
+                if (dobValidate) {
+                  setBlock(true);
+                  return dobValidate;
+                } else {
+                  setBlock(false);
+                  return true;
+                }
+              },
+            }}
+            error={errors.dob}
+          />
+
+          {/* Gender Field */}
+          <Controller
+  name="gender"
+  control={control}
+  rules={{ required: "Gender is required" }}
+  render={({ field }) => (
+    <select
+      {...field}
+      className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-3 px-5 bg-[#413C340D] ${
+        errors.gender ? "border-red-500" : ""
+      }`}
+    >
+      <option value="">SELECT GENDER</option>
+      <option value="Male">Male</option>
+      <option value="Female">Female</option>
+      <option value="Other">Other</option>
+    </select>
+  )}
+/>
+{errors.gender && (
+  <p className="text-red-500 text-xs mt-1">{errors.gender.message}</p>
+)}
+
+        </div>
+        <div className="flex flex-col gap-4">
+          {/* Phone Number Field */}
+          <FormInput
+            name="phone"
+            type="text"
+            placeholder="PHONE NUMBER"
+            control={control}
+            rules={{
+              required: "Phone number is required",
+              validate: (value: any) => {
+                let phoneValidate = validatePhone(value);
+                if (phoneValidate) {
+                  setBlock(true);
+                  return phoneValidate;
+                } else {
+                  setBlock(false);
+                  return true;
+                }
+              },
+            }}
+            error={errors.phone}
+          />
+          {/* Volunteer Selection Dropdown (Styled Like Other Inputs) */}
+
+          <Controller
+            name="volunteerName"
+            control={control}
+            rules={{ required: "Volunteer selection is required" }}
+            render={({ field }) => (
+              <select
+                {...field}
+                className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-3 px-5 bg-[#413C340D] ${
+                  errors.volunteerName ? "border-red-500" : ""
+                }`}
+              >
+                <option value="">SELECT A VOLUNTEER</option>
+                {loading ? (
+                  <option disabled>Loading...</option>
+                ) : (
+                  volunteers.map((volunteer) => (
+                    <option key={volunteer._id} value={volunteer.name}>
+                      {volunteer.name}
+                    </option>
+                  ))
+                )}
+              </select>
+            )}
+          />
+          {errors.volunteerName && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.volunteerName.message}
+            </p>
+          )}
+
+          {/* Bank Account Number */}
+          <FormInput
+            name="bankAccNumber"
+            type="text"
+            placeholder="BANK ACCOUNT NUMBER"
+            control={control}
+            rules={{
+              required: "Bank Account Number is required",
+              validate: (value: any) => {
+                let bankAccValidate = validateBankAccNumber(value);
+                if (bankAccValidate) {
+                  setBlock(true);
+                  return bankAccValidate;
+                } else {
+                  setBlock(false);
+                  return true;
+                }
+              },
+            }}
+            error={errors.bankAccNumber}
+          />
+
+          {/* Bank Name */}
+          <FormInput
+            name="bankName"
+            type="text"
+            placeholder="BANK NAME"
+            control={control}
+            rules={{
+              required: "Bank Name is required",
+              validate: (value: any) => {
+                let bankNameValidate = validateBankName(value);
+                if (bankNameValidate) {
+                  setBlock(true);
+                  return bankNameValidate;
+                } else {
+                  setBlock(false);
+                  return true;
+                }
+              },
+            }}
+            error={errors.bankName}
+          />
+
+          {/* IFSC Code */}
+          <FormInput
+            name="ifsc"
+            type="text"
+            placeholder="IFSC CODE"
+            control={control}
+            rules={{
+              required: "IFSC Code is required",
+              validate: (value: any) => {
+                let ifscValidate = validateIFSC(value);
+                if (ifscValidate) {
+                  setBlock(true);
+                  return ifscValidate;
+                } else {
+                  setBlock(false);
+                  return true;
+                }
+              },
+            }}
+            error={errors.ifsc}
+          />
+
+{/* PWD Category */}
+<Controller
+  name="pwdCategory"
+  control={control}
+  rules={{ required: "PWD Category is required" }}
+  render={({ field }) => (
+    <select
+      {...field}
+      className={`w-full border rounded-lg px-4 py-3 bg-white ${
+        errors.pwdCategory ? "border-red-500" : ""
+      }`}
+    >
+      <option value="">Select PWD Category</option>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select>
+  )}
+/>
+{errors.pwdCategory && (
+  <p className="text-red-500 text-xs mt-1">{errors.pwdCategory.message}</p>
+)}
+
+{/* Entrepreneurship Interest */}
+<Controller
+  name="entrepreneurshipInterest"
+  control={control}
+  rules={{ required: "Entrepreneurship Interest is required" }}
+  render={({ field }) => (
+    <select
+      {...field}
+      className={`w-full border rounded-lg px-4 py-3 bg-white ${
+        errors.entrepreneurshipInterest ? "border-red-500" : ""
+      }`}
+    >
+      <option value="">Select Entrepreneurship Interest</option>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select>
+  )}
+/>
+{errors.entrepreneurshipInterest && (
+  <p className="text-red-500 text-xs mt-1">
+    {errors.entrepreneurshipInterest.message}
+  </p>
+)}
+        </div>
       </div>
 
       <button
+        disabled={block}
         type="submit"
         className="flex items-center justify-center gap-[34px] text-white bg-[#688086] rounded-[8px] py-[10px] px-[54px] w-[fit-content] m-auto mb-[10px]"
       >

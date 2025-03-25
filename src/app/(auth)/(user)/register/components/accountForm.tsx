@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import { useRouter } from "next/navigation";
 import axios from "axios";
 import ReCAPTCHA from "react-google-recaptcha";
 import FormInput from "@/components/ui/formInput";
@@ -17,9 +16,7 @@ interface SignUpData {
   confirm_password: string;
   otp: string;
 }
-
 const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
-  const router = useRouter();
   const {
     control,
     handleSubmit,
@@ -37,6 +34,7 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
   const [timer, setTimer] = useState(0);
   const [otpMessage, setOtpMessage] = useState("");
   const [submitError, setSubmitError] = useState("");
+  const [captchaError, setCaptchaError] = useState("");
   const [loading, setLoading] = useState({ sendOtp: false, verifyOtp: false, register: false });
   const [resendOtp, setResendOtp] = useState(false);
   const [captchaValue, setCaptchaValue] = useState<string | null>(null); // ✅ CAPTCHA State
@@ -102,8 +100,8 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
       } else {
         setError("otp", { type: "manual", message: response.data.message || "Invalid OTP." });
       }
-    } catch (error) {
-      setError("otp", { type: "manual", message: "Invalid OTP. Please try again." });
+    } catch (error: any) {
+      setError("otp", { type: "manual", message: error.response?.data?.message || "Invalid OTP. Please try again." });
     } finally {
       setLoading((prev) => ({ ...prev, verifyOtp: false }));
     }
@@ -111,6 +109,9 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
 
   // 🔹 Final Form Submission
   const onSubmit: SubmitHandler<SignUpData> = async (data) => {
+    setSubmitError(""); // Clear previous error messages
+    setCaptchaError(""); // Clear previous CAPTCHA error
+
     if (!otpVerified) {
       setError("otp", { type: "manual", message: "Please verify the OTP first." });
       return;
@@ -120,14 +121,22 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
       return;
     }
     if (!captchaValue) {
-      alert("Please complete the CAPTCHA verification.");
+      setCaptchaError("Please complete the CAPTCHA verification.");
       return;
     }
 
     if (updateFormData) updateFormData({ email, password });
     setLoading((prev) => ({ ...prev, register: true }));
-    await handleFinalSubmit(email, password, setLoading, setSubmitError);
+
+    try {
+      await handleFinalSubmit(email, password, setLoading, setSubmitError);
+    } catch (error: any) {
+      setSubmitError(error.response?.data?.message || "An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading((prev) => ({ ...prev, register: false }));
+    }
   };
+
   return (
     <form className="flex flex-col items-center" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-4 md:gap-6 mb-6 w-full max-w-md">
@@ -157,11 +166,15 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
             <Controller name="confirm_password" control={control} render={({ field }) => <PasswordInput placeholder="Confirm Password" value={field.value || ""} onChange={field.onChange} />} />
 
             {/* ✅ Google reCAPTCHA */}
-            <ReCAPTCHA className="bg-[#f4f4f4] rounded-3xl" sitekey={CAPTCHA_API??""} onChange={(value) => setCaptchaValue(value)} />
+            <ReCAPTCHA className="bg-[#f4f4f4] rounded-3xl" sitekey={CAPTCHA_API ?? ""} onChange={(value) => setCaptchaValue(value)} />
+            {captchaError && <p className="text-sm text-red-600">{captchaError}</p>} {/* ✅ CAPTCHA Error Message */}
 
             <button type="submit" className="bg-[#688086] text-white font-semibold rounded-lg py-2 px-6" disabled={!otpVerified || !captchaValue || loading.register}>
               {loading.register ? "Registering..." : "Register"}
             </button>
+
+            {/* ✅ Display submit errors */}
+            {submitError && <p className="text-sm text-red-600">{submitError}</p>}
           </div>
         )}
       </div>
@@ -170,3 +183,4 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
 };
 
 export default AccountForm;
+

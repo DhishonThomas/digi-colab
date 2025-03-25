@@ -1,88 +1,186 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import { useRouter, useSearchParams } from "next/navigation";
-import InputText from "@/components/ui/inputText";
-import check_icon from '@/../public/icons/check.svg'
-import PasswordInput from "@/components/ui/passwordInput";
-import Image from "next/image";
+import axios from "axios";
+import ReCAPTCHA from "react-google-recaptcha";
 import FormInput from "@/components/ui/formInput";
+import PasswordInput from "@/components/ui/passwordInput";
+import {
+  CAPTCHA_API,
+  USER_SEND_OTP,
+  USER_VERIFY_OTP,
+} from "@/utils/constants";
 
-
-// Define the form data type
 interface SignUpData {
-  name: string;
   email: string;
-  aadhaar: string;
-  phone: string;
+  password: string;
+  confirm_password: string;
+  otp: string;
 }
-
-function AccountForm({switchTab}:any) {
-  const router = useRouter();
+const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    watch,
     setError,
+    clearErrors,
+    formState: { errors },
   } = useForm<SignUpData>({
-    defaultValues: {
-      email: "",
-    },
+    defaultValues: { email: "", password: "", confirm_password: "", otp: "" },
   });
 
-  const searchParams = useSearchParams();
+  // 🔹 State
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+  const [timer, setTimer] = useState(0);
+  const [otpMessage, setOtpMessage] = useState("");
+  const [submitError, setSubmitError] = useState("");
+  const [captchaError, setCaptchaError] = useState("");
+  const [loading, setLoading] = useState({ sendOtp: false, verifyOtp: false, register: false });
+  const [resendOtp, setResendOtp] = useState(false);
+  const [captchaValue, setCaptchaValue] = useState<string | null>(null); // ✅ CAPTCHA State
 
+  // 🔹 Watch Form Values
+  const email = watch("email", "");
+  const password = watch("password", "");
+  const confirmPassword = watch("confirm_password", "");
+  const otp = watch("otp", "");
+
+  useEffect(() => {
+    if (timer > 0) {
+      const countdown = setTimeout(() => setTimer((prev) => prev - 1), 1000);
+      return () => clearTimeout(countdown);
+    }
+  }, [timer]);
+
+  const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  // 🔹 API Call: Send OTP
+  const sendOtp = async () => {
+    if (!email || !isValidEmail(email)) {
+      setError("email", { type: "manual", message: "Enter a valid email address." });
+      return;
+    }
+    clearErrors("email");
+    setLoading((prev) => ({ ...prev, sendOtp: true }));
+
+    try {
+      const response = await axios.post(USER_SEND_OTP, { email });
+      if (response.data.success) {
+        setOtpSent(true);
+        setOtpMessage("✅ OTP sent successfully!");
+        setTimer(60);
+        setResendOtp(true);
+      } else {
+        setOtpMessage(response.data.message || "Failed to send OTP.");
+      }
+    } catch (error: any) {
+      setOtpMessage(error.response?.data?.message || "Failed to send OTP.");
+    } finally {
+      setLoading((prev) => ({ ...prev, sendOtp: false }));
+    }
+  };
+
+  // 🔹 API Call: Verify OTP
+  const verifyOtp = async () => {
+    if (!otp) {
+      setError("otp", { type: "manual", message: "Enter the OTP sent to your email." });
+      return;
+    }
+    setLoading((prev) => ({ ...prev, verifyOtp: true }));
+
+    try {
+      const response = await axios.post(USER_VERIFY_OTP, { email, otp });
+      if (response.data.success) {
+        setOtpVerified(true);
+        setOtpMessage("✅ OTP verified successfully!");
+        clearErrors("otp");
+        setResendOtp(false);
+        setTimer(0);
+        setOtpSent(false);
+      } else {
+        setError("otp", { type: "manual", message: response.data.message || "Invalid OTP." });
+      }
+    } catch (error: any) {
+      setError("otp", { type: "manual", message: error.response?.data?.message || "Invalid OTP. Please try again." });
+    } finally {
+      setLoading((prev) => ({ ...prev, verifyOtp: false }));
+    }
+  };
+
+  // 🔹 Final Form Submission
   const onSubmit: SubmitHandler<SignUpData> = async (data) => {
-    router.push("/")
+    setSubmitError(""); // Clear previous error messages
+    setCaptchaError(""); // Clear previous CAPTCHA error
+
+    if (!otpVerified) {
+      setError("otp", { type: "manual", message: "Please verify the OTP first." });
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError("confirm_password", { type: "manual", message: "Passwords do not match." });
+      return;
+    }
+    if (!captchaValue) {
+      setCaptchaError("Please complete the CAPTCHA verification.");
+      return;
+    }
+
+    if (updateFormData) updateFormData({ email, password });
+    setLoading((prev) => ({ ...prev, register: true }));
+
+    try {
+      await handleFinalSubmit(email, password, setLoading, setSubmitError);
+    } catch (error: any) {
+      setSubmitError(error.response?.data?.message || "An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading((prev) => ({ ...prev, register: false }));
+    }
   };
 
   return (
-    <form
-      className="flex flex-col items-center"
-      onSubmit={handleSubmit(onSubmit)}
-    >
-      <div className="flex flex-col gap-4 md:gap-6 mb-[40px]">
-        <div className="flex flex-col gap-[10px]">
-        <FormInput
-          name="EMAIL"
-          type="text"
-          placeholder="EMAIL" />
-          <div className="flex gap-6 justify-center px-7">
-            <div className="flex">
-            <FormInput
-              name=""
-              type="text"
-              placeholder="-" /></div>
-            <div className="flex">
-            <FormInput
-              name=""
-              type="text"
-              placeholder="-" /></div>
-            <div className="flex">
-            <FormInput
-              name=""
-              type="text"
-              placeholder="-" /></div>
-            <div className="flex">
-            <FormInput
-              name=""
-              type="text"
-              placeholder="-" /></div>
-  
-          </div></div>
-          <PasswordInput placeholder="ENTER PASSWORD" />
-          <PasswordInput placeholder="CONFIRM PASSWORD"  />
-      </div>
+    <form className="flex flex-col items-center" onSubmit={handleSubmit(onSubmit)}>
+      <div className="flex flex-col gap-4 md:gap-6 mb-6 w-full max-w-md">
+        <FormInput label="Email" name="email" type="email" placeholder="Enter Email" control={control} rules={{ required: "Email is required." }} error={errors.email} />
 
-      
-      <button
-        type="submit"
-        className="flex items-center justify-center gap-[34px] text-white bg-[#688086] rounded-[8px] py-[10px] px-[54px] w-[fit-content] m-auto mb-[10px]"
-      >
-        <span>Register</span>
-        <Image alt="login banner" src={check_icon} />
-      </button>
+        {!otpSent && !otpVerified && (
+          <button type="button" onClick={sendOtp} className="bg-[#688086] text-white font-semibold py-2 px-4 rounded-lg" disabled={loading.sendOtp}>
+            {loading.sendOtp ? "Sending..." : "Send OTP"}
+          </button>
+        )}
+
+        {otpMessage && <p className="text-sm text-green-600">{otpMessage}</p>}
+
+        {otpSent && (
+          <>
+            <FormInput label="OTP" name="otp" type="text" placeholder="Enter OTP" control={control} rules={{ required: "Please enter the OTP." }} error={errors.otp} />
+            <button type="button" onClick={verifyOtp} className="bg-[#688086] text-white font-semibold py-2 px-4 rounded-lg" disabled={loading.verifyOtp || otpVerified}>
+              {loading.verifyOtp ? "Verifying..." : "Verify OTP"}
+            </button>
+            {timer > 0 && <p className="text-gray-500 text-xs">Resend OTP in {timer}s</p>}
+          </>
+        )}
+
+        {otpVerified && (
+          <div className="flex flex-col gap-4 md:gap-6 mb-6 w-full max-w-md">
+            <Controller name="password" control={control} render={({ field }) => <PasswordInput placeholder="Enter Password" value={field.value || ""} onChange={field.onChange} />} />
+            <Controller name="confirm_password" control={control} render={({ field }) => <PasswordInput placeholder="Confirm Password" value={field.value || ""} onChange={field.onChange} />} />
+
+            {/* ✅ Google reCAPTCHA */}
+            <ReCAPTCHA className="bg-[#f4f4f4] rounded-3xl" sitekey={CAPTCHA_API ?? ""} onChange={(value) => setCaptchaValue(value)} />
+            {captchaError && <p className="text-sm text-red-600">{captchaError}</p>} {/* ✅ CAPTCHA Error Message */}
+
+            <button type="submit" className="bg-[#688086] text-white font-semibold rounded-lg py-2 px-6" disabled={!otpVerified || !captchaValue || loading.register}>
+              {loading.register ? "Registering..." : "Register"}
+            </button>
+
+            {/* ✅ Display submit errors */}
+            {submitError && <p className="text-sm text-red-600">{submitError}</p>}
+          </div>
+        )}
+      </div>
     </form>
   );
-}
+};
 
 export default AccountForm;
+

@@ -5,6 +5,7 @@ import AccountForm from "./components/accountForm";
 import VerificationForm from "./components/verificationForm";
 import axios from "axios";
 import { USER_REGISTER } from "@/utils/constants";
+import { useRouter } from "next/navigation";
 
 type Tab = "basic" | "verification" | "account";
 
@@ -22,6 +23,7 @@ export type FormData = {
   address: string;
   currentAddress:string;
   dob: string;
+  age: number|string;
   gender: string;
   phone: string;
   volunteerName:string;
@@ -47,6 +49,8 @@ function Page() {
     value: "basic",
   });
 
+  const router=useRouter()
+
   const [data, setData] = useState<FormData>({
     name: "",
     email:"",
@@ -55,6 +59,7 @@ function Page() {
     address: "",
     currentAddress:"",
     dob: "",
+    age: "",
     gender: "",
     phone: "",
     volunteerName:"",
@@ -130,6 +135,8 @@ function Page() {
       setActiveTab({ index, value });
     }
   };
+
+
   const handleFinalSubmit = async (
     email: string,
     password: string,
@@ -137,6 +144,7 @@ function Page() {
     handleError: (message: string) => void
   ) => {
     handleLoading(true);
+  
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("email", email);
@@ -145,6 +153,7 @@ function Page() {
     formData.append("address", data.address);
     formData.append("currentAddress", data.currentAddress);
     formData.append("dob", data.dob);
+    formData.append("age", data.age ? String(Number(data.age)) : "0");
     formData.append("gender", data.gender);
     formData.append("phone", data.phone);
     formData.append("volunteerName", data.volunteerName);
@@ -153,38 +162,33 @@ function Page() {
     formData.append("ifsc", data.ifsc);
     formData.append("pwdCategory", data.pwdCategory);
     formData.append("entrepreneurshipInterest", data.entrepreneurshipInterest);
-      // Append only files
-
-    Object.entries(data.files).forEach(([key, file]) => {
-      if (file) {
-        formData.append(key, file as File);
+  
+    // Append only files
+    Object.entries(data.files || {}).forEach(([key, file]) => {
+      if (file instanceof File) {
+        formData.append(key, file);
       }
     });
-  
-    for (const pair of formData.entries()) {
-      console.log(pair[0] + ": ", pair[1]);
-    }
-      
     try {
       const response = await axios.post(USER_REGISTER, formData, {
         headers: { "Content-Type": "multipart/form-data" },
-      });
-  
-      console.log("Response:", response.data);
-  
+      });  
       if (response.data.success) {
-        // Redirect to login or handle success
-        // router.replace("/login")
+        router.replace("/login");
+      } else {
+        handleError(response.data.message || "Something went wrong.");
       }
-    } catch (error) {
-      handleError("Please provide correct details.");
-      console.error(error);
+    } catch (error: any) {
+      let errorMessage = "An unexpected error occurred. Please try again.";
+      if (axios.isAxiosError(error)) {
+        errorMessage = error.response?.data?.message || "Server error occurred.";
+      }
+      handleError(errorMessage);
+      console.error("Error:", error);
     } finally {
       handleLoading(false);
     }
   };
-  
-
   return (
     <main className="bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat">
       <div className="flex w-full min-h-[100vh] justify-center gap-[173px] container py-[140px]">
