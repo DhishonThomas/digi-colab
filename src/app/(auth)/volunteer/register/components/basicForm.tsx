@@ -1,22 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import right_arrow from "@/../public/icons/arrow_right.svg";
 import FormInput from "@/components/ui/formInput";
 import {
   validateAddress,
+  validateAge,
   validateBankAccNumber,
   validateBankName,
   validateCurrentAddress,
   validateDOB,
+  validateEducationYearOfCompletion,
   validateGuardian,
   validateIFSC,
   validateName,
   validatePhone,
 } from "@/utils/validators";
-import axios from "axios";
-import { GET_VOLUNTEERS } from "@/utils/constants";
 
 // Define the form data type
 interface SignUpData {
@@ -25,18 +24,19 @@ interface SignUpData {
   address: string;
   currentAddress: string;
   dob: string;
+  age: string;
   gender: string;
   phone: string;
-  volunteerName: string;
   bankAccNumber: string;
   bankName: string;
   ifsc: string;
-  pwdCategory: string;
-  entrepreneurshipInterest: string;
+  educationDegree: string;
+  educationYearOfCompletion: string;
+  employmentStatus: string;
+  monthlyIncomeRange: string;
 }
 
 function BasicForm({ switchTab, formData, updateFormData }: any) {
-  const router = useRouter();
   const {
     control,
     handleSubmit,
@@ -47,33 +47,13 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
   });
 
   const [block, setBlock] = useState(false);
-  const [volunteers, setVolunteers] = useState<{ _id: string; name: string }[]>(
-    []
-  );
-  const [loading, setLoading] = useState(true);
+  
+  const [isEmployed, setIsEmployed] = useState(false);
 
   useEffect(() => {
     reset(formData);
   }, [formData, reset]);
 
-  useEffect(() => {
-    const fetchVolunteers = async () => {
-      try {
-        const response = await axios.get(GET_VOLUNTEERS);
-        if (response.data.success) {
-          setVolunteers(response.data.volunteers);
-        } else {
-          console.error("Error fetching volunteers:", response.data.message);
-        }
-      } catch (error) {
-        console.error("API error:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchVolunteers();
-  }, []);
 
   const onSubmit: SubmitHandler<SignUpData> = async (data) => {
     updateFormData(data);
@@ -155,28 +135,6 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
             error={errors.address}
           />
 
-          {/* Current Address Field */}
-          <FormInput
-            name="currentAddress"
-            type="text"
-            placeholder="CURRENT ADDRESS"
-            control={control}
-            rules={{
-              required: "Current Address is required",
-              validate: (value: any) => {
-                let currentAddressValidate = validateCurrentAddress(value);
-                if (currentAddressValidate) {
-                  setBlock(true);
-                  return currentAddressValidate;
-                } else {
-                  setBlock(false);
-                  return true;
-                }
-              },
-            }}
-            error={errors.currentAddress}
-          />
-
           {/* Date of Birth Field */}
           <FormInput
             name="dob"
@@ -199,31 +157,96 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
             error={errors.dob}
           />
 
+          {/* Age Number Field */}
+          <FormInput
+            name="age"
+            type="number"
+            placeholder="Age"
+            control={control}
+            rules={{
+              required: "Age is required",
+              validate: (value: any) => {
+                let ageValidate = validateAge(value);
+                if (ageValidate) {
+                  setBlock(true);
+                  return ageValidate;
+                } else {
+                  setBlock(false);
+                  return true;
+                }
+              },
+            }}
+            error={errors.age}
+          />
+
           {/* Gender Field */}
           <Controller
-  name="gender"
-  control={control}
-  rules={{ required: "Gender is required" }}
-  render={({ field }) => (
-    <select
-      {...field}
-      className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-3 px-5 bg-[#413C340D] ${
-        errors.gender ? "border-red-500" : ""
-      }`}
-    >
-      <option value="">SELECT GENDER</option>
-      <option value="Male">Male</option>
-      <option value="Female">Female</option>
-      <option value="Other">Other</option>
-    </select>
-  )}
-/>
-{errors.gender && (
-  <p className="text-red-500 text-xs mt-1">{errors.gender.message}</p>
-)}
+            name="gender"
+            control={control}
+            rules={{ required: "Gender is required" }}
+            render={({ field }) => (
+              <select
+                {...field}
+                className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-3 px-5 bg-[#413C340D] ${
+                  errors.gender ? "border-red-500" : ""
+                }`}
+              >
+                <option value="">SELECT GENDER</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            )}
+          />
+          {errors.gender && (
+            <p className="text-red-500 text-xs mt-1">{errors.gender.message}</p>
+          )}
 
+          {/* Education Degree Dropdown */}
+          <Controller
+            name="educationDegree"
+            control={control}
+            rules={{ required: "Education degree is required" }}
+            render={({ field }) => (
+              <select
+                {...field}
+                className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-3 px-5 bg-[#413C340D] ${
+                  errors.educationDegree ? "border-red-500" : ""
+                }`}
+              >
+                <option value="">SELECT EDUCATION DEGREE</option>
+                <option value="Class XII">Class XII</option>
+                <option value="Diploma">Diploma</option>
+                <option value="Bachelor's">Bachelor's</option>
+                <option value="Master's">Master's</option>
+                <option value="Ph.D.">Ph.D.</option>
+                <option value="Other">Other</option>
+              </select>
+            )}
+          />
+          {errors.educationDegree && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.educationDegree.message}
+            </p>
+          )}
         </div>
         <div className="flex flex-col gap-4">
+          {/* Education Year of Completion Field */}
+          <FormInput
+            name="educationYearOfCompletion"
+            type="number"
+            placeholder="Year of Completion"
+            control={control}
+            rules={{
+              required: "Year of completion is required",
+              validate: (value: any) => {
+                let yearValidate = validateEducationYearOfCompletion(value);
+                return yearValidate || true;
+              },
+            }}
+            error={errors.educationYearOfCompletion}
+          />
+
           {/* Phone Number Field */}
           <FormInput
             name="phone"
@@ -245,37 +268,28 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
             }}
             error={errors.phone}
           />
-          {/* Volunteer Selection Dropdown (Styled Like Other Inputs) */}
 
-          <Controller
-            name="volunteerName"
+          {/* Current Address Field */}
+          <FormInput
+            name="currentAddress"
+            type="text"
+            placeholder="CURRENT ADDRESS"
             control={control}
-            rules={{ required: "Volunteer selection is required" }}
-            render={({ field }) => (
-              <select
-                {...field}
-                className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-3 px-5 bg-[#413C340D] ${
-                  errors.volunteerName ? "border-red-500" : ""
-                }`}
-              >
-                <option value="">SELECT A VOLUNTEER</option>
-                {loading ? (
-                  <option disabled>Loading...</option>
-                ) : (
-                  volunteers.map((volunteer) => (
-                    <option key={volunteer._id} value={volunteer.name}>
-                      {volunteer.name}
-                    </option>
-                  ))
-                )}
-              </select>
-            )}
+            rules={{
+              required: "Current Address is required",
+              validate: (value: any) => {
+                let currentAddressValidate = validateCurrentAddress(value);
+                if (currentAddressValidate) {
+                  setBlock(true);
+                  return currentAddressValidate;
+                } else {
+                  setBlock(false);
+                  return true;
+                }
+              },
+            }}
+            error={errors.currentAddress}
           />
-          {errors.volunteerName && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.volunteerName.message}
-            </p>
-          )}
 
           {/* Bank Account Number */}
           <FormInput
@@ -343,51 +357,60 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
             error={errors.ifsc}
           />
 
-{/* PWD Category */}
-<Controller
-  name="pwdCategory"
-  control={control}
-  rules={{ required: "PWD Category is required" }}
-  render={({ field }) => (
-    <select
-      {...field}
-      className={`w-full border rounded-lg px-4 py-3 bg-white ${
-        errors.pwdCategory ? "border-red-500" : ""
-      }`}
-    >
-      <option value="">Select PWD Category</option>
-      <option value="Yes">Yes</option>
-      <option value="No">No</option>
-    </select>
-  )}
-/>
-{errors.pwdCategory && (
-  <p className="text-red-500 text-xs mt-1">{errors.pwdCategory.message}</p>
-)}
+          {/* Employment Status Dropdown */}
+          <Controller
+            name="employmentStatus"
+            control={control}
+            rules={{ required: "Employment status is required" }}
+            render={({ field }) => (
+              <select
+                {...field}
+                onChange={(e) => {
+                  field.onChange(e); // Update form state
+                  setIsEmployed(e.target.value === "Employed"); // Track employment status
+                }}
+                className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-3 px-5 bg-[#413C340D] ${
+                  errors.employmentStatus ? "border-red-500" : ""
+                }`}
+              >
+                <option value="">SELECT EMPLOYMENT STATUS</option>
+                <option value="Employed">Employed</option>
+                <option value="Un-employed">Un-employed</option>
+              </select>
+            )}
+          />
+          {errors.employmentStatus && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.employmentStatus.message}
+            </p>
+          )}
 
-{/* Entrepreneurship Interest */}
-<Controller
-  name="entrepreneurshipInterest"
-  control={control}
-  rules={{ required: "Entrepreneurship Interest is required" }}
-  render={({ field }) => (
-    <select
-      {...field}
-      className={`w-full border rounded-lg px-4 py-3 bg-white ${
-        errors.entrepreneurshipInterest ? "border-red-500" : ""
-      }`}
-    >
-      <option value="">Select Entrepreneurship Interest</option>
-      <option value="Yes">Yes</option>
-      <option value="No">No</option>
-    </select>
-  )}
-/>
-{errors.entrepreneurshipInterest && (
-  <p className="text-red-500 text-xs mt-1">
-    {errors.entrepreneurshipInterest.message}
-  </p>
-)}
+          {/* Monthly Income Range Dropdown (Shown only if Employed) */}
+          {isEmployed && (
+            <Controller
+              name="monthlyIncomeRange"
+              control={control}
+              rules={{ required: "Monthly income range is required" }}
+              render={({ field }) => (
+                <select
+                  {...field}
+                  className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-3 px-5 bg-[#413C340D] ${
+                    errors.monthlyIncomeRange ? "border-red-500" : ""
+                  }`}
+                >
+                  <option value="">SELECT MONTHLY INCOME RANGE</option>
+                  <option value="Upto 20000">Upto 20000</option>
+                  <option value="20001 to 50000">20001 to 50000</option>
+                  <option value="50001 and above">50001 and above</option>
+                </select>
+              )}
+            />
+          )}
+          {errors.monthlyIncomeRange && isEmployed && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.monthlyIncomeRange.message}
+            </p>
+          )}
         </div>
       </div>
 

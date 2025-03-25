@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import Image from "next/image";
 import upload_icon from "@/../public/icons/upload.svg";
@@ -10,10 +10,9 @@ interface SignUpData {
   image: File | null;
   undertaking: File | null;
   policeVerification: File | null;
-  educationQualification: File | null;
-  bankPassbook: File | null;
-  pwdCertificate: File | null;
-  bplCertificate: File | null;
+  bankDocument:File|null,
+  educationCertificate:File|null,
+
 }
 
 const MAX_FILE_SIZE_MB = 5;
@@ -27,23 +26,11 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
       image: null,
       undertaking: null,
       policeVerification: null,
-      educationQualification: null,
-      bankPassbook: null,
-      pwdCertificate: null,
-      bplCertificate: null,
+      bankDocument: null,
+      educationCertificate: null,
+    
     }
   );
-  useEffect(() => {
-    setUploadedFiles(formData.files || {
-      image: null,
-      undertaking: null,
-      policeVerification: null,
-      educationQualification: null,
-      bankPassbook: null,
-      pwdCertificate: null,
-      bplCertificate: null,
-    });
-  }, [formData]);
   
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [touchedFields, setTouchedFields] = useState<{
@@ -57,10 +44,8 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
     image: useRef(null),
     undertaking: useRef(null),
     policeVerification: useRef(null),
-    educationQualification: useRef(null),
-    bankPassbook: useRef(null),
-    pwdCertificate: useRef(null),
-    bplCertificate: useRef(null),
+    bankDocument: useRef(null),
+    educationCertificate: useRef(null),
   };
 
   const handleFileClick = (ref: React.RefObject<HTMLInputElement>) => {
@@ -87,10 +72,11 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
 
     setUploadedFiles((prev) => {
       const newFiles = { ...prev, [field]: file };
-      updateFormData({ files: newFiles });
+      updateFormData({ ...formData, files: newFiles }); // Ensure full formData is updated
       localStorage.setItem("uploadedFiles", JSON.stringify(newFiles));
       return newFiles;
     });
+    
 
     setErrors((prev) => ({ ...prev, [field]: errorMsg }));
     setTouchedFields((prev) => ({ ...prev, [field]: true })); // Mark field as touched

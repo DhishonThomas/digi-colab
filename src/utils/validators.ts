@@ -77,3 +77,14 @@ export const validateIFSC = (ifsc: string): string | null => {
         return "Invalid IFSC Code (Format: 4 letters, 0, 6 alphanumeric)";
     return null;
 };
+
+
+
+export const validateEducationYearOfCompletion = (year: string): string | null => {
+    const yearNum = Number(year);
+    const currentYear = new Date().getFullYear();
+    if (!year.trim()) return "Year of completion is required";
+    if (isNaN(yearNum) || yearNum < 1900 || yearNum > currentYear) return "Invalid year of completion";
+    return null;
+  };
+  

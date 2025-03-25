@@ -36,6 +36,9 @@ let accountType=""
 
 if(pathName.startsWith("/admin")){
   accountType="admin"
+}else if(pathName.startsWith("/volunteer")){
+  accountType="volunteer"
+
 }
 
 
