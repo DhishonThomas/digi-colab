@@ -159,7 +159,16 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
             {timer > 0 && <p className="text-gray-500 text-xs">Resend OTP in {timer}s</p>}
           </>
         )}
-
+  {(timer==0&&resendOtp)&&
+ <button
+ type="button"
+ onClick={sendOtp}
+ className=" text-blue-600 font-semibold py-2 px-4 rounded-lg"
+ disabled={loading.sendOtp || otpVerified}
+>
+ {loading.sendOtp ? "Resending..." : "Resend OTP"}
+</button>
+}
         {otpVerified && (
           <div className="flex flex-col gap-4 md:gap-6 mb-6 w-full max-w-md">
             <Controller name="password" control={control} render={({ field }) => <PasswordInput placeholder="Enter Password" value={field.value || ""} onChange={field.onChange} />} />

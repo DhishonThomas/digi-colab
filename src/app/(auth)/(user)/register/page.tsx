@@ -89,19 +89,25 @@ function Page() {
   useEffect(() => {
     const savedData = localStorage.getItem("formData");
     if (savedData) {
-      setData(JSON.parse(savedData));
+      const parsedData = JSON.parse(savedData);
+      setData((prevData) => ({
+        ...parsedData, // Load text fields from localStorage
+        files: prevData.files || {}, // Retain existing `files`
+      }));
     }
+  
     const savedTab = localStorage.getItem("activeTab");
     if (savedTab) {
       setActiveTab(JSON.parse(savedTab));
     }
+  
     const savedCompletion = localStorage.getItem("completedForms");
     if (savedCompletion) {
       setCompletedForms(JSON.parse(savedCompletion));
     }
   }, []);
-
-  // Save data on form change
+  
+  // Save data on form change (excluding `files`)
   useEffect(() => {
     const { files, ...textData } = data; // Exclude the `files` field
     localStorage.setItem("formData", JSON.stringify(textData));
@@ -110,12 +116,11 @@ function Page() {
   useEffect(() => {
     localStorage.setItem("activeTab", JSON.stringify(activeTab));
   }, [activeTab]);
-
+  
   useEffect(() => {
     localStorage.setItem("completedForms", JSON.stringify(completedForms));
   }, [completedForms]);
-
-  // Upadationg the parent form..
+    // Upadationg the parent form..
   const updateFormData = (newData: Partial<FormData>) => {
     setData((prev) => ({
       ...prev,

@@ -33,17 +33,6 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
       bplCertificate: null,
     }
   );
-  useEffect(() => {
-    setUploadedFiles(formData.files || {
-      image: null,
-      undertaking: null,
-      policeVerification: null,
-      educationQualification: null,
-      bankPassbook: null,
-      pwdCertificate: null,
-      bplCertificate: null,
-    });
-  }, [formData]);
   
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [touchedFields, setTouchedFields] = useState<{
@@ -87,10 +76,11 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
 
     setUploadedFiles((prev) => {
       const newFiles = { ...prev, [field]: file };
-      updateFormData({ files: newFiles });
+      updateFormData({ ...formData, files: newFiles }); // Ensure full formData is updated
       localStorage.setItem("uploadedFiles", JSON.stringify(newFiles));
       return newFiles;
     });
+    
 
     setErrors((prev) => ({ ...prev, [field]: errorMsg }));
     setTouchedFields((prev) => ({ ...prev, [field]: true })); // Mark field as touched
