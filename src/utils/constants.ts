@@ -25,3 +25,14 @@ export const VOLUNTEER_VERIFY_OTP=`${VOLUNTEER_URL}/verify-email-otp`
 export const USER_REGISTER=`${USER_URL}/register`
 export const VOLUNTEER_REGISTER=`${VOLUNTEER_URL}/register`
 export const GET_VOLUNTEERS=`${USER_URL}/volunteers`
+
+
+//Forget-Password
+
+export const USER_FORGET_PASSWORD=`${USER_URL}/forgot-password`
+export const VOLUNTEER_FORGET_PASSWORD=`${VOLUNTEER_URL}/forgot-password`
+
+//Reset-Password
+
+export const USER_RESET_PASSWORD=`${USER_URL}/reset-password`
+export const VOLUNTEER_RESET_PASSWORD=`${VOLUNTEER_URL}/reset-password`

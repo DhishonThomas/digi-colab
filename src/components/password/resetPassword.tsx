@@ -1,53 +1,58 @@
-"use client"
-import React from 'react'
-import { Controller, useForm } from 'react-hook-form'
-import InputText from '../ui/inputText';
-import Image from 'next/image';
-import PasswordInput from '../ui/passwordInput';
+"use client";
+import React from "react";
+import { Controller, useForm } from "react-hook-form";
+import PasswordInput from "../ui/passwordInput";
 
-
-interface ResetPasswordProps{
-    password:string;
-    confirm_password:string;
+interface ResetPasswordProps {
+  password: string;
+  confirm_password: string;
 }
-  
-  interface ResetPasswordFormProps {
-    onSubmit: (data: ResetPasswordProps) => void; 
-    errorMessage?:string|null
-  }
 
-const ResetPassword = ({onSubmit,errorMessage}:ResetPasswordFormProps) => {
+interface ResetPasswordFormProps {
+  onSubmit: (data: ResetPasswordProps) => void;
+  errorMessage?: string | null;
+  successMessage?: string | null;
+  loading: boolean;
+}
 
-    const {
-        control,
-        handleSubmit,
-        watch,
-        setError,
-        clearErrors,
-        setValue,
-        formState: { errors },
-      } = useForm<ResetPasswordProps>({
-        defaultValues: {
-          password: "",
-          confirm_password:""
-        },
-      });
+const ResetPassword = ({ onSubmit, errorMessage, successMessage, loading }: ResetPasswordFormProps) => {
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<ResetPasswordProps>({
+    defaultValues: {
+      password: "",
+      confirm_password: "",
+    },
+  });
+
+  const password = watch("password");
 
   return (
-
-    <form className="flex flex-col items-center" onSubmit={handleSubmit(onSubmit)}> 
-       
-       <div className="flex flex-col gap-2 mb-[67px]">
-        <h1 className="text-text-primary text-[36px] leading-[40px] md:leading-[56px] font-semibold">
+    <form className="flex flex-col items-center w-full" onSubmit={handleSubmit(onSubmit)}>
+      <div className="flex flex-col gap-2 mb-8">
+        <h1 className="text-text-primary text-3xl font-semibold text-center">
           Reset Password
         </h1>
       </div>
-      <div className="flex flex-col gap-4 md:gap-6 mb-[45px]">
-        {/* Email Field */}
-        <div className="flex flex-col gap-2 sm:gap-[13px]">
-        <Controller
+
+      <div className="flex flex-col gap-4 w-full">
+        {/* Password Field */}
+        <div className="flex flex-col gap-2">
+          <Controller
             name="password"
             control={control}
+            rules={{
+              required: "Password is required",
+              minLength: { value: 8, message: "Password must be at least 8 characters long" },
+              pattern: {
+                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+                message:
+                  "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character",
+              },
+            }}
             render={({ field }) => (
               <PasswordInput
                 placeholder="Enter Password"
@@ -55,11 +60,19 @@ const ResetPassword = ({onSubmit,errorMessage}:ResetPasswordFormProps) => {
                 onChange={field.onChange}
               />
             )}
-          />         
-          
+          />
+          {errors.password && <p className="text-red-500 text-xs">{errors.password.message}</p>}
+        </div>
+
+        {/* Confirm Password Field */}
+        <div className="flex flex-col gap-2">
           <Controller
             name="confirm_password"
             control={control}
+            rules={{
+              required: "Confirm Password is required",
+              validate: (value) => value === password || "Passwords do not match",
+            }}
             render={({ field }) => (
               <PasswordInput
                 placeholder="Confirm Password"
@@ -67,21 +80,27 @@ const ResetPassword = ({onSubmit,errorMessage}:ResetPasswordFormProps) => {
                 onChange={field.onChange}
               />
             )}
-          /> 
-          {(errors.password||errors.confirm_password) && (
-            <p className="text-red-500 text-xs">{errors.password?.message||errors.confirm_password?.message}</p>
-          )}
+          />
+          {errors.confirm_password && <p className="text-red-500 text-xs">{errors.confirm_password.message}</p>}
         </div>
 
+        {/* Submit Button */}
         <button
-        type="submit"
-        className="flex items-center justify-center gap-[14px] text-white bg-[#688086] rounded-[8px] py-[10px] px-[88px] w-[fit-content] m-auto mb-[20px]"
-      >
-        <span>Verify</span>
-      </button>
-        </div>
-    </form>
-)
-}
+          type="submit"
+          disabled={loading}
+          className={`flex items-center justify-center gap-3 text-white bg-[#688086] rounded-md py-2 px-16 w-fit mx-auto ${
+            loading ? "opacity-50 cursor-not-allowed" : "hover:bg-[#546a70]"
+          }`}
+        >
+          {loading ? "Processing..." : "Reset Password"}
+        </button>
 
-export default ResetPassword
+        {/* Error & Success Messages */}
+        {errorMessage && <p className="text-red-500 text-sm text-center mt-2">{errorMessage}</p>}
+        {successMessage && <p className="text-green-500 text-sm text-center mt-2">{successMessage}</p>}
+      </div>
+    </form>
+  );
+};
+
+export default ResetPassword;
