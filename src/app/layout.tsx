@@ -14,7 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Digi Colab",
+  title: "Anara",
+  icons: "/favicon.png"
 };
 
 export default function RootLayout({
