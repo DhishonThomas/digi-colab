@@ -1,15 +1,15 @@
 "use client";
 import ResetPassword from "@/components/password/resetPassword";
 import Image from "next/image";
-import React, { Suspense, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import React, { useState } from "react";
+import { useParams } from "next/navigation"; // ✅ Use useParams instead of useSearchParams
 import axios from "axios";
 import login_banner from "@/../public/images/login_banner.png";
 import { VOLUNTEER_RESET_PASSWORD } from "@/utils/constants";
 
 const Page = () => {
-  const searchParams = useSearchParams();
-  const token = searchParams.get("token"); // ✅ Get token from URL
+  const { token } = useParams(); // ✅ Get token from URL path
+  console.log("Token from URL:", token);
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -27,7 +27,7 @@ const Page = () => {
     }
 
     try {
-      const response = await axios.post(`${VOLUNTEER_RESET_PASSWORD}/${token}`, {
+      const response = await axios.put(`${VOLUNTEER_RESET_PASSWORD}/${token}`, {
         password: data.password,
         confirmPassword: data.confirm_password,
       });
@@ -46,14 +46,12 @@ const Page = () => {
     <main className="bg-[url('/images/background.png')] bg-center bg-no-repeat bg-cover w-full">
       <div className="flex w-full min-h-[100vh] justify-center gap-[173px] container py-[140px]">
         <div className="w-full max-w-[310px]">
-          <Suspense>
-            <ResetPassword
-              onSubmit={handleResetPassword}
-              errorMessage={errorMessage}
-              successMessage={successMessage}
-              loading={loading}
-            />
-          </Suspense>
+          <ResetPassword
+            onSubmit={handleResetPassword}
+            errorMessage={errorMessage}
+            successMessage={successMessage}
+            loading={loading}
+          />
         </div>
         <div className="relative hidden md:block">
           <Image alt="login banner" src={login_banner} />
