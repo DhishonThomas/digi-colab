@@ -8,6 +8,7 @@ import login_banner from "@/../public/images/login_banner.png";
 import { USER_RESET_PASSWORD } from "@/utils/constants";
 
 const Page = () => {
+    
   const { token } = useParams(); // ✅ Get token from URL path
   console.log("Token from URL:", token);
 
@@ -34,6 +35,7 @@ const Page = () => {
 
       if (response.data.success) {
         setSuccessMessage("Password reset successful! You can now log in.");
+
       }
     } catch (error: any) {
       setErrorMessage(error.response?.data?.message || "Failed to reset password. Try again.");

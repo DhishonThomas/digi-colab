@@ -5,6 +5,7 @@ import upload_icon from "@/../public/icons/upload.svg";
 import check_icon from "@/../public/icons/check_green.svg";
 import download_icon from "@/../public/icons/download.svg";
 import right_arrow from "@/../public/icons/arrow_right.svg";
+import CameraCaptureModal from "@/components/common/CameraCaptureModal";
 
 interface SignUpData {
   image: File | null;
@@ -34,6 +35,8 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
     }
   );
   
+  const [showCameraModal,setShowCameraModal]=useState(false)
+
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [touchedFields, setTouchedFields] = useState<{
     [key: string]: boolean;
@@ -56,6 +59,10 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
     ref.current?.click();
   };
 
+  const handleCapturedImage = (file: File) => {
+    handleFileChange("image", file);
+  };
+  
   const validateFile = (field: keyof SignUpData, file: File | null) => {
     let errorMsg = "";
 
@@ -201,7 +208,7 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
 
                   <button
                     type="button"
-                    onClick={() => handleFileClick(fileRefs[key])}
+                    onClick={() =>key==="image"?setShowCameraModal(true):handleFileClick(fileRefs[key])}
                   >
                     {uploadedFiles[key as keyof SignUpData] ? (
                       <Image
@@ -249,6 +256,12 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
 </button>
 
       </div>
+      <CameraCaptureModal
+  isOpen={showCameraModal}
+  onClose={() => setShowCameraModal(false)}
+  onCapture={handleCapturedImage}
+/>
+
     </form>
   );
 }
