@@ -26,7 +26,7 @@ export type FormData = {
   age: number|string;
   gender: string;
   phone: string;
-  volunteerName:string;
+  volunteerRegisterNumber:string;
   bankAccNumber:string;
   bankName: string;
   ifsc: string;
@@ -34,7 +34,6 @@ export type FormData = {
   entrepreneurshipInterest: string;
   files: {
     image?: File | null;
-    undertaking?: File | null;
     policeVerification?: File | null;
     educationQualification?: File | null;
     bankPassbook?: File|null,
@@ -62,7 +61,7 @@ function Page() {
     age: "",
     gender: "",
     phone: "",
-    volunteerName:"",
+    volunteerRegisterNumber:"",
     bankAccNumber:"",
     bankName: "",
     ifsc: "",
@@ -70,7 +69,6 @@ function Page() {
     entrepreneurshipInterest: "",
     files: {
       image: null,
-      undertaking: null,
       policeVerification: null,
       educationQualification: null,
       bankPassbook:null,
@@ -161,7 +159,7 @@ function Page() {
     formData.append("age", data.age ? String(Number(data.age)) : "0");
     formData.append("gender", data.gender);
     formData.append("phone", data.phone);
-    formData.append("volunteerName", data.volunteerName);
+    formData.append("volunteerRegisterNumber", data.volunteerRegisterNumber);
     formData.append("bankAccNumber", data.bankAccNumber);
     formData.append("bankName", data.bankName);
     formData.append("ifsc", data.ifsc);

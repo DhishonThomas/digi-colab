@@ -9,7 +9,6 @@ import CameraCaptureModal from "@/components/common/CameraCaptureModal";
 
 interface SignUpData {
   image: File | null;
-  undertaking: File | null;
   policeVerification: File | null;
   educationQualification: File | null;
   bankPassbook: File | null;
@@ -26,7 +25,6 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
   const [uploadedFiles, setUploadedFiles] = useState<SignUpData>(
     formData.files || {
       image: null,
-      undertaking: null,
       policeVerification: null,
       educationQualification: null,
       bankPassbook: null,
@@ -47,7 +45,6 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
 
   const fileRefs: any = {
     image: useRef(null),
-    undertaking: useRef(null),
     policeVerification: useRef(null),
     educationQualification: useRef(null),
     bankPassbook: useRef(null),

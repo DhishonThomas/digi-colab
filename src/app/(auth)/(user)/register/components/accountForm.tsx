@@ -39,6 +39,8 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
   const [resendOtp, setResendOtp] = useState(false);
   const [captchaValue, setCaptchaValue] = useState<string | null>(null); // ✅ CAPTCHA State
 
+  const [declarationAccepted, setDeclarationAccepted] = useState(false);
+
   // 🔹 Watch Form Values
   const email = watch("email", "");
   const password = watch("password", "");
@@ -178,7 +180,25 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
             <ReCAPTCHA className="bg-[#f4f4f4] rounded-3xl" sitekey={CAPTCHA_API ?? ""} onChange={(value) => setCaptchaValue(value)} />
             {captchaError && <p className="text-sm text-red-600">{captchaError}</p>} {/* ✅ CAPTCHA Error Message */}
 
-            <button type="submit" className="bg-[#688086] text-white font-semibold rounded-lg py-2 px-6" disabled={!otpVerified || !captchaValue || loading.register}>
+              {/* ✅ Declaration Checkbox */}
+    <div className="flex items-start gap-2">
+      <input
+        type="checkbox"
+        id="declaration"
+        checked={declarationAccepted}
+        onChange={(e) => setDeclarationAccepted(e.target.checked)}
+        className="mt-1"
+      />
+      <label htmlFor="declaration" className="text-sm text-gray-700">
+        I have read and agree to the{" "}
+        <a href="/terms-and-conditions" target="_blank" className="text-blue-600 underline">
+          Terms and Conditions
+        </a>
+      </label>
+    </div>
+
+
+            <button type="submit" className="bg-[#688086] text-white font-semibold rounded-lg py-2 px-6" disabled={!otpVerified || !captchaValue ||!declarationAccepted|| loading.register}>
               {loading.register ? "Registering..." : "Register"}
             </button>
 

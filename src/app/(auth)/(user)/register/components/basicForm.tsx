@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import right_arrow from "@/../public/icons/arrow_right.svg";
 import FormInput from "@/components/ui/formInput";
@@ -16,8 +15,6 @@ import {
   validateName,
   validatePhone,
 } from "@/utils/validators";
-import axios from "axios";
-import { GET_VOLUNTEERS } from "@/utils/constants";
 
 // Define the form data type
 interface SignUpData {
@@ -29,7 +26,7 @@ interface SignUpData {
   age: string;
   gender: string;
   phone: string;
-  volunteerName: string;
+  volunteerRegisterNumber: string;
   bankAccNumber: string;
   bankName: string;
   ifsc: string;
@@ -48,33 +45,11 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
   });
 
   const [block, setBlock] = useState(false);
-  const [volunteers, setVolunteers] = useState<{ _id: string; name: string }[]>(
-    []
-  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     reset(formData);
   }, [formData, reset]);
-
-  useEffect(() => {
-    const fetchVolunteers = async () => {
-      try {
-        const response = await axios.get(GET_VOLUNTEERS);
-        if (response.data.success) {
-          setVolunteers(response.data.volunteers);
-        } else {
-          console.error("Error fetching volunteers:", response.data.message);
-        }
-      } catch (error) {
-        console.error("API error:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchVolunteers();
-  }, []);
 
   const onSubmit: SubmitHandler<SignUpData> = async (data) => {
     updateFormData(data);
@@ -359,34 +334,25 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
           />
 
           {/* Volunteer Selection Dropdown (Styled Like Other Inputs) */}
-
           <Controller
-            name="volunteerName"
-            control={control}
-            rules={{ required: "Volunteer selection is required" }}
-            render={({ field }) => (
-              <select
-                {...field}
-                className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-3 px-5 bg-[#413C340D] ${
-                  errors.volunteerName ? "border-red-500" : ""
-                }`}
-              >
-                <option value="">SELECT A VOLUNTEER</option>
-                {loading ? (
-                  <option disabled>Loading...</option>
-                ) : (
-                  volunteers.map((volunteer) => (
-                    <option key={volunteer._id} value={volunteer.name}>
-                      {volunteer.name}
-                    </option>
-                  ))
-                )}
-              </select>
-            )}
-          />
-          {errors.volunteerName && (
+  name="volunteerRegisterNumber"
+  control={control}
+  rules={{ required: "Volunteer Register Number is required" }}
+  render={({ field }) => (
+    <input
+      {...field}
+      type="text"
+      placeholder="Volunteer Register Number"
+      className={`text-[14px] placeholder:text-gray-500 bg-white leading-[14px] rounded-[10px] border w-full py-3 px-4 bg-[#413C340D] ${
+        errors.volunteerRegisterNumber ? "border-red-500" : "border-[#423B3125]"
+      }`}
+    />
+  )}
+/>
+
+          {errors.volunteerRegisterNumber && (
             <p className="text-red-500 text-xs mt-1">
-              {errors.volunteerName.message}
+              {errors.volunteerRegisterNumber.message}
             </p>
           )}
 
