@@ -6,6 +6,7 @@ import { useParams } from "next/navigation"; // ✅ Use useParams instead of use
 import axios from "axios";
 import login_banner from "@/../public/images/login_banner.png";
 import { USER_RESET_PASSWORD } from "@/utils/constants";
+import AuthLayout from "@/components/layout/AuthLayout";
 
 const Page = () => {
     
@@ -45,21 +46,20 @@ const Page = () => {
   };
 
   return (
-    <main className="bg-[url('/images/background.png')] bg-center bg-no-repeat bg-cover w-full">
-      <div className="flex w-full min-h-[100vh] justify-center gap-[173px] container py-[140px]">
-        <div className="w-full max-w-[310px]">
-          <ResetPassword
+
+    <AuthLayout
+    backgroundImage="/images/background.png"
+    maxWidth="310px"
+    showSideImage
+    sideImageSrc={login_banner}
+    >
+<ResetPassword
             onSubmit={handleResetPassword}
             errorMessage={errorMessage}
             successMessage={successMessage}
             loading={loading}
           />
-        </div>
-        <div className="relative hidden md:block">
-          <Image alt="login banner" src={login_banner} />
-        </div>
-      </div>
-    </main>
+    </AuthLayout>
   );
 };
 

@@ -9,7 +9,7 @@ import CameraCaptureModal from "@/components/common/CameraCaptureModal";
 
 interface SignUpData {
   image: File | null;
-  policeVerification: File | null;
+  policeVerification?: File | null;
   educationQualification: File | null;
   bankPassbook: File | null;
   pwdCertificate: File | null;
@@ -105,14 +105,20 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
 
     Object.keys(uploadedFiles).forEach((key) => {
       const file = uploadedFiles[key as keyof SignUpData];
+    
       const isPwdRequired =
         key === "pwdCertificate" && formData.pwdCategory === "Yes";
       const isBplRequired =
         key === "bplCertificate" && formData.entrepreneurshipInterest === "Yes";
-
+    
+      // 🆕 Skip policeVerification
+      if (key === "policeVerification") {
+        newBlockSubmit[key] = true; // Valid by default
+        return; // Skip validation
+      }
+    
       let errorMsg = "";
-
-      // File validation conditions
+    
       if (
         (!file && isPwdRequired) ||
         (!file && isBplRequired) ||
@@ -128,7 +134,7 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
       } else if (file && file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
         errorMsg = `File size must be under ${MAX_FILE_SIZE_MB}MB.`;
       }
-
+    
       if (errorMsg) {
         newErrors[key] = errorMsg;
         newBlockSubmit[key] = false;
@@ -136,6 +142,7 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
         newBlockSubmit[key] = true;
       }
     });
+    
 
     setErrors(newErrors);
     setBlockSubmit(newBlockSubmit);

@@ -6,6 +6,7 @@ import VerificationForm from "./components/verificationForm";
 import axios from "axios";
 import { USER_REGISTER } from "@/utils/constants";
 import { useRouter } from "next/navigation";
+import AuthLayout from "@/components/layout/AuthLayout";
 
 type Tab = "basic" | "verification" | "account";
 
@@ -26,7 +27,7 @@ export type FormData = {
   age: number|string;
   gender: string;
   phone: string;
-  volunteerRegisterNumber:string;
+  volunteerRegNum:string;
   bankAccNumber:string;
   bankName: string;
   ifsc: string;
@@ -61,7 +62,7 @@ function Page() {
     age: "",
     gender: "",
     phone: "",
-    volunteerRegisterNumber:"",
+    volunteerRegNum:"",
     bankAccNumber:"",
     bankName: "",
     ifsc: "",
@@ -143,6 +144,7 @@ function Page() {
   const handleFinalSubmit = async (
     email: string,
     password: string,
+    undertaking: boolean,
     handleLoading: (loading: boolean) => void,
     handleError: (message: string) => void
   ) => {
@@ -159,13 +161,13 @@ function Page() {
     formData.append("age", data.age ? String(Number(data.age)) : "0");
     formData.append("gender", data.gender);
     formData.append("phone", data.phone);
-    formData.append("volunteerRegisterNumber", data.volunteerRegisterNumber);
+    formData.append("volunteerRegNum", data.volunteerRegNum);
     formData.append("bankAccNumber", data.bankAccNumber);
     formData.append("bankName", data.bankName);
     formData.append("ifsc", data.ifsc);
     formData.append("pwdCategory", data.pwdCategory);
     formData.append("entrepreneurshipInterest", data.entrepreneurshipInterest);
-  
+    formData.append("undertaking",undertaking+"")
     // Append only files
     Object.entries(data.files || {}).forEach(([key, file]) => {
       if (file instanceof File) {
@@ -193,45 +195,47 @@ function Page() {
     }
   };
   return (
-    <main className="bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat">
-      <div className="flex w-full min-h-[100vh] justify-center gap-[173px] container py-[140px]">
-        <div className="w-full max-w-[510px]">
-          <h1 className="text-text-primary text-[36px] font-semibold text-center mb-6">
-            Register
-          </h1>
-          <div className="flex items-center justify-center mb-[24px] gap-[65px]">
-            {tabs.map((tab:any, i) => (
-              <div
-                key={i}
-                onClick={() => handleTabSwitch(i, tab.value)}
-                className={`flex flex-col items-center cursor-pointer ${
-                  !completedForms[tab.value] && i > activeTab.index ? "opacity-50 cursor-not-allowed" : ""
-                }`}
-              >
-                <div
-                  className={`text-[10px] font-[600] border border-[#DADADA] w-[32px] flex items-center justify-center rounded-full aspect-square ${
-                    activeTab.index >= i ? "bg-[#688086] text-white" : ""
-                  }`}
-                >
-                  {i + 1}
-                </div>
-                <div className="text-[8px]">{tab.label}</div>
-              </div>
-            ))}
-          </div>
-          <Suspense>
-            <TabDispatcher
-              switchTab={setActiveTab}
-              activeTab={activeTab.value}
-              formData={data}
-              updateFormData={updateFormData}
-              handleFinalSubmit={handleFinalSubmit}
-              markFormCompleted={markFormCompleted}
-            />
-          </Suspense>
+
+<AuthLayout backgroundImage="/images/watermark_logo.png" maxWidth="510px">
+  <h1 className="text-text-primary text-[36px] font-semibold text-center mb-6">
+    Register
+  </h1>
+  <div className="flex items-center justify-center mb-[24px] gap-[65px]">
+    {tabs.map((tab: any, i) => (
+      <div
+        key={i}
+        onClick={() => handleTabSwitch(i, tab.value)}
+        className={`flex flex-col items-center cursor-pointer ${
+          !completedForms[tab.value] && i > activeTab.index
+            ? "opacity-50 cursor-not-allowed"
+            : ""
+        }`}
+      >
+        <div
+          className={`text-[10px] font-[600] border border-[#DADADA] w-[32px] flex items-center justify-center rounded-full aspect-square ${
+            activeTab.index >= i ? "bg-[#688086] text-white" : ""
+          }`}
+        >
+          {i + 1}
         </div>
+        <div className="text-[8px]">{tab.label}</div>
       </div>
-    </main>
+    ))}
+  </div>
+  <Suspense>
+    <TabDispatcher
+      switchTab={setActiveTab}
+      activeTab={activeTab.value}
+      formData={data}
+      updateFormData={updateFormData}
+      handleFinalSubmit={handleFinalSubmit}
+      markFormCompleted={markFormCompleted}
+    />
+  </Suspense>
+</AuthLayout>
+
+         
+     
   );
 }
 
@@ -249,7 +253,7 @@ const TabDispatcher = ({
   updateFormData: (data: Partial<FormData>) => void;
   activeTab: string;
   switchTab: any;
-  handleFinalSubmit: (email:string,password:string,handleLoading:()=>void,handleError:()=>void) => Promise<any>;
+  handleFinalSubmit: (email:string,password:string,undertaking:boolean,handleLoading:()=>void,handleError:()=>void) => Promise<any>;
   markFormCompleted: (formName: Tab) => void;
 }) => {
   switch (activeTab) {

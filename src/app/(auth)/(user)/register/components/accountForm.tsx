@@ -9,6 +9,7 @@ import {
   USER_SEND_OTP,
   USER_VERIFY_OTP,
 } from "@/utils/constants";
+import Link from "next/link";
 
 interface SignUpData {
   email: string;
@@ -131,7 +132,7 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
     setLoading((prev) => ({ ...prev, register: true }));
 
     try {
-      await handleFinalSubmit(email, password, setLoading, setSubmitError);
+      await handleFinalSubmit(email, password,declarationAccepted, setLoading, setSubmitError);
     } catch (error: any) {
       setSubmitError(error.response?.data?.message || "An unexpected error occurred. Please try again.");
     } finally {
@@ -191,9 +192,9 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
       />
       <label htmlFor="declaration" className="text-sm text-gray-700">
         I have read and agree to the{" "}
-        <a href="/terms-and-conditions" target="_blank" className="text-blue-600 underline">
-          Terms and Conditions
-        </a>
+        <Link href={"/register/terms-and-conditions"} target="_blank" className="text-blue-600 underline" >
+        Terms and Conditions
+        </Link>
       </label>
     </div>
 

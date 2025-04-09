@@ -14,6 +14,7 @@ import {
   validateIFSC,
   validateName,
   validatePhone,
+  validateVolunteerRegNum,
 } from "@/utils/validators";
 
 // Define the form data type
@@ -26,7 +27,7 @@ interface SignUpData {
   age: string;
   gender: string;
   phone: string;
-  volunteerRegisterNumber: string;
+  volunteerRegNum: string;
   bankAccNumber: string;
   bankName: string;
   ifsc: string;
@@ -335,24 +336,35 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
 
           {/* Volunteer Selection Dropdown (Styled Like Other Inputs) */}
           <Controller
-  name="volunteerRegisterNumber"
+  name="volunteerRegNum"
   control={control}
-  rules={{ required: "Volunteer Register Number is required" }}
+  rules={{ required: "Volunteer Register Number is required",
+    validate: (value: any) => {
+      let registerNumValidate = validateVolunteerRegNum(value);
+      if (registerNumValidate) {
+        setBlock(true);
+        return registerNumValidate;
+      } else {
+        setBlock(false);
+        return true;
+      }
+    },
+   }}
   render={({ field }) => (
     <input
       {...field}
       type="text"
       placeholder="Volunteer Register Number"
       className={`text-[14px] placeholder:text-gray-500 bg-white leading-[14px] rounded-[10px] border w-full py-3 px-4 bg-[#413C340D] ${
-        errors.volunteerRegisterNumber ? "border-red-500" : "border-[#423B3125]"
+        errors.volunteerRegNum ? "border-red-500" : "border-[#423B3125]"
       }`}
     />
   )}
 />
 
-          {errors.volunteerRegisterNumber && (
+          {errors.volunteerRegNum && (
             <p className="text-red-500 text-xs mt-1">
-              {errors.volunteerRegisterNumber.message}
+              {errors.volunteerRegNum.message}
             </p>
           )}
 
