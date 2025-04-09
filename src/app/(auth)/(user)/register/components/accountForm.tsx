@@ -17,7 +17,7 @@ interface SignUpData {
   confirm_password: string;
   otp: string;
 }
-const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
+const AccountForm = ({ switchTab, handleFinalSubmit }: any) => {
   const {
     control,
     handleSubmit,
@@ -112,6 +112,8 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
 
   // 🔹 Final Form Submission
   const onSubmit: SubmitHandler<SignUpData> = async (data) => {
+    setLoading((prev) => ({ ...prev, register: true }));
+
     setSubmitError(""); // Clear previous error messages
     setCaptchaError(""); // Clear previous CAPTCHA error
 
@@ -128,11 +130,9 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
       return;
     }
 
-    if (updateFormData) updateFormData({ email, password });
-    setLoading((prev) => ({ ...prev, register: true }));
 
     try {
-      await handleFinalSubmit(email, password,declarationAccepted, setLoading, setSubmitError);
+      await handleFinalSubmit(email, password,declarationAccepted, setSubmitError);
     } catch (error: any) {
       setSubmitError(error.response?.data?.message || "An unexpected error occurred. Please try again.");
     } finally {
@@ -213,4 +213,3 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
 };
 
 export default AccountForm;
-

@@ -145,10 +145,8 @@ function Page() {
     email: string,
     password: string,
     undertaking: boolean,
-    handleLoading: (loading: boolean) => void,
     handleError: (message: string) => void
   ) => {
-    handleLoading(true);
   
     const formData = new FormData();
     formData.append("name", data.name);
@@ -168,6 +166,7 @@ function Page() {
     formData.append("pwdCategory", data.pwdCategory);
     formData.append("entrepreneurshipInterest", data.entrepreneurshipInterest);
     formData.append("undertaking",undertaking+"")
+    
     // Append only files
     Object.entries(data.files || {}).forEach(([key, file]) => {
       if (file instanceof File) {
@@ -190,8 +189,6 @@ function Page() {
       }
       handleError(errorMessage);
       console.error("Error:", error);
-    } finally {
-      handleLoading(false);
     }
   };
   return (
