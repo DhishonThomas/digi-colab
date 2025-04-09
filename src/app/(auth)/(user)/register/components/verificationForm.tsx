@@ -197,6 +197,7 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
                 }`}
               >
                 <span>{key.replace(/_/g, " ").toUpperCase()}</span>
+                <p className="text-gray-400">{key==="policeVerification"?"*not mandatory":""}</p>
 
                 <div className="flex gap-3">
                   {key === "policeVerification" && (
