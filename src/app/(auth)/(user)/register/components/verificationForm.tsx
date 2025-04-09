@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import Image from "next/image";
 import upload_icon from "@/../public/icons/upload.svg";
@@ -32,8 +32,8 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
       bplCertificate: null,
     }
   );
-  
-  const [showCameraModal,setShowCameraModal]=useState(false)
+
+  const [showCameraModal, setShowCameraModal] = useState(false);
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [touchedFields, setTouchedFields] = useState<{
@@ -59,7 +59,7 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
   const handleCapturedImage = (file: File) => {
     handleFileChange("image", file);
   };
-  
+
   const validateFile = (field: keyof SignUpData, file: File | null) => {
     let errorMsg = "";
 
@@ -84,7 +84,6 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
       localStorage.setItem("uploadedFiles", JSON.stringify(newFiles));
       return newFiles;
     });
-    
 
     setErrors((prev) => ({ ...prev, [field]: errorMsg }));
     setTouchedFields((prev) => ({ ...prev, [field]: true })); // Mark field as touched
@@ -105,20 +104,20 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
 
     Object.keys(uploadedFiles).forEach((key) => {
       const file = uploadedFiles[key as keyof SignUpData];
-    
+
       const isPwdRequired =
         key === "pwdCertificate" && formData.pwdCategory === "Yes";
       const isBplRequired =
         key === "bplCertificate" && formData.entrepreneurshipInterest === "Yes";
-    
+
       // 🆕 Skip policeVerification
       if (key === "policeVerification") {
         newBlockSubmit[key] = true; // Valid by default
         return; // Skip validation
       }
-    
+
       let errorMsg = "";
-    
+
       if (
         (!file && isPwdRequired) ||
         (!file && isBplRequired) ||
@@ -134,7 +133,7 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
       } else if (file && file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
         errorMsg = `File size must be under ${MAX_FILE_SIZE_MB}MB.`;
       }
-    
+
       if (errorMsg) {
         newErrors[key] = errorMsg;
         newBlockSubmit[key] = false;
@@ -142,7 +141,6 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
         newBlockSubmit[key] = true;
       }
     });
-    
 
     setErrors(newErrors);
     setBlockSubmit(newBlockSubmit);
@@ -197,7 +195,9 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
                 }`}
               >
                 <span>{key.replace(/_/g, " ").toUpperCase()}</span>
-                <p className="text-gray-400">{key==="policeVerification"?"*not mandatory":""}</p>
+                <p className="text-gray-400">
+                  {key === "policeVerification" ? "*not mandatory" : ""}
+                </p>
 
                 <div className="flex gap-3">
                   {key === "policeVerification" && (
@@ -213,7 +213,11 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
 
                   <button
                     type="button"
-                    onClick={() =>key==="image"?setShowCameraModal(true):handleFileClick(fileRefs[key])}
+                    onClick={() =>
+                      key === "image"
+                        ? setShowCameraModal(true)
+                        : handleFileClick(fileRefs[key])
+                    }
                   >
                     {uploadedFiles[key as keyof SignUpData] ? (
                       <Image
@@ -253,20 +257,18 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
 
         {/* Submit Button */}
         <button
-  type="submit"
-  className="flex items-center justify-center gap-2 bg-[#688086] text-white rounded-lg py-2 px-6 w-full"
->
-  <span>Next</span>
-  <Image alt="Next arrow" src={right_arrow} width={20} height={20} />
-</button>
-
+          type="submit"
+          className="flex items-center justify-center gap-2 bg-[#688086] text-white rounded-lg py-2 px-6 w-full"
+        >
+          <span>Next</span>
+          <Image alt="Next arrow" src={right_arrow} width={20} height={20} />
+        </button>
       </div>
       <CameraCaptureModal
-  isOpen={showCameraModal}
-  onClose={() => setShowCameraModal(false)}
-  onCapture={handleCapturedImage}
-/>
-
+        isOpen={showCameraModal}
+        onClose={() => setShowCameraModal(false)}
+        onCapture={handleCapturedImage}
+      />
     </form>
   );
 }
