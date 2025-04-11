@@ -8,7 +8,6 @@ import right_arrow from "@/../public/icons/arrow_right.svg";
 
 interface SignUpData {
   image: File | null;
-  undertaking: File | null;
   policeVerification: File | null;
   bankDocument:File|null,
   educationCertificate:File|null,
@@ -24,7 +23,6 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
   const [uploadedFiles, setUploadedFiles] = useState<SignUpData>(
     formData.files || {
       image: null,
-      undertaking: null,
       policeVerification: null,
       bankDocument: null,
       educationCertificate: null,
@@ -42,7 +40,6 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
 
   const fileRefs: any = {
     image: useRef(null),
-    undertaking: useRef(null),
     policeVerification: useRef(null),
     bankDocument: useRef(null),
     educationCertificate: useRef(null),
@@ -101,7 +98,10 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
         key === "pwdCertificate" && formData.pwdCategory === "Yes";
       const isBplRequired =
         key === "bplCertificate" && formData.entrepreneurshipInterest === "Yes";
-
+        if (key === "policeVerification") {
+          newBlockSubmit[key] = true; // Valid by default
+          return; // Skip validation
+        } 
       let errorMsg = "";
 
       // File validation conditions
@@ -182,7 +182,9 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
                 }`}
               >
                 <span>{key.replace(/_/g, " ").toUpperCase()}</span>
-
+                <p className="text-gray-400">
+                  {key === "policeVerification" ? "*not mandatory" : ""}
+                </p>
                 <div className="flex gap-3">
                   {key === "policeVerification" && (
                     <button type="button" onClick={handleDownload}>

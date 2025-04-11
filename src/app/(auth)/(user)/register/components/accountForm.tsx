@@ -16,6 +16,7 @@ interface SignUpData {
   password: string;
   confirm_password: string;
   otp: string;
+  declaration:string;
 }
 const AccountForm = ({ switchTab, handleFinalSubmit }: any) => {
   const {
@@ -26,7 +27,7 @@ const AccountForm = ({ switchTab, handleFinalSubmit }: any) => {
     clearErrors,
     formState: { errors },
   } = useForm<SignUpData>({
-    defaultValues: { email: "", password: "", confirm_password: "", otp: "" },
+    defaultValues: { email: "", password: "", confirm_password: "", otp: "" ,declaration: ""},
   });
 
   // 🔹 State
@@ -47,6 +48,7 @@ const AccountForm = ({ switchTab, handleFinalSubmit }: any) => {
   const password = watch("password", "");
   const confirmPassword = watch("confirm_password", "");
   const otp = watch("otp", "");
+  const declaration=watch("declaration", "")
 
   useEffect(() => {
     if (timer > 0) {
@@ -112,31 +114,41 @@ const AccountForm = ({ switchTab, handleFinalSubmit }: any) => {
 
   // 🔹 Final Form Submission
   const onSubmit: SubmitHandler<SignUpData> = async (data) => {
+   
     setLoading((prev) => ({ ...prev, register: true }));
 
     setSubmitError(""); // Clear previous error messages
     setCaptchaError(""); // Clear previous CAPTCHA error
-
+    try {
     if (!otpVerified) {
       setError("otp", { type: "manual", message: "Please verify the OTP first." });
+      setSubmitError("Please verify the OTP first.")
       return;
     }
     if (password !== confirmPassword) {
       setError("confirm_password", { type: "manual", message: "Passwords do not match." });
+     setSubmitError("Passwords do not match.")
       return;
+    }
+    if(!declarationAccepted){
+      setError("declaration",{type:"manual",message: "Confirmation is required ."})
+      setSubmitError("Confirmation is required.")
+      return
     }
     if (!captchaValue) {
       setCaptchaError("Please complete the CAPTCHA verification.");
+     setSubmitError("Please complete the CAPTCHA verification.")
       return;
     }
 
 
-    try {
+   
       await handleFinalSubmit(email, password,declarationAccepted, setSubmitError);
     } catch (error: any) {
       setSubmitError(error.response?.data?.message || "An unexpected error occurred. Please try again.");
     } finally {
       setLoading((prev) => ({ ...prev, register: false }));
+      
     }
   };
 
@@ -186,6 +198,7 @@ const AccountForm = ({ switchTab, handleFinalSubmit }: any) => {
       <input
         type="checkbox"
         id="declaration"
+        name="declaration"
         checked={declarationAccepted}
         onChange={(e) => setDeclarationAccepted(e.target.checked)}
         className="mt-1"

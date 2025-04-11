@@ -35,7 +35,6 @@ export type FormData = {
   monthlyIncomeRange:string;
   files: {
     image?: File | null;
-    undertaking?: File | null;
     policeVerification?: File | null;
     bankDocument?: File|null,
     educationCertificate?: File|null,
@@ -70,7 +69,6 @@ function Page() {
     monthlyIncomeRange:"",
     files: {
       image: null,
-      undertaking: null,
       policeVerification: null,
       bankDocument:null,
       educationCertificate:null,
@@ -143,10 +141,9 @@ function Page() {
   const handleFinalSubmit = async (
     email: string,
     password: string,
-    handleLoading: (loading: boolean) => void,
+    undertaking: boolean,
     handleError: (message: string) => void
   ) => {
-    handleLoading(true);
   
     const formData = new FormData();
     formData.append("name", data.name);
@@ -166,7 +163,7 @@ function Page() {
     formData.append("educationYearOfCompletion", data.educationYearOfCompletion);
     formData.append("employmentStatus", data.employmentStatus);
     formData.append("monthlyIncomeRange", data.monthlyIncomeRange);
-  
+    formData.append("undertaking",undertaking+"")
     // Append only files
     Object.entries(data.files || {}).forEach(([key, file]) => {
       if (file instanceof File) {
@@ -189,8 +186,6 @@ function Page() {
       }
       handleError(errorMessage);
       console.error("Error:", error);
-    } finally {
-      handleLoading(false);
     }
   };
   return (
@@ -250,7 +245,7 @@ const TabDispatcher = ({
   updateFormData: (data: Partial<FormData>) => void;
   activeTab: string;
   switchTab: any;
-  handleFinalSubmit: (email:string,password:string,handleLoading:()=>void,handleError:()=>void) => Promise<any>;
+  handleFinalSubmit: (email:string,password:string,undertaking:boolean,handleError:()=>void) => Promise<any>;
   markFormCompleted: (formName: Tab) => void;
 }) => {
   switch (activeTab) {

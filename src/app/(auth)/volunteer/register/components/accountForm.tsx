@@ -9,6 +9,7 @@ import {
   VOLUNTEER_SEND_OTP,
   VOLUNTEER_VERIFY_OTP,
 } from "@/utils/constants";
+import Link from "next/link";
 
 interface SignUpData {
   email: string;
@@ -38,7 +39,9 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
   const [loading, setLoading] = useState({ sendOtp: false, verifyOtp: false, register: false });
   const [resendOtp, setResendOtp] = useState(false);
   const [captchaValue, setCaptchaValue] = useState<string | null>(null); // ✅ CAPTCHA State
-
+    
+  const [declarationAccepted, setDeclarationAccepted] = useState(false);
+  
   // 🔹 Watch Form Values
   const email = watch("email", "");
   const password = watch("password", "");
@@ -109,27 +112,35 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
 
   // 🔹 Final Form Submission
   const onSubmit: SubmitHandler<SignUpData> = async (data) => {
-    setSubmitError(""); // Clear previous error messages
-    setCaptchaError(""); // Clear previous CAPTCHA error
-
-    if (!otpVerified) {
-      setError("otp", { type: "manual", message: "Please verify the OTP first." });
-      return;
-    }
-    if (password !== confirmPassword) {
-      setError("confirm_password", { type: "manual", message: "Passwords do not match." });
-      return;
-    }
-    if (!captchaValue) {
-      setCaptchaError("Please complete the CAPTCHA verification.");
-      return;
-    }
-
-    if (updateFormData) updateFormData({ email, password });
     setLoading((prev) => ({ ...prev, register: true }));
 
+    
+    setSubmitError(""); // Clear previous error messages
+    setCaptchaError(""); // Clear previous CAPTCHA error
     try {
-      await handleFinalSubmit(email, password, setLoading, setSubmitError);
+      if (!otpVerified) {
+        setError("otp", { type: "manual", message: "Please verify the OTP first." });
+        setSubmitError("Please verify the OTP first.")
+        return;
+      }
+      if (password !== confirmPassword) {
+        setError("confirm_password", { type: "manual", message: "Passwords do not match." });
+       setSubmitError("Passwords do not match.")
+        return;
+      }
+      if(!declarationAccepted){
+        setSubmitError("Confirmation is required.")
+        return
+      }
+      if (!captchaValue) {
+        setCaptchaError("Please complete the CAPTCHA verification.");
+       setSubmitError("Please complete the CAPTCHA verification.")
+        return;
+      }
+  
+  
+     
+      await handleFinalSubmit(email, password, declarationAccepted, setSubmitError);
     } catch (error: any) {
       setSubmitError(error.response?.data?.message || "An unexpected error occurred. Please try again.");
     } finally {
@@ -178,7 +189,26 @@ const AccountForm = ({ switchTab, handleFinalSubmit, updateFormData }: any) => {
             <ReCAPTCHA className="bg-[#f4f4f4] rounded-3xl" sitekey={CAPTCHA_API ?? ""} onChange={(value) => setCaptchaValue(value)} />
             {captchaError && <p className="text-sm text-red-600">{captchaError}</p>} {/* ✅ CAPTCHA Error Message */}
 
-            <button type="submit" className="bg-[#688086] text-white font-semibold rounded-lg py-2 px-6" disabled={!otpVerified || !captchaValue || loading.register}>
+        {/* ✅ Declaration Checkbox */}
+        <div className="flex items-start gap-2">
+      <input
+        type="checkbox"
+        id="declaration"
+        checked={declarationAccepted}
+        onChange={(e) => setDeclarationAccepted(e.target.checked)}
+        className="mt-1"
+      />
+      <label htmlFor="declaration" className="text-sm text-gray-700">
+        I have read and agree to the{" "}
+        <Link href={"/volunteer/register/terms-and-conditions"} target="_blank" className="text-blue-600 underline" >
+        Terms and Conditions
+        </Link>
+      </label>
+    </div>
+
+
+
+            <button type="submit" className="bg-[#688086] text-white font-semibold rounded-lg py-2 px-6" disabled={!otpVerified || !captchaValue || !declarationAccepted || loading.register}>
               {loading.register ? "Registering..." : "Register"}
             </button>
 
