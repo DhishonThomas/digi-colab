@@ -5,13 +5,13 @@ import upload_icon from "@/../public/icons/upload.svg";
 import check_icon from "@/../public/icons/check_green.svg";
 import download_icon from "@/../public/icons/download.svg";
 import right_arrow from "@/../public/icons/arrow_right.svg";
+import CameraCaptureModal from "@/components/common/CameraCaptureModal";
 
 interface SignUpData {
   image: File | null;
   policeVerification: File | null;
-  bankDocument:File|null,
-  educationCertificate:File|null,
-
+  bankDocument: File | null;
+  educationCertificate: File | null;
 }
 
 const MAX_FILE_SIZE_MB = 5;
@@ -26,10 +26,10 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
       policeVerification: null,
       bankDocument: null,
       educationCertificate: null,
-    
     }
   );
-  
+  const [showCameraModal, setShowCameraModal] = useState(false);
+
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [touchedFields, setTouchedFields] = useState<{
     [key: string]: boolean;
@@ -49,6 +49,9 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
     ref.current?.click();
   };
 
+  const handleCapturedImage = (file: File) => {
+    handleFileChange("image", file);
+  };
   const validateFile = (field: keyof SignUpData, file: File | null) => {
     let errorMsg = "";
 
@@ -73,7 +76,6 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
       localStorage.setItem("uploadedFiles", JSON.stringify(newFiles));
       return newFiles;
     });
-    
 
     setErrors((prev) => ({ ...prev, [field]: errorMsg }));
     setTouchedFields((prev) => ({ ...prev, [field]: true })); // Mark field as touched
@@ -98,10 +100,10 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
         key === "pwdCertificate" && formData.pwdCategory === "Yes";
       const isBplRequired =
         key === "bplCertificate" && formData.entrepreneurshipInterest === "Yes";
-        if (key === "policeVerification") {
-          newBlockSubmit[key] = true; // Valid by default
-          return; // Skip validation
-        } 
+      if (key === "policeVerification") {
+        newBlockSubmit[key] = true; // Valid by default
+        return; // Skip validation
+      }
       let errorMsg = "";
 
       // File validation conditions
@@ -199,7 +201,11 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
 
                   <button
                     type="button"
-                    onClick={() => handleFileClick(fileRefs[key])}
+                    onClick={() =>
+                      key === "image"
+                        ? setShowCameraModal(true)
+                        : handleFileClick(fileRefs[key])
+                    }
                   >
                     {uploadedFiles[key as keyof SignUpData] ? (
                       <Image
@@ -239,14 +245,18 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
 
         {/* Submit Button */}
         <button
-  type="submit"
-  className="flex items-center justify-center gap-2 bg-[#688086] text-white rounded-lg py-2 px-6 w-full"
->
-  <span>Next</span>
-  <Image alt="Next arrow" src={right_arrow} width={20} height={20} />
-</button>
-
+          type="submit"
+          className="flex items-center justify-center gap-2 bg-[#688086] text-white rounded-lg py-2 px-6 w-full"
+        >
+          <span>Next</span>
+          <Image alt="Next arrow" src={right_arrow} width={20} height={20} />
+        </button>
       </div>
+      <CameraCaptureModal
+        isOpen={showCameraModal}
+        onClose={() => setShowCameraModal(false)}
+        onCapture={handleCapturedImage}
+      />
     </form>
   );
 }
