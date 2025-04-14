@@ -1,0 +1,182 @@
+"use client";
+import React, { useEffect, useState } from "react";
+
+const dummy = {
+  success: true,
+  data: [
+    {
+      candidateCount: 3,
+      volunteerRegNumber: "ASF/FE/00001",
+      volunteerName: "Megha Saju",
+      volunteerEmail: "meghasajup05@gmail.com",
+      isPaid: true,
+    },
+    {
+      candidateCount: 5,
+      volunteerRegNumber: "ASF/FE/00002",
+      volunteerName: "Rahul Menon",
+      volunteerEmail: "rahul.menon92@example.com",
+      isPaid: false,
+    },
+    {
+      candidateCount: 2,
+      volunteerRegNumber: "ASF/FE/00003",
+      volunteerName: "Anjali Raj",
+      volunteerEmail: "anjali.raj@example.com",
+      isPaid: true,
+    },
+    {
+      candidateCount: 4,
+      volunteerRegNumber: "ASF/FE/00004",
+      volunteerName: "Deepak Nair",
+      volunteerEmail: "deepak.nair@example.com",
+      isPaid: false,
+    },
+    {
+      candidateCount: 1,
+      volunteerRegNumber: "ASF/FE/00005",
+      volunteerName: "Sneha Varma",
+      volunteerEmail: "sneha.varma@example.com",
+      isPaid: true,
+    },
+    {
+      candidateCount: 6,
+      volunteerRegNumber: "ASF/FE/00006",
+      volunteerName: "Arjun Das",
+      volunteerEmail: "arjun.das@example.com",
+      isPaid: true,
+    },
+    {
+      candidateCount: 3,
+      volunteerRegNumber: "ASF/FE/00007",
+      volunteerName: "Divya Joseph",
+      volunteerEmail: "divya.joseph@example.com",
+      isPaid: false,
+    },
+    {
+      candidateCount: 7,
+      volunteerRegNumber: "ASF/FE/00008",
+      volunteerName: "Kiran Thomas",
+      volunteerEmail: "kiran.thomas@example.com",
+      isPaid: true,
+    },
+    {
+      candidateCount: 2,
+      volunteerRegNumber: "ASF/FE/00009",
+      volunteerName: "Lakshmi Babu",
+      volunteerEmail: "lakshmi.babu@example.com",
+      isPaid: false,
+    },
+    {
+      candidateCount: 4,
+      volunteerRegNumber: "ASF/FE/00010",
+      volunteerName: "Vivek Krishnan",
+      volunteerEmail: "vivek.krishnan@example.com",
+      isPaid: true,
+    },
+  ],
+};
+
+export default function Page() {
+  const [data, setData] = useState<any>([]);
+  const [search, setSearch] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 10;
+
+  useEffect(() => {
+    setData(dummy.data);
+  }, []);
+
+  const filteredData = data.filter(
+    (elem: any) =>
+      elem.volunteerName.toLowerCase().includes(search.toLowerCase()) ||
+      elem.volunteerRegNumber.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
+  return (
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-4 text-center">Candidates</h1>
+      <input
+        type="text"
+        placeholder="Search by name or reg number"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="w-full p-2 mb-6 border border-gray-300 rounded-md"
+      />
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat bg-contain border border-gray-200 text-center">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="px-4 py-2 border-b">Name</th>
+              <th className="px-4 py-2 border-b">Reg Number</th>
+              <th className="px-4 py-2 border-b">Email</th>
+              <th className="px-4 py-2 border-b">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedData.map((elem: any, index: number) => (
+              <tr key={index} className="hover:bg-gray-50">
+                <td className="px-4 py-2 border-b">{elem.volunteerName}</td>
+                <td className="px-4 py-2 border-b">{elem.volunteerRegNumber}</td>
+                <td className="px-4 py-2 border-b">{elem.volunteerEmail}</td>
+             
+                <td className="px-4 py-2 border-b space-x-2">
+ 
+  <button className="px-3 py-1 rounded-md text-sm bg-[#B56365] text-white hover:bg-[#b56364f8]">
+    View
+  </button>
+
+  <button
+    onClick={() => {}}
+    className={`px-3 py-1 rounded-md text-sm ${
+      elem.isBlocked
+        ? "bg-yellow-500 text-white hover:bg-yellow-600"
+        : "bg-red-500 text-white hover:bg-red-600"
+    }`}
+  >
+    {elem.isBlocked ? "Unblock" : "Block"}
+  </button>
+</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="flex justify-center items-center mt-6 space-x-4">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+          className={`px-4 py-2 rounded-md ${
+            currentPage === 1
+              ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+              : "bg-[#B56365] text-white hover:bg-[#b56364f8]"
+          }`}
+        >
+          Previous
+        </button>
+        <span className="text-sm font-medium">
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          disabled={currentPage === totalPages}
+          className={`px-4 py-2 rounded-md ${
+            currentPage === totalPages
+              ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+              : "bg-[#B56365] text-white hover:bg-[#b56364f8]"
+          }`}
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  );
+}

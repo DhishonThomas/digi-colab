@@ -5,9 +5,14 @@
         "path": "/admin/dashboard"
     },
     {
+        "title":"Volunteers",
+        "icon":"/icons/sidebar/icon-users.svg",
+        "path": "/admin/volunteers"
+    },
+    {
         "title":"Candidates",
         "icon":"/icons/sidebar/icon-users.svg",
-        "path": "#"
+        "path": "/admin/candidates"
     },
     {
         "title":"Analytics Section",
