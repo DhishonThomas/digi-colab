@@ -1,11 +1,13 @@
+import AuthLayout from "@/components/layout/AuthLayout";
 import React from "react";
 
 const VolunteerTerms = () => {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 text-gray-800">
-      <h1 className="text-3xl font-bold mb-6 text-center">Volunteer Declaration</h1>
+    <AuthLayout hideScroll maxWidth="999px"> 
 
-      <div className="space-y-6">
+    <h1 className="text-3xl font-bold  text-center">Volunteer Declaration</h1>
+
+  <div className="space-y-6">
         <section>
           <h2 className="text-xl font-semibold mb-2">Commitment to Volunteering</h2>
           <ul className="list-disc list-inside space-y-2">
@@ -44,7 +46,7 @@ const VolunteerTerms = () => {
           </ul>
         </section>
       </div>
-    </div>
+      </AuthLayout>
   );
 };
 
