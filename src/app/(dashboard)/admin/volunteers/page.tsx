@@ -1,4 +1,5 @@
 "use client";
+import adminApi from "@/utils/axios_Interceptors/adminApiService";
 import React, { useEffect, useState } from "react";
 
 const dummy = {
@@ -83,14 +84,39 @@ export default function Page() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 5;
 
+ async function fetchData(){
+
+  const volunteer=await adminApi.get('/volunteers')
+  console.log(volunteer.data)
+  setData(volunteer.data.data)
+}
+
   useEffect(() => {
-    setData(dummy.data);
+fetchData()
+    
   }, []);
 
+  /*
+  {
+    "success": true,
+    "totalVolunteers": 1,
+    "data": [
+        {
+            "volunteerDetails": {
+                "_id": "6800c4f1830a270887757baf",
+                "name": "Megha Saju",
+                "tempRegNumber": "ASF/FE/00001",
+                "isBlocked": false
+            },
+            "userCount": 4
+        }
+    ]
+}
+  */
   const filteredData = data.filter(
     (elem: any) =>
-      elem.volunteerName.toLowerCase().includes(search.toLowerCase()) ||
-      elem.volunteerRegNumber.toLowerCase().includes(search.toLowerCase())
+      elem.volunteerDetails.name.toLowerCase().includes(search.toLowerCase()) ||
+      elem.volunteerDetails.tempRegNumber.toLowerCase().includes(search.toLowerCase())
   );
 
   const paginatedData = filteredData.slice(
@@ -99,7 +125,7 @@ export default function Page() {
   );
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-
+console.log(data)
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4 text-center">Volunteers</h1>
@@ -125,23 +151,23 @@ export default function Page() {
           <tbody>
             {paginatedData.map((elem: any, index: number) => (
               <tr key={index} className="hover:bg-gray-50">
-                <td className="px-4 py-2 border-b">{elem.volunteerName}</td>
-                <td className="px-4 py-2 border-b">{elem.volunteerRegNumber}</td>
-                <td className="px-4 py-2 border-b">{elem.volunteerEmail}</td>
-                <td className="px-4 py-2 border-b">{elem.candidateCount}</td>
+                <td className="px-4 py-2 border-b">{elem?.volunteerDetails?.name}</td>
+                <td className="px-4 py-2 border-b">{elem?.volunteerDetails?.tempRegNumber}</td>
+                <td className="px-4 py-2 border-b">{elem?.volunteerDetails?.email}</td>
+                <td className="px-4 py-2 border-b">{elem?.userCount}</td>
                 <td className="px-4 py-2 border-b">
-                  {elem.isPaid ? "Yes" : "No"}
+                  {elem?.volunteerDetails?.isPaid ? "Yes" : "No"}
                 </td>
                 <td className="px-4 py-2 border-b space-x-2">
   <button
-    disabled={elem.isPaid}
+    disabled={elem?.volunteerDetails?.isPaid}
     className={`px-3 py-1 rounded-md text-sm ${
-      elem.isPaid
+      elem?.volunteerDetails?.isPaid
         ? "bg-gray-300 text-gray-600 cursor-not-allowed"
         : "bg-green-500 text-white hover:bg-green-600"
     }`}
   >
-    {elem.isPaid ? "Paid" : "Pay"}
+    {elem?.volunteerDetails?.isPaid ? "Paid" : "Pay"}
   </button>
 
   <button className="px-3 py-1 rounded-md text-sm bg-[#B56365] text-white hover:bg-[#b56364f8]">
@@ -151,12 +177,12 @@ export default function Page() {
   <button
     onClick={() => {}}
     className={`px-3 py-1 rounded-md text-sm ${
-      elem.isBlocked
+      elem?.volunteerDetails?.isBlocked
         ? "bg-yellow-500 text-white hover:bg-yellow-600"
         : "bg-red-500 text-white hover:bg-red-600"
     }`}
   >
-    {elem.isBlocked ? "Unblock" : "Block"}
+    {elem?.volunteerDetails?.isBlocked ? "Unblock" : "Block"}
   </button>
 </td>
               </tr>
