@@ -1,7 +1,8 @@
 "use client";
 import adminApi from "@/utils/axios_Interceptors/adminApiService";
 import React, { useEffect, useState } from "react";
-
+import Modal from "@/components/ui/Modal";
+import VolunteerDetailsContent from "./components/VolunteerDetailsContent";
 const dummy = {
   success: true,
   data: [
@@ -87,7 +88,6 @@ export default function Page() {
  async function fetchData(){
 
   const volunteer=await adminApi.get('/volunteers')
-  console.log(volunteer.data)
   setData(volunteer.data.data)
 }
 
@@ -126,6 +126,21 @@ fetchData()
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 console.log(data)
+
+async function handleView(regNumber: string) {
+  const encodedRegNumber = encodeURIComponent(regNumber);
+  const response = await adminApi.get(`/volunteer/${encodedRegNumber}`);
+  if (response.data.success) {
+    setSelectedVolunteer(response.data);
+    setModalOpen(true);
+  } else {
+    alert("Failed to fetch details.");
+  }
+}
+const [selectedVolunteer, setSelectedVolunteer] = useState(null);
+const [modalOpen, setModalOpen] = useState(false);
+
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4 text-center">Volunteers</h1>
@@ -170,7 +185,9 @@ console.log(data)
     {elem?.volunteerDetails?.isPaid ? "Paid" : "Pay"}
   </button>
 
-  <button className="px-3 py-1 rounded-md text-sm bg-[#B56365] text-white hover:bg-[#b56364f8]">
+  <button className="px-3 py-1 rounded-md text-sm bg-[#B56365] text-white hover:bg-[#b56364f8]"
+  onClick={()=>{handleView(elem?.volunteerDetails?.tempRegNumber)}}
+  >
     View
   </button>
 
@@ -218,6 +235,16 @@ console.log(data)
           Next
         </button>
       </div>
+      <Modal
+  isOpen={modalOpen}
+  onClose={() => setModalOpen(false)}
+  title="Volunteer Details"
+  fullscreen
+>
+  {selectedVolunteer && <VolunteerDetailsContent data={selectedVolunteer} />}
+</Modal>
+
     </div>
+    
   );
 }

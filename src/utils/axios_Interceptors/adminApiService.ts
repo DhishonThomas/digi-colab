@@ -31,6 +31,7 @@ adminApi.interceptors.response.use(
     return response;
   },
   (error) => {
+    console.log(error)
     alert("Session expired. Please log in again.");
 
     if (error.response && error.response.status === 401||error.response.status===400) {
