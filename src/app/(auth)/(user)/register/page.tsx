@@ -28,6 +28,7 @@ export type FormData = {
   gender: string;
   phone: string;
   volunteerRegNum:string;
+  educationQualification:string;
   bankAccNumber:string;
   bankName: string;
   ifsc: string;
@@ -63,6 +64,7 @@ function Page() {
     gender: "",
     phone: "",
     volunteerRegNum:"",
+    educationQualification:"",
     bankAccNumber:"",
     bankName: "",
     ifsc: "",
@@ -149,6 +151,20 @@ function Page() {
   ) => {
   
     const formData = new FormData();
+
+    const calculateAge = (dobString: string): number => {
+      const today = new Date();
+      const birthDate = new Date(dobString);
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      return age;
+    };
+  
+    const age = calculateAge(data.dob);
+
     formData.append("name", data.name);
     formData.append("email", email);
     formData.append("password", password);
@@ -156,13 +172,14 @@ function Page() {
     formData.append("address", data.address);
     formData.append("currentAddress", data.currentAddress);
     formData.append("dob", data.dob);
-    formData.append("age", data.age ? String(Number(data.age)) : "0");
+    formData.append("age", String(age));
     formData.append("gender", data.gender);
     formData.append("phone", data.phone);
     formData.append("volunteerRegNum", data.volunteerRegNum);
     formData.append("bankAccNumber", data.bankAccNumber);
     formData.append("bankName", data.bankName);
     formData.append("ifsc", data.ifsc);
+    formData.append("educationQualification", data.educationQualification);
     formData.append("pwdCategory", data.pwdCategory);
     formData.append("entrepreneurshipInterest", data.entrepreneurshipInterest);
     formData.append("undertaking",undertaking+"")

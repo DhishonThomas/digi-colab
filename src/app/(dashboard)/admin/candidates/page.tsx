@@ -69,7 +69,7 @@ const [blockTarget, setBlockTarget] = useState<{ regNumber: string; isBlocked: b
     console.log("encodedReg", encodedReg);
     
     try {
-      const response = await adminApi.put(`/user/block/${encodedReg}`);
+      const response = await adminApi.put(`/user/block/${encodedReg}`,{block:blockTarget.isBlocked?"false":"true"});
       if (response.data.success) {
         // Update the state directly
         setData((prevData: any[]) =>

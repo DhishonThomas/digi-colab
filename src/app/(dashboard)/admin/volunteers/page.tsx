@@ -4,81 +4,6 @@ import React, { useEffect, useState } from "react";
 import Modal from "@/components/ui/Modal";
 import VolunteerDetailsContent from "./components/VolunteerDetailsContent";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
-const dummy = {
-  success: true,
-  data: [
-    {
-      candidateCount: 3,
-      volunteerRegNumber: "ASF/FE/00001",
-      volunteerName: "Megha Saju",
-      volunteerEmail: "meghasajup05@gmail.com",
-      isPaid: true,
-    },
-    {
-      candidateCount: 5,
-      volunteerRegNumber: "ASF/FE/00002",
-      volunteerName: "Rahul Menon",
-      volunteerEmail: "rahul.menon92@example.com",
-      isPaid: false,
-    },
-    {
-      candidateCount: 2,
-      volunteerRegNumber: "ASF/FE/00003",
-      volunteerName: "Anjali Raj",
-      volunteerEmail: "anjali.raj@example.com",
-      isPaid: true,
-    },
-    {
-      candidateCount: 4,
-      volunteerRegNumber: "ASF/FE/00004",
-      volunteerName: "Deepak Nair",
-      volunteerEmail: "deepak.nair@example.com",
-      isPaid: false,
-    },
-    {
-      candidateCount: 1,
-      volunteerRegNumber: "ASF/FE/00005",
-      volunteerName: "Sneha Varma",
-      volunteerEmail: "sneha.varma@example.com",
-      isPaid: true,
-    },
-    {
-      candidateCount: 6,
-      volunteerRegNumber: "ASF/FE/00006",
-      volunteerName: "Arjun Das",
-      volunteerEmail: "arjun.das@example.com",
-      isPaid: true,
-    },
-    {
-      candidateCount: 3,
-      volunteerRegNumber: "ASF/FE/00007",
-      volunteerName: "Divya Joseph",
-      volunteerEmail: "divya.joseph@example.com",
-      isPaid: false,
-    },
-    {
-      candidateCount: 7,
-      volunteerRegNumber: "ASF/FE/00008",
-      volunteerName: "Kiran Thomas",
-      volunteerEmail: "kiran.thomas@example.com",
-      isPaid: true,
-    },
-    {
-      candidateCount: 2,
-      volunteerRegNumber: "ASF/FE/00009",
-      volunteerName: "Lakshmi Babu",
-      volunteerEmail: "lakshmi.babu@example.com",
-      isPaid: false,
-    },
-    {
-      candidateCount: 4,
-      volunteerRegNumber: "ASF/FE/00010",
-      volunteerName: "Vivek Krishnan",
-      volunteerEmail: "vivek.krishnan@example.com",
-      isPaid: true,
-    },
-  ],
-};
 
 export default function Page() {
   const [data, setData] = useState<any>([]);
@@ -134,7 +59,7 @@ const [blockTarget, setBlockTarget] = useState<{ regNumber: string; isBlocked: b
     console.log("encodedReg", encodedReg);
     
     try {
-      const response = await adminApi.put(`/volunteer/block/${encodedReg}`);
+      const response = await adminApi.put(`/volunteer/block/${encodedReg}`,{block:blockTarget.isBlocked?"false":"true"});
      console.log(response.data)
       if (response.data.success) {
         // Update the state directly

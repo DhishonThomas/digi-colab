@@ -28,6 +28,7 @@ interface SignUpData {
   gender: string;
   phone: string;
   volunteerRegNum: string;
+  educationQualification: string;
   bankAccNumber: string;
   bankName: string;
   ifsc: string;
@@ -154,51 +155,72 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
             error={errors.dob}
           />
 
-          {/* Age Number Field */}
-          <FormInput
-            name="age"
-            type="number"
-            placeholder="Age"
+          {/* Volunteer Selection Dropdown (Styled Like Other Inputs) */}
+          <Controller
+            name="volunteerRegNum"
             control={control}
             rules={{
-              required: "Age is required",
+              required: "Volunteer Register Number is required",
               validate: (value: any) => {
-                let ageValidate = validateAge(value);
-                if (ageValidate) {
+                let registerNumValidate = validateVolunteerRegNum(value);
+                if (registerNumValidate) {
                   setBlock(true);
-                  return ageValidate;
+                  return registerNumValidate;
                 } else {
                   setBlock(false);
                   return true;
                 }
               },
             }}
-            error={errors.age}
+            render={({ field }) => (
+              <input
+                {...field}
+                type="text"
+                placeholder="Volunteer Register Number"
+                className={`text-[12px] placeholder:text-gray-500 bg-white leading-[14px] rounded-[10px] border w-full py-3 px-4 bg-[#413C340D] ${
+                  errors.volunteerRegNum
+                    ? "border-red-500"
+                    : "border-[#423B3125]"
+                }`}
+              />
+            )}
           />
 
-          {/* Gender Field */}
+          {errors.volunteerRegNum && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.volunteerRegNum.message}
+            </p>
+          )}
+          {/* Education Qualification Field */}
           <Controller
-            name="gender"
+            name="educationQualification"
             control={control}
-            rules={{ required: "Gender is required" }}
+            rules={{ required: "Education Qualification is required" }}
             render={({ field }) => (
               <select
                 {...field}
-                className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-3 px-5 bg-[#413C340D] ${
-                  errors.gender ? "border-red-500" : ""
+                className={`text-[14px] placeholder:text-gray-500 leading-[14px] rounded-[10px] border w-full py-3 px-4 bg-[#413C340D] ${
+                  errors.educationQualification
+                    ? "border-red-500"
+                    : "border-[#423B3125]"
                 }`}
               >
-                <option value="">SELECT GENDER</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
+                <option value="">Select Education Qualification</option>
+                <option value="5th">5th</option>
+                <option value="6th">6th</option>
+                <option value="7th">7th</option>
+                <option value="8th">8th</option>
+                <option value="9th">9th</option>
+                <option value="10th">10th</option>
+                <option value="ITI">ITI</option>
               </select>
             )}
           />
-          {errors.gender && (
-            <p className="text-red-500 text-xs mt-1">{errors.gender.message}</p>
+          {errors.educationQualification && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.educationQualification.message}
+            </p>
           )}
-
           {/* Entrepreneurship Interest */}
           <Controller
             name="entrepreneurshipInterest"
@@ -334,40 +356,28 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
             error={errors.ifsc}
           />
 
-          {/* Volunteer Selection Dropdown (Styled Like Other Inputs) */}
+          {/* Gender Field */}
           <Controller
-  name="volunteerRegNum"
-  control={control}
-  rules={{ required: "Volunteer Register Number is required",
-    validate: (value: any) => {
-      let registerNumValidate = validateVolunteerRegNum(value);
-      if (registerNumValidate) {
-        setBlock(true);
-        return registerNumValidate;
-      } else {
-        setBlock(false);
-        return true;
-      }
-    },
-   }}
-  render={({ field }) => (
-    <input
-      {...field}
-      type="text"
-      placeholder="Volunteer Register Number"
-      className={`text-[14px] placeholder:text-gray-500 bg-white leading-[14px] rounded-[10px] border w-full py-3 px-4 bg-[#413C340D] ${
-        errors.volunteerRegNum ? "border-red-500" : "border-[#423B3125]"
-      }`}
-    />
-  )}
-/>
-
-          {errors.volunteerRegNum && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.volunteerRegNum.message}
-            </p>
+            name="gender"
+            control={control}
+            rules={{ required: "Gender is required" }}
+            render={({ field }) => (
+              <select
+                {...field}
+                className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-3 px-5 bg-[#413C340D] ${
+                  errors.gender ? "border-red-500" : ""
+                }`}
+              >
+                <option value="">SELECT GENDER</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            )}
+          />
+          {errors.gender && (
+            <p className="text-red-500 text-xs mt-1">{errors.gender.message}</p>
           )}
-
           {/* PWD Category */}
           <Controller
             name="pwdCategory"

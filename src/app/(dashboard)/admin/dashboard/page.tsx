@@ -5,6 +5,8 @@ import JobStatus from "./components/jobStatus"
 import CandidateSource from "./components/candidateSource"
 import ScheduleTable from "./components/scheduleTable"
 import useAdminAuth from "@/app/hooks/useAdminAuth"
+import adminApi from "@/utils/axios_Interceptors/adminApiService"
+import { useEffect } from "react"
 
 
 const overView = [
@@ -31,6 +33,19 @@ const overView = [
 ]
 export default function page() {
 
+
+async function fetchData() {
+    const userCount = await adminApi.get('/count')
+    const candiVolnteeCount=await adminApi.get('/volunteer-candidate-count')
+
+    console.log("adminDash_userCount", userCount.data)
+    console.log("adminDash_candiVolnteeCount", candiVolnteeCount.data)
+    
+}
+
+useEffect(() => {
+    fetchData()
+}, [])
     const {loading}=useAdminAuth()
 
     if(loading)return ( <div>Loading....</div> )
