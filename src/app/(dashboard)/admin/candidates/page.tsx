@@ -1,81 +1,12 @@
 "use client";
+import adminApi from "@/utils/axios_Interceptors/adminApiService";
 import React, { useEffect, useState } from "react";
 
-const dummy = {
-  success: true,
-  data: [
-    {
-      candidateCount: 3,
-      volunteerRegNumber: "ASF/FE/00001",
-      volunteerName: "Megha Saju",
-      volunteerEmail: "meghasajup05@gmail.com",
-      isPaid: true,
-    },
-    {
-      candidateCount: 5,
-      volunteerRegNumber: "ASF/FE/00002",
-      volunteerName: "Rahul Menon",
-      volunteerEmail: "rahul.menon92@example.com",
-      isPaid: false,
-    },
-    {
-      candidateCount: 2,
-      volunteerRegNumber: "ASF/FE/00003",
-      volunteerName: "Anjali Raj",
-      volunteerEmail: "anjali.raj@example.com",
-      isPaid: true,
-    },
-    {
-      candidateCount: 4,
-      volunteerRegNumber: "ASF/FE/00004",
-      volunteerName: "Deepak Nair",
-      volunteerEmail: "deepak.nair@example.com",
-      isPaid: false,
-    },
-    {
-      candidateCount: 1,
-      volunteerRegNumber: "ASF/FE/00005",
-      volunteerName: "Sneha Varma",
-      volunteerEmail: "sneha.varma@example.com",
-      isPaid: true,
-    },
-    {
-      candidateCount: 6,
-      volunteerRegNumber: "ASF/FE/00006",
-      volunteerName: "Arjun Das",
-      volunteerEmail: "arjun.das@example.com",
-      isPaid: true,
-    },
-    {
-      candidateCount: 3,
-      volunteerRegNumber: "ASF/FE/00007",
-      volunteerName: "Divya Joseph",
-      volunteerEmail: "divya.joseph@example.com",
-      isPaid: false,
-    },
-    {
-      candidateCount: 7,
-      volunteerRegNumber: "ASF/FE/00008",
-      volunteerName: "Kiran Thomas",
-      volunteerEmail: "kiran.thomas@example.com",
-      isPaid: true,
-    },
-    {
-      candidateCount: 2,
-      volunteerRegNumber: "ASF/FE/00009",
-      volunteerName: "Lakshmi Babu",
-      volunteerEmail: "lakshmi.babu@example.com",
-      isPaid: false,
-    },
-    {
-      candidateCount: 4,
-      volunteerRegNumber: "ASF/FE/00010",
-      volunteerName: "Vivek Krishnan",
-      volunteerEmail: "vivek.krishnan@example.com",
-      isPaid: true,
-    },
-  ],
-};
+import Modal from "@/components/ui/Modal";
+import CandidateDetailsContent from "./components/CandidateDetailsContent";
+import ConfirmationModal from "@/components/ui/ConfirmationModal";
+
+
 
 export default function Page() {
   const [data, setData] = useState<any>([]);
@@ -83,14 +14,23 @@ export default function Page() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 10;
 
+ async function fetchData(){
+
+  const candidates=await adminApi.get('/users')
+  console.log("candidates",candidates.data)
+  setData(candidates.data.data)
+}
+
   useEffect(() => {
-    setData(dummy.data);
+fetchData()
+    
   }, []);
+
 
   const filteredData = data.filter(
     (elem: any) =>
-      elem.volunteerName.toLowerCase().includes(search.toLowerCase()) ||
-      elem.volunteerRegNumber.toLowerCase().includes(search.toLowerCase())
+      elem?.userDetails?.name.toLowerCase().includes(search.toLowerCase()) ||
+    elem?.userDetails?.toLowerCase().includes(search.toLowerCase())
   );
 
   const paginatedData = filteredData.slice(
@@ -100,6 +40,62 @@ export default function Page() {
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  
+  async function handleView(regNumber: string) {
+    try {
+      const encodedRegisterNumber = encodeURIComponent(regNumber);
+      const response = await adminApi.get(`/user/${encodedRegisterNumber}`);
+      if (response.data.success) {
+        setSelectedUser(response.data.user);  // updated for `user` key
+        setIsModalOpen(true);
+      } else {
+        console.error("Error fetching user details:", response.data.message);
+      }
+    } catch (error) {
+      console.error("Unexpected error:", error);
+    }
+  }
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+const [blockTarget, setBlockTarget] = useState<{ regNumber: string; isBlocked: boolean } | null>(null);
+
+  async function handleBlockToggle() {
+    if (!blockTarget) return;
+  
+    const encodedReg = encodeURIComponent(blockTarget.regNumber);
+    console.log("blockTarget", blockTarget)
+    console.log("encodedReg", encodedReg);
+    
+    try {
+      const response = await adminApi.put(`/user/block/${encodedReg}`);
+      if (response.data.success) {
+        // Update the state directly
+        setData((prevData: any[]) =>
+          prevData.map((item) =>
+            item.userDetails.regNumber === blockTarget.regNumber
+              ? {
+                  ...item,
+                  userDetails: {
+                    ...item.userDetails,
+                    isBlocked: !blockTarget.isBlocked,
+                  },
+                }
+              : item
+          )
+        );
+      } else {
+        console.error("Failed to block/unblock:", response.data.message);
+      }
+    } catch (err) {
+      console.error("Error:", err);
+    } finally {
+      setIsConfirmModalOpen(false);
+      setBlockTarget(null);
+    }
+  }
+  
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4 text-center">Candidates</h1>
@@ -123,26 +119,40 @@ export default function Page() {
           <tbody>
             {paginatedData.map((elem: any, index: number) => (
               <tr key={index} className="hover:bg-gray-50">
-                <td className="px-4 py-2 border-b">{elem.volunteerName}</td>
-                <td className="px-4 py-2 border-b">{elem.volunteerRegNumber}</td>
-                <td className="px-4 py-2 border-b">{elem.volunteerEmail}</td>
+                <td className="px-4 py-2 border-b">{elem?.userDetails?.name}</td>
+                <td className="px-4 py-2 border-b">{elem?.userDetails?.regNumber}</td>
+                <td className="px-4 py-2 border-b">{elem?.userDetails?.email}</td>
              
                 <td className="px-4 py-2 border-b space-x-2">
  
-  <button className="px-3 py-1 rounded-md text-sm bg-[#B56365] text-white hover:bg-[#b56364f8]">
+  <button className="px-3 py-1 rounded-md text-sm bg-[#B56365] text-white hover:bg-[#b56364f8]"
+  onClick={()=>{handleView(elem?.userDetails?.regNumber)}}
+  >
     View
   </button>
+{
 
-  <button
-    onClick={() => {}}
-    className={`px-3 py-1 rounded-md text-sm ${
-      elem.isBlocked
-        ? "bg-yellow-500 text-white hover:bg-yellow-600"
-        : "bg-red-500 text-white hover:bg-red-600"
-    }`}
-  >
-    {elem.isBlocked ? "Unblock" : "Block"}
-  </button>
+}
+<button
+  onClick={() => {
+    // Set the block target first
+    setBlockTarget({
+      regNumber: elem?.userDetails?.regNumber,
+      isBlocked: elem?.userDetails?.isBlocked,
+    });
+    
+    // Then open the confirmation modal
+    setIsConfirmModalOpen(true);
+  }}
+  className={`px-3 py-1 rounded-md text-sm ${
+    elem?.userDetails?.isBlocked
+      ? "bg-yellow-500 text-white hover:bg-yellow-600"
+      : "bg-red-500 text-white hover:bg-red-600"
+  }`}
+>
+  {elem?.userDetails?.isBlocked ? "Unblock" : "Block"}
+</button>
+
 </td>
               </tr>
             ))}
@@ -177,6 +187,20 @@ export default function Page() {
           Next
         </button>
       </div>
+      <Modal fullscreen isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+  {selectedUser && <CandidateDetailsContent user={selectedUser} />}
+</Modal>
+<ConfirmationModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => {
+          setIsConfirmModalOpen(false);
+          setBlockTarget(null);
+        }}
+        onConfirm={handleBlockToggle}
+        actionType={blockTarget?.isBlocked ? 'unblock' : 'block'} // Dynamically pass action type
+        regNumber={blockTarget?.regNumber || ''}
+      />
+
     </div>
   );
 }

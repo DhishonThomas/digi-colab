@@ -3,6 +3,7 @@ import adminApi from "@/utils/axios_Interceptors/adminApiService";
 import React, { useEffect, useState } from "react";
 import Modal from "@/components/ui/Modal";
 import VolunteerDetailsContent from "./components/VolunteerDetailsContent";
+import ConfirmationModal from "@/components/ui/ConfirmationModal";
 const dummy = {
   success: true,
   data: [
@@ -95,24 +96,6 @@ export default function Page() {
 fetchData()
     
   }, []);
-
-  /*
-  {
-    "success": true,
-    "totalVolunteers": 1,
-    "data": [
-        {
-            "volunteerDetails": {
-                "_id": "6800c4f1830a270887757baf",
-                "name": "Megha Saju",
-                "tempRegNumber": "ASF/FE/00001",
-                "isBlocked": false
-            },
-            "userCount": 4
-        }
-    ]
-}
-  */
   const filteredData = data.filter(
     (elem: any) =>
       elem.volunteerDetails.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -140,7 +123,44 @@ async function handleView(regNumber: string) {
 const [selectedVolunteer, setSelectedVolunteer] = useState(null);
 const [modalOpen, setModalOpen] = useState(false);
 
+const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+const [blockTarget, setBlockTarget] = useState<{ regNumber: string; isBlocked: boolean } | null>(null);
 
+  async function handleBlockToggle() {
+    if (!blockTarget) return;
+  
+    const encodedReg = encodeURIComponent(blockTarget.regNumber);
+    console.log("blockTarget", blockTarget)
+    console.log("encodedReg", encodedReg);
+    
+    try {
+      const response = await adminApi.put(`/volunteer/block/${encodedReg}`);
+     console.log(response.data)
+      if (response.data.success) {
+        // Update the state directly
+        setData((prevData: any[]) =>
+          prevData.map((item) =>
+            item.volunteerDetails.tempRegNumber === blockTarget.regNumber
+              ? {
+                  ...item,
+                  userDetails: {
+                    ...item.userDetails,
+                    isBlocked: !blockTarget.isBlocked,
+                  },
+                }
+              : item
+          )
+        );
+      } else {
+        console.error("Failed to block/unblock:", response.data.message);
+      }
+    } catch (err) {
+      console.error("Error:", err);
+    } finally {
+      setIsConfirmModalOpen(false);
+      setBlockTarget(null);
+    }
+  }
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4 text-center">Volunteers</h1>
@@ -192,15 +212,24 @@ const [modalOpen, setModalOpen] = useState(false);
   </button>
 
   <button
-    onClick={() => {}}
-    className={`px-3 py-1 rounded-md text-sm ${
-      elem?.volunteerDetails?.isBlocked
-        ? "bg-yellow-500 text-white hover:bg-yellow-600"
-        : "bg-red-500 text-white hover:bg-red-600"
-    }`}
-  >
-    {elem?.volunteerDetails?.isBlocked ? "Unblock" : "Block"}
-  </button>
+  onClick={() => {
+    // Set the block target first
+    setBlockTarget({
+      regNumber: elem?.volunteerDetails?.tempRegNumber,
+      isBlocked: elem?.volunteerDetails?.isBlocked,
+    });
+    
+    // Then open the confirmation modal
+    setIsConfirmModalOpen(true);
+  }}
+  className={`px-3 py-1 rounded-md text-sm ${
+    elem?.volunteerDetails?.isBlocked
+      ? "bg-yellow-500 text-white hover:bg-yellow-600"
+      : "bg-red-500 text-white hover:bg-red-600"
+  }`}
+>
+  {elem?.volunteerDetails?.isBlocked ? "Unblock" : "Block"}
+</button>
 </td>
               </tr>
             ))}
@@ -243,7 +272,16 @@ const [modalOpen, setModalOpen] = useState(false);
 >
   {selectedVolunteer && <VolunteerDetailsContent data={selectedVolunteer} />}
 </Modal>
-
+<ConfirmationModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => {
+          setIsConfirmModalOpen(false);
+          setBlockTarget(null);
+        }}
+        onConfirm={handleBlockToggle}
+        actionType={blockTarget?.isBlocked ? 'unblock' : 'block'} // Dynamically pass action type
+        regNumber={blockTarget?.regNumber || ''}
+      />
     </div>
     
   );
