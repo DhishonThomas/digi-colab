@@ -3,8 +3,8 @@ import React from 'react'
 
 type Props = {
     icon?:string,
-    title:string,
-    value:string
+    title?:string,
+    value:number|string
 }
 const DashboardCard = ({icon,title,value}:Props) => {
     return (
