@@ -15,13 +15,18 @@
         "path": "/admin/candidates"
     },
     {
-        "title":"Analytics Section",
-        "icon":"/icons/sidebar/icon-graph.svg",
-        "path": "#"
+        "title":"Job Roles",
+        "icon":"/icons/sidebar/icon-job.svg",
+        "path": "/admin/jobRoles"
     },
     {
-        "title":"Job Listing",
-        "icon":"/icons/sidebar/icon-job.svg",
+        "title":"Courses",
+        "icon":"/icons/sidebar/courses-icon.svg",
+        "path": "/admin/courses"
+    },
+    {
+        "title":"Analytics Section",
+        "icon":"/icons/sidebar/icon-graph.svg",
         "path": "#"
     },
     {
