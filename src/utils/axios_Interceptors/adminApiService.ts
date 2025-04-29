@@ -33,8 +33,13 @@ adminApi.interceptors.response.use(
   (error) => {
     console.log(error)
     alert("Session expired. Please log in again.");
-
-    if (error.response && error.response.status === 401||error.response.status===400) {
+    // if (error.response && error.response.status === 401||error.response.status===400) {
+    //   console.log("error response",error.response)
+      
+    //    store.dispatch(logout());
+    //    window.location.href = "/admin/login";
+    //  }
+    if (error.response && error.response.status === 401) {
      console.log("error response",error.response)
      
       store.dispatch(logout());

@@ -103,7 +103,7 @@ const JobRolesPage = () => {
         <h1 className="text-2xl font-bold">Manage Job Roles</h1>
         <button
           onClick={() => setCreateModalOpen(true)}
-          className="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          className="px-5 py-2 bg-[#B56365] text-white hover:bg-[#b56364f8]"
         >
           + Add Job Role
         </button>
@@ -185,7 +185,7 @@ const JobRolesPage = () => {
       </div>
       {/* Create Modal */}
       <Modal isOpen={createModalOpen} onClose={() => setCreateModalOpen(false)} title="Add New Job Role">
-        <div className="space-y-4">
+        <div className="space-y-8 rounded-xl bg-white bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat bg-contain border border-gray-200 overflow-y-auto">
           <div>
             <label className="block font-medium text-gray-700 mb-1">Job Role Name</label>
             <input
@@ -207,7 +207,7 @@ const JobRolesPage = () => {
           </div>
           <button
             onClick={handleCreateJobRole}
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+            className="w-full bg-[#B56365] text-white hover:bg-[#b56364f8]"
           >
             Create
           </button>
