@@ -1,21 +1,29 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Modal from "@/components/ui/Modal";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import SuccessModal from "@/components/ui/SuccessModal";
 import adminApi from "@/utils/axios_Interceptors/adminApiService";
 
-export interface Course {
+interface Course {
   _id: string;
   title: string;
   description: string;
   image?: string;
+  jobRole?: { _id: string; name: string };
 }
 
-const defaultImage = "/images/courses-dummy.png"; // Your default image path
+interface JobRole {
+  _id: string;
+  name: string;
+}
+
+const defaultImage = "/images/default-course.png";
 
 const CoursesPage = () => {
   const [courses, setCourses] = useState<Course[]>([]);
+  const [jobRoles, setJobRoles] = useState<JobRole[]>([]);
+  const [selectedJobRoleId, setSelectedJobRoleId] = useState<string | null>(null);
   const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -28,6 +36,7 @@ const CoursesPage = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const imageInputRef = useRef<HTMLInputElement | null>(null);
 
   const coursesPerPage = 5;
 
@@ -46,22 +55,38 @@ const CoursesPage = () => {
     }
   };
 
+  const fetchJobRoles = async () => {
+    try {
+      const { data } = await adminApi.get("/jobroles");
+      if (data.success) setJobRoles(data.roles);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     fetchCourses();
+    fetchJobRoles();
   }, []);
 
   const handleCreateOrUpdate = async () => {
+    if (!selectedJobRoleId) {
+      alert("Please select a job role.");
+      return;
+    }
     try {
+      const payload = { ...formData, jobRoleId: selectedJobRoleId };
       if (isEditing && selectedCourse) {
-        await adminApi.put(`/courses/${selectedCourse._id}`, formData);
+        await adminApi.put(`/courses/${selectedCourse._id}`, payload);
         setSuccessMessage("Course updated successfully!");
       } else {
-        await adminApi.post("/courses", formData);
+        await adminApi.post("/courses", payload);
         setSuccessMessage("Course created successfully!");
       }
       setShowSuccessModal(true);
       setCreateModalOpen(false);
       setFormData({ title: "", description: "", image: "" });
+      setSelectedJobRoleId(null);
       fetchCourses();
     } catch (error) {
       console.error(error);
@@ -111,17 +136,19 @@ const CoursesPage = () => {
   const openCreateModal = () => {
     setIsEditing(false);
     setFormData({ title: "", description: "", image: "" });
+    setSelectedJobRoleId(null);
     setCreateModalOpen(true);
   };
 
   const openEditModal = (course: Course) => {
     setIsEditing(true);
     setSelectedCourse(course);
-    setFormData({ 
-      title: course.title, 
-      description: course.description, 
-      image: course.image || "" 
+    setFormData({
+      title: course.title,
+      description: course.description,
+      image: course.image || ""
     });
+    setSelectedJobRoleId(course.jobRole?._id || null);
     setCreateModalOpen(true);
   };
 
@@ -132,7 +159,6 @@ const CoursesPage = () => {
 
   return (
     <div className="p-6">
-      {/* Top Title + Add Button */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Manage Courses</h1>
         <button
@@ -143,7 +169,6 @@ const CoursesPage = () => {
         </button>
       </div>
 
-      {/* Search */}
       <input
         type="text"
         placeholder="Search by title"
@@ -152,52 +177,36 @@ const CoursesPage = () => {
         className="w-full p-2 mb-6 border border-gray-300 rounded-md"
       />
 
-      {/* Table */}
       <div className="overflow-x-auto">
-        <table className="min-w-full bg-white bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat bg-contain border border-gray-200 text-center">
+        <table className="min-w-full bg-white border border-gray-200 text-center">
           <thead className="bg-gray-100">
             <tr>
               <th className="px-4 py-2 border-b">Image</th>
               <th className="px-4 py-2 border-b">Title</th>
               <th className="px-4 py-2 border-b">Description</th>
-              <th className="px-4 py-2 border-b">Action</th>
+              <th className="px-4 py-2 border-b">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {paginateData.map((course, index) => (
-              <tr key={index} className="hover:bg-gray-50">
+            {paginateData.map((course) => (
+              <tr key={course._id} className="hover:bg-gray-50">
                 <td className="px-4 py-2 border-b">
                   <img
                     src={course.image || defaultImage}
-                    alt="Course"
                     className="h-10 w-10 rounded-full object-cover mx-auto"
+                    alt="course"
                   />
                 </td>
                 <td className="px-4 py-2 border-b">{course.title}</td>
                 <td className="px-4 py-2 border-b">
-                  {course.description.length > 50
-                    ? course.description.slice(0, 50) + "..."
+                  {course.description.length > 60
+                    ? course.description.slice(0, 60) + "..."
                     : course.description}
                 </td>
                 <td className="px-4 py-2 border-b space-x-2">
-                  <button
-                    onClick={() => openViewModal(course)}
-                    className="px-3 py-1 rounded-md text-sm bg-[#B56365] text-white hover:bg-[#b56364f8]"
-                  >
-                    View
-                  </button>
-                  <button
-                    onClick={() => openEditModal(course)}
-                    className="px-3 py-1 rounded-md text-sm bg-green-500 text-white hover:bg-green-600"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => setDeleteTargetId(course._id)}
-                    className="px-3 py-1 rounded-md text-sm bg-red-500 text-white hover:bg-red-600"
-                  >
-                    Delete
-                  </button>
+                  <button onClick={() => openViewModal(course)} className="text-blue-600">View</button>
+                  <button onClick={() => openEditModal(course)} className="text-green-600">Edit</button>
+                  <button onClick={() => setDeleteTargetId(course._id)} className="text-red-600">Delete</button>
                 </td>
               </tr>
             ))}
@@ -205,75 +214,88 @@ const CoursesPage = () => {
         </table>
       </div>
 
-      {/* Pagination */}
-      <div className="flex justify-center items-center mt-6 space-x-4">
+      <div className="flex justify-center gap-4 mt-6">
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
-          className={`px-4 py-2 rounded-md ${
-            currentPage === 1
-              ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-              : "bg-[#B56365] text-white hover:bg-[#b56364f8]"
-          }`}
+          className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300"
         >
           Previous
         </button>
-        <span className="text-sm font-medium">
-          Page {currentPage} of {totalPages}
-        </span>
+        <span className="text-sm">Page {currentPage} of {totalPages}</span>
         <button
           onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
           disabled={currentPage === totalPages}
-          className={`px-4 py-2 rounded-md ${
-            currentPage === totalPages
-              ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-              : "bg-[#B56365] text-white hover:bg-[#b56364f8]"
-          }`}
+          className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300"
         >
           Next
         </button>
       </div>
 
-      {/* Create/Edit Modal */}
-      <Modal
-        isOpen={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
-        title={isEditing ? "Edit Course" : "Add Course"}
-      >
-        <div className="space-y-4">
-          <div>
-            <label className="block font-medium text-gray-700 mb-1">Title</label>
-            <input
-              type="text"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="w-full border p-2 rounded"
-              placeholder="Enter course title"
-            />
-          </div>
-          <div>
-            <label className="block font-medium text-gray-700 mb-1">Description</label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full border p-2 rounded"
-              placeholder="Enter course description"
-            />
-          </div>
-          <div>
-            <label className="block font-medium text-gray-700 mb-1">Image (optional)</label>
-            <input type="file" accept="image/*" onChange={handleImageChange} />
-          </div>
-          <button
-            onClick={handleCreateOrUpdate}
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-          >
-            {isEditing ? "Update" : "Create"}
-          </button>
-        </div>
-      </Modal>
+      <Modal isOpen={createModalOpen} size="large" onClose={() => setCreateModalOpen(false)} title={isEditing ? "Edit Course" : "Add Course"}>
+      <div className="space-y-4">
+        <input
+          type="text"
+          placeholder="Title"
+          className="w-full border p-2 rounded"
+          value={formData.title}
+          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+        />
+        <textarea
+          placeholder="Description"
+          className="w-full border p-2 rounded"
+          value={formData.description}
+          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+        />
 
-      {/* View Modal */}
+        {/* Image Preview + Upload */}
+        <div className="space-y-2">
+          <h3 className="text-sm font-medium text-gray-700">Course Image</h3>
+          <div className="relative w-full max-w-[200px] aspect-video rounded-lg overflow-hidden cursor-pointer border" onClick={() => imageInputRef.current?.click()}>
+            <img
+              src={formData.image || defaultImage}
+              alt="Course Preview"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <input
+            ref={imageInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="hidden"
+          />
+        </div>
+
+        {/* Job Role Selection */}
+        <div>
+          <h3 className="text-sm font-semibold mb-2">Select Job Role</h3>
+          <div className="rounded-xl bg-white bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat bg-contain border border-gray-200 max-h-60 overflow-y-auto p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            {jobRoles.map((role) => (
+              <button
+                key={role._id}
+                onClick={() => setSelectedJobRoleId(role._id)}
+                className={`text-left px-4 py-2 rounded-lg transition-all text-sm ${
+                  selectedJobRoleId === role._id
+                    ? "bg-blue-100 text-blue-800 font-semibold"
+                    : "hover:bg-blue-50 text-gray-800"
+                }`}
+              >
+                {role.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <button
+          onClick={handleCreateOrUpdate}
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+        >
+          {isEditing ? "Update" : "Create"}
+        </button>
+      </div>
+    </Modal>
+
       {selectedCourse && (
         <Modal isOpen={viewModalOpen} onClose={() => setViewModalOpen(false)} title="Course Details">
           <div className="space-y-4">
@@ -284,11 +306,13 @@ const CoursesPage = () => {
             />
             <h2 className="text-xl font-bold">{selectedCourse.title}</h2>
             <p className="text-gray-700">{selectedCourse.description}</p>
+            {selectedCourse.jobRole && (
+              <p className="text-sm text-gray-600">Job Role: {selectedCourse.jobRole.name}</p>
+            )}
           </div>
         </Modal>
       )}
 
-      {/* Confirmation Modal */}
       <ConfirmationModal
         isOpen={!!deleteTargetId}
         onClose={() => setDeleteTargetId(null)}
@@ -298,7 +322,6 @@ const CoursesPage = () => {
         confirmButtonText="Yes, Delete"
       />
 
-      {/* Success Modal */}
       <SuccessModal
         isOpen={showSuccessModal}
         onClose={() => setShowSuccessModal(false)}

@@ -49,7 +49,7 @@ const JobRolesPage = () => {
 
   const handleCreateJobRole = async () => {
     try {
-      await adminApi.post("/jobroless", formData);
+      await adminApi.post("/jobroles", formData);
       setSuccessMessage("Job role created successfully!");
       setShowSuccessModal(true);
       setCreateModalOpen(false);

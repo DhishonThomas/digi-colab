@@ -9,6 +9,7 @@ interface ModalProps {
   fullscreen?: boolean;
   showCloseButton?: boolean;
   overlayClickClose?: boolean;
+  size?: "fullscreen" | "large" | "medium" | "small"; // New prop for sizes
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -19,10 +20,26 @@ const Modal: React.FC<ModalProps> = ({
   fullscreen = false,
   showCloseButton = true,
   overlayClickClose = true,
+  size = "medium", // Default size
 }) => {
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget && overlayClickClose) {
       onClose();
+    }
+  };
+
+  const getSizeClasses = () => {
+    if (fullscreen) return "h-full w-full m-4"; // Maintain existing fullscreen logic
+
+    switch (size) {
+      case "large":
+        return "w-[80vw] h-[80vh]";
+      case "medium":
+        return "w-[60vw] h-[70vh]";
+      case "small":
+        return "w-[40vw] h-[50vh]";
+      default:
+        return "max-w-md md:max-w-lg lg:max-w-2xl max-h-[90vh] overflow-y-auto"; // Existing default
     }
   };
 
@@ -41,11 +58,7 @@ const Modal: React.FC<ModalProps> = ({
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className={`bg-white rounded-xl shadow-xl w-full ${
-              fullscreen
-                ? "h-full m-4"
-                : "max-w-md md:max-w-lg lg:max-w-2xl max-h-[90vh] overflow-y-auto"
-            } p-6 relative`}
+            className={`bg-white rounded-xl shadow-xl p-6 relative ${getSizeClasses()}`}
           >
             {showCloseButton && (
               <button
