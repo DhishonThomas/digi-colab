@@ -51,7 +51,9 @@ export default function Page() {
   const fetchCounts = async () => {
     try {
       const response = await adminApi.get("/count");
+const re=await adminApi.get("/courses");
 
+console.log("kfjalksdfjoiewm",re.data);
       if (response.data.success) {
         const { userCount, volunteerCount } = response.data;
 

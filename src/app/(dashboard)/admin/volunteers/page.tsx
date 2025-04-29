@@ -198,15 +198,20 @@ const [blockTarget, setBlockTarget] = useState<{ regNumber: string; isBlocked: b
   {selectedVolunteer && <VolunteerDetailsContent data={selectedVolunteer} />}
 </Modal>
 <ConfirmationModal
-        isOpen={isConfirmModalOpen}
-        onClose={() => {
-          setIsConfirmModalOpen(false);
-          setBlockTarget(null);
-        }}
-        onConfirm={handleBlockToggle}
-        actionType={blockTarget?.isBlocked ? 'unblock' : 'block'} // Dynamically pass action type
-        regNumber={blockTarget?.regNumber || ''}
-      />
+  isOpen={isConfirmModalOpen}
+  onClose={() => {
+    setIsConfirmModalOpen(false);
+    setBlockTarget(null);
+  }}
+  onConfirm={handleBlockToggle}
+  title={blockTarget?.isBlocked ? "Unblock User" : "Block User"}
+  message={`Are you sure you want to ${
+    blockTarget?.isBlocked ? "unblock" : "block"
+  } the user with Registration Number: ${blockTarget?.regNumber || ''}?`}
+  confirmButtonText={blockTarget?.isBlocked ? "Yes, Unblock" : "Yes, Block"}
+  confirmButtonClass={blockTarget?.isBlocked ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700"}
+/>
+
     </div>
     
   );
