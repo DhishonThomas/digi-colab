@@ -10,7 +10,7 @@ interface Course {
   title: string;
   description: string;
   image?: string;
-  jobRole?: { _id: string; name: string };
+  jobRole?: any;
 }
 
 interface JobRole {
@@ -44,6 +44,65 @@ const CoursesPage = () => {
     setIsLoading(true);
     try {
       const { data } = await adminApi.get("/courses");
+      console.log("Courses data:", data);
+      let k={
+        "success": true,
+        "courses": [
+            {
+                "_id": "6809da9fd011d673f49de174",
+                "title": "Electronics",
+                "description": "nfjshfkjsdcfl",
+                "__v": 0,
+                "jobRoles": [
+                    {
+                        "id": "6809dbdcd011d673f49de17f",
+                        "name": "nfjhf",
+                        "description": "husdhfjkds"
+                    }
+                ]
+            },
+            {
+                "_id": "662a1234abcd5678ef901234",
+                "title": "Organize work and resources (Service)",
+                "description": "Focuses on workplace safety, hygiene, quality standards, and resource management. NOS Code: ASC/N9801",
+                "jobRoles": [
+                    {
+                        "id": "662a9999abcd5678ef901999",
+                        "name": "Four Wheeler Service Assistant",
+                        "description": "Supports the technician in routine servicing, repair, and maintenance of four wheeler vehicles."
+                    }
+                ]
+            }
+        ],
+        "jobRoles": [
+            {
+                "_id": "6809dbdcd011d673f49de17f",
+                "name": "nfjhf",
+                "description": "husdhfjkds",
+                "courses": [
+                    {
+                        "_id": "6809da9fd011d673f49de174",
+                        "title": "Electronics",
+                        "description": "nfjshfkjsdcfl",
+                        "__v": 0
+                    }
+                ],
+                "__v": 0
+            },
+            {
+                "_id": "662a9999abcd5678ef901999",
+                "name": "Four Wheeler Service Assistant",
+                "description": "Supports the technician in routine servicing, repair, and maintenance of four wheeler vehicles.",
+                "courses": [
+                    {
+                        "_id": "662a1234abcd5678ef901234",
+                        "title": "Organize work and resources (Service)",
+                        "description": "Focuses on workplace safety, hygiene, quality standards, and resource management. NOS Code: ASC/N9801"
+                    }
+                ]
+            }
+        ]
+    }
       if (data.success) {
         setCourses(data.courses);
         setFilteredCourses(data.courses);
@@ -70,14 +129,16 @@ const CoursesPage = () => {
   }, []);
 
   const handleCreateOrUpdate = async () => {
-    if (!selectedJobRoleId) {
-      alert("Please select a job role.");
-      return;
-    }
+    if (!isEditing && !selectedJobRoleId) {
+        alert("Please select a job role.");
+        return;
+      }
     try {
-      const payload = { ...formData, jobRoleId: selectedJobRoleId };
-      if (isEditing && selectedCourse) {
-        await adminApi.put(`/courses/${selectedCourse._id}`, payload);
+        const payload = {
+            ...formData,
+            jobRoleId: selectedJobRoleId || (selectedCourse?.jobRole?.[0]?.id || null),
+          };      if (isEditing && selectedCourse) {
+        await adminApi.put(`/edit-courses/${selectedCourse._id}`, payload);
         setSuccessMessage("Course updated successfully!");
       } else {
         await adminApi.post("/courses", payload);
@@ -232,86 +293,101 @@ const CoursesPage = () => {
         </button>
       </div>
 
-      <Modal isOpen={createModalOpen} size="large" onClose={() => setCreateModalOpen(false)} title={isEditing ? "Edit Course" : "Add Course"}>
-      <div className="space-y-4">
-        <input
-          type="text"
-          placeholder="Title"
-          className="w-full border p-2 rounded"
-          value={formData.title}
-          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+      <Modal
+  isOpen={createModalOpen}
+  size="large"
+  onClose={() => setCreateModalOpen(false)}
+  title={isEditing ? "Edit Course" : "Add Course"}
+>
+  <div className="space-y-4">
+    <input
+      type="text"
+      placeholder="Title"
+      className="w-full border p-2 rounded"
+      value={formData.title}
+      onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+    />
+    <textarea
+      placeholder="Description"
+      className="w-full border p-2 rounded"
+      value={formData.description}
+      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+    />
+
+    {/* Image Preview + Upload */}
+    <div className="space-y-2">
+      <h3 className="text-sm font-medium text-gray-700">Course Image</h3>
+      <div
+        className="relative w-full max-w-[300px] h-[200px] rounded-lg overflow-hidden cursor-pointer border"
+        onClick={() => imageInputRef.current?.click()}
+      >
+        <img
+          src={formData.image || defaultImage}
+          alt="Course Preview"
+          className="w-full h-full object-contain"
         />
-        <textarea
-          placeholder="Description"
-          className="w-full border p-2 rounded"
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-        />
-
-        {/* Image Preview + Upload */}
-        <div className="space-y-2">
-          <h3 className="text-sm font-medium text-gray-700">Course Image</h3>
-          <div className="relative w-full max-w-[200px] aspect-video rounded-lg overflow-hidden cursor-pointer border" onClick={() => imageInputRef.current?.click()}>
-            <img
-              src={formData.image || defaultImage}
-              alt="Course Preview"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <input
-            ref={imageInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-            className="hidden"
-          />
-        </div>
-
-        {/* Job Role Selection */}
-        <div>
-          <h3 className="text-sm font-semibold mb-2">Select Job Role</h3>
-          <div className="rounded-xl bg-white bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat bg-contain border border-gray-200 max-h-60 overflow-y-auto p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            {jobRoles.map((role) => (
-              <button
-                key={role._id}
-                onClick={() => setSelectedJobRoleId(role._id)}
-                className={`text-left px-4 py-2 rounded-lg transition-all text-sm ${
-                  selectedJobRoleId === role._id
-                    ? "bg-blue-100 text-blue-800 font-semibold"
-                    : "hover:bg-blue-50 text-gray-800"
-                }`}
-              >
-                {role.name}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <button
-          onClick={handleCreateOrUpdate}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-        >
-          {isEditing ? "Update" : "Create"}
-        </button>
       </div>
-    </Modal>
+      <input
+        ref={imageInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleImageChange}
+        className="hidden"
+      />
+    </div>
 
-      {selectedCourse && (
-        <Modal isOpen={viewModalOpen} onClose={() => setViewModalOpen(false)} title="Course Details">
-          <div className="space-y-4">
-            <img
-              src={selectedCourse.image || defaultImage}
-              alt="Course"
-              className="w-full h-48 object-cover rounded-lg"
-            />
-            <h2 className="text-xl font-bold">{selectedCourse.title}</h2>
-            <p className="text-gray-700">{selectedCourse.description}</p>
-            {selectedCourse.jobRole && (
-              <p className="text-sm text-gray-600">Job Role: {selectedCourse.jobRole.name}</p>
-            )}
-          </div>
-        </Modal>
+    {/* Job Role Selection */}
+    <div>
+      <h3 className="text-sm font-semibold mb-2">Select Job Role</h3>
+      <div className="rounded-xl bg-white bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat bg-contain border border-gray-200 max-h-60 overflow-y-auto p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        {jobRoles.map((role) => (
+          <button
+            key={role._id}
+            onClick={() => setSelectedJobRoleId(role._id)}
+            className={`text-left px-4 py-2 rounded-lg transition-all text-sm ${
+              selectedJobRoleId === role._id
+                ? "bg-blue-100 text-blue-800 font-semibold"
+                : "hover:bg-blue-50 text-gray-800"
+            }`}
+          >
+            {role.name}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    <button
+      onClick={handleCreateOrUpdate}
+      className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+    >
+      {isEditing ? "Update" : "Create"}
+    </button>
+  </div>
+</Modal>
+
+{selectedCourse && (
+  <Modal
+    isOpen={viewModalOpen}
+    onClose={() => setViewModalOpen(false)}
+    title="Course Details"
+  >
+    <div className="space-y-4">
+      <div className="w-full max-w-[300px] h-[200px] mx-auto rounded-lg overflow-hidden border">
+        <img
+          src={selectedCourse.image || defaultImage}
+          alt="Course"
+          className="w-full h-full object-contain"
+        />
+      </div>
+      <h2 className="text-xl font-bold">{selectedCourse.title}</h2>
+      <p className="text-gray-700">{selectedCourse.description}</p>
+      {selectedCourse.jobRole && (
+        <p className="text-sm text-gray-600">Job Role: {selectedCourse.jobRole.name}</p>
       )}
+    </div>
+  </Modal>
+)}
+
 
       <ConfirmationModal
         isOpen={!!deleteTargetId}
