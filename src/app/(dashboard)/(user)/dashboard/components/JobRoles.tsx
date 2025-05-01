@@ -1,3 +1,4 @@
+import userApi from "@/utils/axios_Interceptors/userApiService";
 import React, { useEffect, useState } from "react";
 
 const jobRoles = [
@@ -44,6 +45,7 @@ const JobRolesList = () => {
 
   const itemsPerPage = 20;
 
+  
   const displayedCourses = selectedCategory
     ? jobRoles.find((role) => role.id === selectedCategory)?.courses || []
     : jobRoles.flatMap((role) => role.courses);
@@ -56,7 +58,16 @@ const JobRolesList = () => {
   const endIndex = startIndex + itemsPerPage;
   const paginatedCourses = displayedCourses.slice(startIndex, endIndex);
   const totalPages = Math.ceil(displayedCourses.length / itemsPerPage);
+const checkIsSubmitted=async()=>{
+  const response=await userApi.get("/dashboard/course-selection");
 
+  console.log("this is course selection data",response.data);
+  if(response.data.success){
+    setIsSubmitted(true)
+  }else{
+    setIsSubmitted(false)
+  }
+}
   const handleCourseSelect = (id: string) => {
     setSelectedCourseId(id === selectedCourseId ? null : id);
   };

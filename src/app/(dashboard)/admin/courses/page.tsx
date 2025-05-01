@@ -18,7 +18,7 @@ interface JobRole {
   name: string;
 }
 
-const defaultImage = "/images/default-course.png";
+const defaultImage = "/images/courses-dummy.png";
 
 const CoursesPage = () => {
   const [courses, setCourses] = useState<Course[]>([]);
@@ -82,7 +82,7 @@ const [imageFile,setImageFile]=useState<File | null>(null);
       const form = new FormData();
       form.append("title", formData.title);
       form.append("description", formData.description);
-      form.append("jobRoles", selectedJobRoleId || (selectedCourse?.jobRoles?.[0]?.id || ""));
+      form.append("jobRoles", selectedJobRoleId || (selectedCourse?.jobRoles?.[0]?.id || courses[0]?.jobRoles?.[0]?.id));
       
       // Append the image file if available
       if (imageFile) {
@@ -287,78 +287,105 @@ const [imageFile,setImageFile]=useState<File | null>(null);
           Next
         </button>
       </div>
-
       <Modal
   isOpen={createModalOpen}
-  size="large"
-  onClose={() => setCreateModalOpen(false)}
+fullscreen 
+
+onClose={() => setCreateModalOpen(false)}
   title={isEditing ? "Edit Course" : "Add Course"}
 >
-  <div className="space-y-4 bg-white bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat bg-contain border border-gray-200 text-center">
+  <div className="border-4 border-[#B56365] rounded-lg bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat bg-contain text-left px-6 py-6 overflow-y-auto max-h-[90vh]">
+    
+    {/* Container with increased width */}
+    <div className="w-full max-w-5xl mx-auto space-y-6">
+
+      {/* Top Section: Image & Job Roles */}
+      <div className="flex flex-col md:flex-row gap-6">
+
+        {/* Left: Image Upload */}
+        <div className="flex-1 space-y-4 ">
+          <h3 className="text-base font-bold text-gray-700">Course Image</h3>
+          <div
+            className="w-full border-4 border-[#B56365] max-w-[300px] h-[250px]  rounded-lg overflow-hidden cursor-pointer"
+            onClick={() => imageInputRef.current?.click()}
+          >
+            <img
+              src={formData.image || defaultImage}
+              alt="Course Preview"
+              className="w-full h-full object-contain"
+            />
+          </div>
+          <input
+            ref={imageInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="hidden"
+          />
+        </div>
+
+        {/* Right: Job Role Selection */}
+        <div className="flex-1 space-y-2">
+          <h3 className="text-base mt-1 font-bold text-gray-700">Select Job Role</h3>
+          <div className="rounded-xl bg-transparent bg-opacity-90 border-4 border-[#B56365]  max-h-60 overflow-y-auto p-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {jobRoles.map((role) => (
+              <button
+                key={role._id}
+                onClick={() => setSelectedJobRoleId(role._id)}
+                className={`text-left px-4 py-2 rounded-lg transition-all text-sm ${
+                  selectedJobRoleId === role._id
+                    ? "bg-blue-100 text-blue-800 font-semibold"
+                    : "hover:bg-blue-50 text-gray-800"
+                }`}
+              >
+                {role.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Section: Title + Description */}
+      <div className="space-y-6 px-2">
+  <div>
+    <h3 className="text-base font-semibold text-gray-800 mb-1">Title</h3>
     <input
       type="text"
-      placeholder="Title"
-      className="w-full border p-2 rounded"
+      placeholder="Enter course title"
+      className="w-full p-4 rounded-md bg-transparent shadow-lg transition-all border-0 border-t-4 border-t-gray-300 focus:border-t-[#B56365] focus:ring-0 outline-none"
       value={formData.title}
       onChange={(e) => setFormData({ ...formData, title: e.target.value })}
     />
+  </div>
+
+  <div>
+    <h3 className="text-base font-semibold text-gray-800 mb-1">Description</h3>
     <textarea
-      placeholder="Description"
-      className="w-full border p-2 rounded"
+      placeholder="Enter course description"
+      className="w-full p-4 rounded-md bg-transparent shadow-lg transition-all border-0 border-t-4 border-t-gray-300 focus:border-t-[#B56365] focus:ring-0 outline-none resize-none"
+      rows={4}
       value={formData.description}
       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
     />
+  </div>
 
-    {/* Image Preview + Upload */}
-    <div className="space-y-2">
-      <h3 className="text-sm font-medium text-gray-700">Course Image</h3>
-      <div
-        className="relative w-full max-w-[300px] h-[200px] rounded-lg overflow-hidden cursor-pointer border"
-        onClick={() => imageInputRef.current?.click()}
-      >
-        <img
-          src={formData.image || defaultImage}
-          alt="Course Preview"
-          className="w-full h-full object-contain"
-        />
-      </div>
-      <input
-        ref={imageInputRef}
-        type="file"
-        accept="image/*"
-        onChange={handleImageChange}
-        className="hidden"
-      />
-    </div>
-
-    {/* Job Role Selection */}
-    <div>
-      <h3 className="text-sm font-semibold mb-2">Select Job Role</h3>
-      <div className="rounded-xl bg-white bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat bg-contain border border-gray-200 max-h-60 overflow-y-auto p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-        {jobRoles.map((role) => (
-          <button
-            key={role._id}
-            onClick={() => setSelectedJobRoleId(role._id)}
-            className={`text-left px-4 py-2 rounded-lg transition-all text-sm ${
-              selectedJobRoleId === role._id
-                ? "bg-blue-100 text-blue-800 font-semibold"
-                : "hover:bg-blue-50 text-gray-800"
-            }`}
-          >
-            {role.name}
-          </button>
-        ))}
-      </div>
-    </div>
-
+  <div className="flex justify-center">
+    <div className="w-1/2">
     <button
       onClick={handleCreateOrUpdate}
-      className="w-full bg-[#B56365] text-white hover:bg-[#b56364f8]"
+      className="w-full py-3 rounded-md bg-[#B56365] text-white text-base font-semibold hover:bg-[#a65052] transition-all duration-300 shadow-md"
     >
       {isEditing ? "Update" : "Create"}
     </button>
+    </div>
+
+  </div>
+</div>
+
+    </div>
   </div>
 </Modal>
+
 
 {selectedCourse && (
   <Modal

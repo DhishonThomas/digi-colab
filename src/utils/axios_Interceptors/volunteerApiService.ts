@@ -9,7 +9,6 @@ const volunteerApi = axios.create({
 });
 
 // Request Interceptor
-
 volunteerApi.interceptors.request.use(
   (config) => {
     const { token } = store.getState().volunteer;
@@ -20,24 +19,22 @@ volunteerApi.interceptors.request.use(
 
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 // Response Interceptor
 volunteerApi.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-
+  (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401||error.response.status===400) {
+    const status = error.response?.status;
+
+    if (status === 401) {
       store.dispatch(logout());
       window.location.href = "/volunteer/login";
+      return Promise.reject(new Error("Session expired. Please log in again."));
     }
 
-    return Promise.reject(new Error("Session expired. Please log in again."));
+    return Promise.reject(error);
   }
 );
 

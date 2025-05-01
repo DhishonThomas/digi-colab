@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import JobRolesList from "./JobRoles";
 import Link from "next/link";
+import userApi from "@/utils/axios_Interceptors/userApiService";
 
 const CCCSection: React.FC = () => {
   const [hasCertificate, setHasCertificate] = useState<null | boolean>(null);
@@ -9,6 +10,21 @@ const CCCSection: React.FC = () => {
   const [error, setError] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [showJobRoles, setShowJobRoles] = useState(false);
+const checkCssStatus=async()=>{
+alert("checking ccc status")
+    const response=await userApi.get("/ccc-status");
+    if(response.data.success){
+      setHasCertificate(true)
+    }else{
+      setHasCertificate(false)
+    }
+console.log("this is ccc-status>data.",response)
+
+  }
+useEffect(()=>{
+
+  checkCssStatus()
+},[])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setError("");
