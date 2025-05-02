@@ -29,7 +29,7 @@ const Modal: React.FC<ModalProps> = ({
   };
 
   const getSizeClasses = () => {
-    if (fullscreen) return "h-full w-full m-4"; // Maintain existing fullscreen logic
+    if (fullscreen) return "h-full w-full m-4 "; // Maintain existing fullscreen logic
 
     switch (size) {
       case "large":

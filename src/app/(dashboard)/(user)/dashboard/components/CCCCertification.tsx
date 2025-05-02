@@ -2,21 +2,23 @@ import React, { useEffect, useState } from "react";
 import JobRolesList from "./JobRoles";
 import Link from "next/link";
 import userApi from "@/utils/axios_Interceptors/userApiService";
+import { set } from "react-hook-form";
 
 const CCCSection: React.FC = () => {
   const [hasCertificate, setHasCertificate] = useState<null | boolean>(null);
-  const [isCCCUploaded, setIsCCCUploaded] = useState(false);
+  const [isCCCUploaded, setIsCCCUploaded] = useState<boolean|null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [showJobRoles, setShowJobRoles] = useState(false);
 const checkCssStatus=async()=>{
-alert("checking ccc status")
     const response=await userApi.get("/ccc-status");
     if(response.data.success){
+      setIsCCCUploaded(true)
       setHasCertificate(true)
     }else{
       setHasCertificate(false)
+      setIsCCCUploaded(false)
     }
 console.log("this is ccc-status>data.",response)
 
@@ -59,6 +61,13 @@ useEffect(()=>{
     }, 1500);
   };
 
+  if(isCCCUploaded===null){
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-lg font-medium">Loading...</p>
+      </div>
+    );
+  }
   return (
     <div className="p-6 max-w-8xl mx-auto space-y-6">
      {hasCertificate===false||hasCertificate===null&& <h1 className="text-3xl font-bold text-center text-gray-800">
