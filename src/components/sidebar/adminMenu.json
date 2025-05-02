@@ -25,6 +25,11 @@
         "path": "/admin/courses"
     },
     {
+        "title":"LetterHeads",
+        "icon":"/icons/sidebar/courses-icon.svg",
+        "path": "/admin/letter-heads"
+    },
+    {
         "title":"Analytics Section",
         "icon":"/icons/sidebar/icon-graph.svg",
         "path": "#"
