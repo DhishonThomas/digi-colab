@@ -11,6 +11,7 @@ interface Course {
   description: string;
   image?: string;
   jobRoles?: any;
+  qualifications?: string;
 }
 
 interface JobRole {
@@ -28,7 +29,7 @@ const CoursesPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [viewModalOpen, setViewModalOpen] = useState(false);
-  const [formData, setFormData] = useState({ title: "", description: "", image: "" });
+  const [formData, setFormData] = useState({ title: "", description: "", image: "",qualifications:"" });
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
@@ -83,8 +84,7 @@ const [imageFile,setImageFile]=useState<File | null>(null);
       form.append("title", formData.title);
       form.append("description", formData.description);
       form.append("jobRoles", selectedJobRoleId || (selectedCourse?.jobRoles?.[0]?.id || courses[0]?.jobRoles?.[0]?.id));
-      
-      // Append the image file if available
+      form.append("qualifications", formData.qualifications);
       if (imageFile) {
         form.append("image", imageFile); // Key "image" should match what the server expects
       }
@@ -105,7 +105,7 @@ const [imageFile,setImageFile]=useState<File | null>(null);
   
       setShowSuccessModal(true);
       setCreateModalOpen(false);
-      setFormData({ title: "", description: "", image: "" });
+      setFormData({ title: "", description: "", image: "",qualifications:"" });
       setSelectedJobRoleId(null);
       setImageFile(null); // Clear the image file
       fetchCourses();
@@ -155,7 +155,7 @@ const [imageFile,setImageFile]=useState<File | null>(null);
 
   const openCreateModal = () => {
     setIsEditing(false);
-    setFormData({ title: "", description: "", image: "" });
+    setFormData({ title: "", description: "", image: "",qualifications:"" });
     setSelectedJobRoleId(null);
     setImageFile(null);
 
@@ -168,7 +168,8 @@ const [imageFile,setImageFile]=useState<File | null>(null);
     setFormData({
       title: course.title,
       description: course.description,
-      image: course.image || ""
+      image: course.image || "",
+      qualifications: course.qualifications || "",
     });
     setSelectedJobRoleId(course.jobRoles?._id || null);
     setImageFile(null);
@@ -369,18 +370,39 @@ onClose={() => setCreateModalOpen(false)}
     />
   </div>
 
+  <div>
+  <h3 className="text-base font-semibold text-gray-800 mb-1">Education Qualification</h3>
+  <select
+    className="w-full p-4 rounded-md bg-transparent shadow-lg transition-all border-0 border-t-4 border-t-gray-300 focus:border-t-[#B56365] focus:ring-0 outline-none"
+    value={formData.qualifications}
+    onChange={(e) =>
+      setFormData({ ...formData, qualifications: e.target.value })
+    }
+  >
+    <option value="" disabled>Select qualification</option>
+    <option value="5th">5th</option>
+    <option value="6th">6th</option>
+    <option value="7th">7th</option>
+    <option value="8th">8th</option>
+    <option value="9th">9th</option>
+    <option value="10th">10th</option>
+    <option value="ITI">ITI</option>
+  </select>
+</div>
+
+
   <div className="flex justify-center">
     <div className="w-1/2">
-    <button
-      onClick={handleCreateOrUpdate}
-      className="w-full py-3 rounded-md bg-[#B56365] text-white text-base font-semibold hover:bg-[#a65052] transition-all duration-300 shadow-md"
-    >
-      {isEditing ? "Update" : "Create"}
-    </button>
+      <button
+        onClick={handleCreateOrUpdate}
+        className="w-full py-3 rounded-md bg-[#B56365] text-white text-base font-semibold hover:bg-[#a65052] transition-all duration-300 shadow-md"
+      >
+        {isEditing ? "Update" : "Create"}
+      </button>
     </div>
-
   </div>
 </div>
+
 
     </div>
   </div>

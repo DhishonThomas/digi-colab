@@ -31,7 +31,6 @@ userApi.interceptors.response.use(
 
     // Token-related failure
     if (status === 401) {
-      alert("Session expired. Please log in again.");
 
       store.dispatch(logout());
       window.location.href = "/login";

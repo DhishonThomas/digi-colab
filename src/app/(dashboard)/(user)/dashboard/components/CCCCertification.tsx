@@ -13,16 +13,17 @@ const CCCSection: React.FC = () => {
   const [showJobRoles, setShowJobRoles] = useState(false);
 const checkCssStatus=async()=>{
     const response=await userApi.get("/ccc-status");
-    if(response.data.success){
+    if(response.data.success&&response.data.cccCertified){
       setIsCCCUploaded(true)
       setHasCertificate(true)
     }else{
-      setHasCertificate(false)
       setIsCCCUploaded(false)
     }
 console.log("this is ccc-status>data.",response)
 
   }
+
+
 useEffect(()=>{
 
   checkCssStatus()
@@ -41,11 +42,12 @@ useEffect(()=>{
       setError("Only PDF files are allowed.");
       return;
     }
-
+console.log(selectedFile);
     setFile(selectedFile);
+
   };
 
-  const handleUpload = () => {
+  const handleUpload =async () => {
     if (!file) {
       setError("Please select a file first.");
       return;
@@ -53,6 +55,15 @@ useEffect(()=>{
 
     setIsUploading(true);
     setError("");
+    const formData = new FormData();
+    formData.append("cccCertificate", file);
+    formData.append("cccCertified", hasCertificate ? "Yes" : "No");
+    const response=await userApi.post("/update-ccc-status",formData,{
+      headers: { "Content-Type": "multipart/form-data" },
+    })
+    
+    console.log("this is the response data of the upload.",response.data)
+    
 
     // Simulate file upload delay
     setTimeout(() => {
