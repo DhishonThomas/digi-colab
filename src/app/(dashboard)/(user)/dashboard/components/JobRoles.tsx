@@ -2,6 +2,42 @@ import userApi from "@/utils/axios_Interceptors/userApiService";
 import React, { useEffect, useState } from "react";
 import SuccessFullSubmission from "./SuccessFullSubmission";
 
+// const jobRoles = [
+//   {
+//     _id: "automotive",
+//     name: "Automotive",
+//     courses: [
+//       {
+//         _id: "auto1",
+//         title: "Automotive Service Technician",
+//         description: "Learn to service and maintain vehicles.",
+        
+//       },
+//       {
+//         _id: "auto2",
+//         title: "Automotive Painter",
+//         description: "Master the art of automotive painting.",
+//       },
+//     ],
+//   },
+//   {
+//     _id: "electronics",
+//     name: "Electronics",
+//     courses: [
+//       {
+//         _id: "elec1",
+//         title: "Electronics Repair Technician",
+//         description: "Repair and maintain electronic devices.",
+//       },
+//       {
+//         _id: "elec2",
+//         title: "Circuit Design Engineer",
+//         description: "Design and test electronic circuits.",
+//       },
+//     ],
+//   },
+// ];
+
 const JobRolesList = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showCategories, setShowCategories] = useState(true);
@@ -114,9 +150,9 @@ if(jobRoles==null){
                 <div
                   key={course.id}
                   className={`border rounded-lg p-5 cursor-pointer transition shadow-sm hover:shadow-md bg-gray-50 ${
-                    selectedCourseId === course.id ? "ring-2 ring-blue-500" : ""
+                    selectedCourseId === course._id ? "ring-2 ring-blue-500" : ""
                   }`}
-                  onClick={() => handleCourseSelect(course.id)}
+                  onClick={() => handleCourseSelect(course._id)}
                 >
                   <h4 className="text-lg font-bold text-gray-800">
                     {course.title}
