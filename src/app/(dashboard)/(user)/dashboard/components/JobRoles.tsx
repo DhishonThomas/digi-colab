@@ -2,42 +2,6 @@ import userApi from "@/utils/axios_Interceptors/userApiService";
 import React, { useEffect, useState } from "react";
 import SuccessFullSubmission from "./SuccessFullSubmission";
 
-// const jobRoles = [
-//   {
-//     _id: "automotive",
-//     name: "Automotive",
-//     courses: [
-//       {
-//         _id: "auto1",
-//         title: "Automotive Service Technician",
-//         description: "Learn to service and maintain vehicles.",
-        
-//       },
-//       {
-//         _id: "auto2",
-//         title: "Automotive Painter",
-//         description: "Master the art of automotive painting.",
-//       },
-//     ],
-//   },
-//   {
-//     _id: "electronics",
-//     name: "Electronics",
-//     courses: [
-//       {
-//         _id: "elec1",
-//         title: "Electronics Repair Technician",
-//         description: "Repair and maintain electronic devices.",
-//       },
-//       {
-//         _id: "elec2",
-//         title: "Circuit Design Engineer",
-//         description: "Design and test electronic circuits.",
-//       },
-//     ],
-//   },
-// ];
-
 const JobRolesList = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showCategories, setShowCategories] = useState(true);
@@ -45,10 +9,10 @@ const JobRolesList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [jobRoles, setJobRoles] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const itemsPerPage = 20;
 
-  
   const displayedCourses = selectedCategory
     ? jobRoles.find((role) => role._id === selectedCategory)?.courses || []
     : jobRoles.flatMap((role) => role.courses);
@@ -62,41 +26,55 @@ const JobRolesList = () => {
   const paginatedCourses = displayedCourses.slice(startIndex, endIndex);
   const totalPages = Math.ceil(displayedCourses.length / itemsPerPage);
 
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      const coursesResponse = await userApi.get("/courses");
+      setJobRoles(coursesResponse.data.jobRoles);
+    } catch (error) {
+      console.error("Error fetching data", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-const fetchData=async()=>{
-  const coursesResponse=await userApi.get("/courses");
-
-  console.log("this is dsafasdfase",coursesResponse.data);
-setJobRoles(coursesResponse.data.jobRoles);
-}
-
-
-const handleCourseSelect = (id: string) => {
+  const handleCourseSelect = (id: string) => {
     setSelectedCourseId(id === selectedCourseId ? null : id);
   };
 
-  const handleSubmit = () => {
+const handleUpdateJobRoles = async () => {
+setIsSubmitted(false);
+}
+
+  const handleSubmit = async () => {
     if (selectedCourseId) {
+      const response = await userApi.post("/update-job-courses", {
+        courseId: selectedCourseId,
+      });
+      console.log("this is the response>update-job-courses", response.data);
       setIsSubmitted(true);
     }
   };
-useEffect(()=>{
-  fetchData()
-},[])
 
-if(jobRoles==null){
-  return (
-    <div className="fixed inset-0 flex justify-center items-center bg-white text-black">
-      Loading...
-    </div>
-  );
-}else if(jobRoles.length===0){
-  return (
-    <div className="fixed inset-0 flex justify-center items-center bg-white text-black">
-      No courses available.
-    </div>  
-    )
-}
+  useEffect(() => {
+    fetchData();
+  }, []);
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 flex justify-center items-center bg-white text-black">
+        Loading...
+      </div>
+    );
+  }
+
+  if (jobRoles.length === 0) {
+    return (
+      <div className="fixed inset-0 flex justify-center items-center bg-white text-black">
+        No courses available.
+      </div>
+    );
+  }
+
   return (
     <div className="w-full max-w-[1400px] mx-auto px-4 md:px-8 py-10 space-y-10">
       {!isSubmitted ? (
@@ -146,11 +124,13 @@ if(jobRoles==null){
             </h3>
 
             <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-              {paginatedCourses.map((course:any) => (
+              {paginatedCourses.map((course: any) => (
                 <div
                   key={course.id}
                   className={`border rounded-lg p-5 cursor-pointer transition shadow-sm hover:shadow-md bg-gray-50 ${
-                    selectedCourseId === course._id ? "ring-2 ring-blue-500" : ""
+                    selectedCourseId === course._id
+                      ? "ring-2 ring-blue-500"
+                      : ""
                   }`}
                   onClick={() => handleCourseSelect(course._id)}
                 >
@@ -208,7 +188,6 @@ if(jobRoles==null){
         </>
       ) : (
         <SuccessFullSubmission />
-
       )}
     </div>
   );
