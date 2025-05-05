@@ -30,13 +30,8 @@
         "path": "/admin/letter-heads"
     },
     {
-        "title":"Analytics Section",
+        "title":"Payments",
         "icon":"/icons/sidebar/icon-graph.svg",
-        "path": "#"
-    },
-    {
-        "title":"Profile",
-        "icon":"/icons/sidebar/icon-profile.svg",
-        "path": "#"
+        "path": "/admin/payments"
     }
 ]

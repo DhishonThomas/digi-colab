@@ -9,6 +9,7 @@ interface ModalProps {
   fullscreen?: boolean;
   showCloseButton?: boolean;
   overlayClickClose?: boolean;
+  overFlow?:boolean
   size?: "fullscreen" | "large" | "medium" | "small"; // New prop for sizes
 }
 
@@ -20,6 +21,8 @@ const Modal: React.FC<ModalProps> = ({
   fullscreen = false,
   showCloseButton = true,
   overlayClickClose = true,
+  overFlow=false,
+
   size = "medium", // Default size
 }) => {
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -29,8 +32,7 @@ const Modal: React.FC<ModalProps> = ({
   };
 
   const getSizeClasses = () => {
-    if (fullscreen) return "h-full w-full m-4 "; // Maintain existing fullscreen logic
-
+    if (fullscreen) return `h-full w-full m-4 ${overFlow?"overflow-y-auto":""}`; // Maintain existing fullscreen logic
     switch (size) {
       case "large":
         return "w-[80vw] h-[80vh]";
