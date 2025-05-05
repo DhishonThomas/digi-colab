@@ -42,9 +42,10 @@ const JobRolesList = () => {
     setSelectedCourseId(id === selectedCourseId ? null : id);
   };
 
-const handleUpdateJobRoles = async () => {
+const handleUpdate= async () => {
 setIsSubmitted(false);
 }
+
 
   const handleSubmit = async () => {
     if (selectedCourseId) {
@@ -187,7 +188,7 @@ setIsSubmitted(false);
           </div>
         </>
       ) : (
-        <SuccessFullSubmission />
+        <SuccessFullSubmission handleUpdate={handleUpdate} />
       )}
     </div>
   );

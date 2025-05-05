@@ -21,15 +21,21 @@ export default function page() {
     }
     useEffect(()=>{
       checkIsSubmitted()
-    },[isSubmitted])
+    },[])
     if(loading){
         return (
             <div className="fixed inset-0 flex justify-center items-center bg-white text-black">
               Checking authentication...
             </div>
           );    }
-    return (
-        <div> {isSubmitted?( <SuccessFullSubmission /> ):(
+   
+   
+const handleUpdate= async () => {
+  setIsSubmitted(false);
+  }
+          return (
+        <div> {isSubmitted?(  <SuccessFullSubmission handleUpdate={handleUpdate} />
+        ):(
          
           <CCCSection />
         )
