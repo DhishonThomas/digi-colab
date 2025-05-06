@@ -3,10 +3,7 @@ import React, { useState } from "react";
 import Modal from "@/components/ui/Modal";
 import adminApi from "@/utils/axios_Interceptors/adminApiService";
 import Image from "next/image";
-import { useSelector } from "react-redux";
-import { RootState } from "../../store/store";
-import ReactDOMServer from "react-dom/server";
-import LetterheadPdf from "./LetterheadPdf";
+
 
 export interface signature {
   _id: string;

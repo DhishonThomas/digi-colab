@@ -6,8 +6,8 @@ import adminApi from "@/utils/axios_Interceptors/adminApiService";
 import Image from "next/image";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../../store/store";
-import LetterHeadButton from "./components/letterHead/LetterHeadButton";
-import LetterheadPdf from "./components/letterHead/LetterheadPdf";
+import LetterHeadButton from "./components/LetterHeadButton";
+import LetterheadPdf from "./components/LetterheadPdf";
 
 export interface signature {
   _id: string;
