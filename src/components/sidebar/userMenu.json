@@ -2,7 +2,7 @@
     {
         "title":"Dashboard",
         "icon":"/icons/sidebar/icon-home.svg",
-        "path": "/admin/dashboard"
+        "path": "/dashboard"
     },
     {
         "title":"Candidates",
