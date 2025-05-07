@@ -4,11 +4,7 @@
         "icon":"/icons/sidebar/icon-home.svg",
         "path": "/dashboard"
     },
-    {
-        "title":"Candidates",
-        "icon":"/icons/sidebar/icon-users.svg",
-        "path": "#"
-    },
+   
   
     {
         "title":"Profile",
