@@ -31,7 +31,6 @@ export function middleware(req: NextRequest) {
   return NextResponse.next();
 }
 
-// Apply middleware to these paths
 export const config = {
   matcher: ["/", "/admin", "/volunteer"],
 };
