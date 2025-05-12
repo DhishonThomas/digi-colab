@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import axios from "axios";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -10,6 +10,7 @@ import {
   USER_VERIFY_OTP,
 } from "@/utils/constants";
 import Link from "next/link";
+import { debounce } from "lodash";
 
 interface SignUpData {
   email: string;
@@ -18,7 +19,7 @@ interface SignUpData {
   otp: string;
   declaration:string;
 }
-const AccountForm = ({ switchTab, handleFinalSubmit }: any) => {
+const AccountForm = ({ switchTab, handleFinalSubmit ,formData,updateFormData}: any) => {
   const {
     control,
     handleSubmit,
@@ -27,18 +28,16 @@ const AccountForm = ({ switchTab, handleFinalSubmit }: any) => {
     clearErrors,
     formState: { errors },
   } = useForm<SignUpData>({
-    defaultValues: { email: "", password: "", confirm_password: "", otp: "" ,declaration: ""},
+    defaultValues: { email: formData.email||"", password: "", confirm_password: "", otp: "" ,declaration: ""},
   });
-
-  // 🔹 State
-  const [otpSent, setOtpSent] = useState(false);
-  const [otpVerified, setOtpVerified] = useState(false);
+ //|| !formData.files.policeVerification
+ if(!formData.files.image  || !formData.files.educationDocument|| !formData.files.bankPassbook){
+  switchTab && switchTab({ index: 1, value: "verification" });
+}
   const [timer, setTimer] = useState(0);
-  const [otpMessage, setOtpMessage] = useState("");
   const [submitError, setSubmitError] = useState("");
   const [captchaError, setCaptchaError] = useState("");
   const [loading, setLoading] = useState({ sendOtp: false, verifyOtp: false, register: false });
-  const [resendOtp, setResendOtp] = useState(false);
   const [captchaValue, setCaptchaValue] = useState<string | null>(null); // ✅ CAPTCHA State
 
   const [declarationAccepted, setDeclarationAccepted] = useState(false);
@@ -48,14 +47,19 @@ const AccountForm = ({ switchTab, handleFinalSubmit }: any) => {
   const password = watch("password", "");
   const confirmPassword = watch("confirm_password", "");
   const otp = watch("otp", "");
-  const declaration=watch("declaration", "")
+
 
   useEffect(() => {
     if (timer > 0) {
       const countdown = setTimeout(() => setTimer((prev) => prev - 1), 1000);
       return () => clearTimeout(countdown);
+    } else {
+      if (formData.otpLockActive) {
+        updateFormData({ otpLockActive: false });
+      }
     }
   }, [timer]);
+  
 
   const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -71,15 +75,13 @@ const AccountForm = ({ switchTab, handleFinalSubmit }: any) => {
     try {
       const response = await axios.post(USER_SEND_OTP, { email });
       if (response.data.success) {
-        setOtpSent(true);
-        setOtpMessage("✅ OTP sent successfully!");
+        updateFormData({otpSend:true,otpLockActive:true,otpMessage:"✅ OTP sent successfully!",otpResend:true});
         setTimer(60);
-        setResendOtp(true);
       } else {
-        setOtpMessage(response.data.message || "Failed to send OTP.");
+        updateFormData({otpMessage:response.data.message || "Failed to send OTP."})
       }
     } catch (error: any) {
-      setOtpMessage(error.response?.data?.message || "Failed to send OTP.");
+      updateFormData({otpMessage:error.response?.data?.message || "Failed to send OTP."})
     } finally {
       setLoading((prev) => ({ ...prev, sendOtp: false }));
     }
@@ -96,12 +98,10 @@ const AccountForm = ({ switchTab, handleFinalSubmit }: any) => {
     try {
       const response = await axios.post(USER_VERIFY_OTP, { email, otp });
       if (response.data.success) {
-        setOtpVerified(true);
-        setOtpMessage("✅ OTP verified successfully!");
+        updateFormData({ otpVerified:true , otpResend:false ,otpSend:false, otpMessage: "✅ OTP verified successfully!" });
         clearErrors("otp");
-        setResendOtp(false);
         setTimer(0);
-        setOtpSent(false);
+        updateFormData({ otpSend: false });
       } else {
         setError("otp", { type: "manual", message: response.data.message || "Invalid OTP." });
       }
@@ -120,7 +120,7 @@ const AccountForm = ({ switchTab, handleFinalSubmit }: any) => {
     setSubmitError(""); // Clear previous error messages
     setCaptchaError(""); // Clear previous CAPTCHA error
     try {
-    if (!otpVerified) {
+    if (!formData.otpVerified) {
       setError("otp", { type: "manual", message: "Please verify the OTP first." });
       setSubmitError("Please verify the OTP first.")
       return;
@@ -151,40 +151,44 @@ const AccountForm = ({ switchTab, handleFinalSubmit }: any) => {
       
     }
   };
+ // inside your component
+  const handleEmailChange = useMemo(() => debounce((val: string) => {
+    updateFormData({ email: val });
+  }, 300), []);
 
   return (
     <form className="flex flex-col items-center" onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-4 md:gap-6 mb-6 w-full max-w-md">
-        <FormInput label="Email" name="email" type="email" placeholder="Enter Email" control={control} rules={{ required: "Email is required." }} error={errors.email} />
+      <FormInput label="Email"  onChange={handleEmailChange}   name="email" type="email" placeholder="Enter Email" control={control} rules={{ required: "Email is required." }} error={errors.email} />
 
-        {!otpSent && !otpVerified && (
+        {!formData.otpSend && !formData.otpVerified && (
           <button type="button" onClick={sendOtp} className="bg-[#688086] text-white font-semibold py-2 px-4 rounded-lg" disabled={loading.sendOtp}>
             {loading.sendOtp ? "Sending..." : "Send OTP"}
           </button>
         )}
 
-        {otpMessage && <p className="text-sm text-green-600">{otpMessage}</p>}
+        {formData.otpMessage && <p className="text-sm text-green-600">{formData.otpMessage}</p>}
 
-        {otpSent && (
+        {formData.otpSend && (
           <>
             <FormInput label="OTP" name="otp" type="text" placeholder="Enter OTP" control={control} rules={{ required: "Please enter the OTP." }} error={errors.otp} />
-            <button type="button" onClick={verifyOtp} className="bg-[#688086] text-white font-semibold py-2 px-4 rounded-lg" disabled={loading.verifyOtp || otpVerified}>
+            <button type="button" onClick={verifyOtp} className="bg-[#688086] text-white font-semibold py-2 px-4 rounded-lg" disabled={loading.verifyOtp || formData.otpVerified}>
               {loading.verifyOtp ? "Verifying..." : "Verify OTP"}
             </button>
             {timer > 0 && <p className="text-gray-500 text-xs">Resend OTP in {timer}s</p>}
           </>
         )}
-  {(timer==0&&resendOtp)&&
+  {(timer==0&&formData.otpResend)&&
  <button
  type="button"
  onClick={sendOtp}
  className=" text-blue-600 font-semibold py-2 px-4 rounded-lg"
- disabled={loading.sendOtp || otpVerified}
+ disabled={loading.sendOtp || formData.otpVerified}
 >
  {loading.sendOtp ? "Resending..." : "Resend OTP"}
 </button>
 }
-        {otpVerified && (
+        {formData.otpVerified && (
           <div className="flex flex-col gap-4 md:gap-6 mb-6 w-full max-w-md">
             <Controller name="password" control={control} render={({ field }) => <PasswordInput placeholder="Enter Password" value={field.value || ""} onChange={field.onChange} />} />
             <Controller name="confirm_password" control={control} render={({ field }) => <PasswordInput placeholder="Confirm Password" value={field.value || ""} onChange={field.onChange} />} />
@@ -212,7 +216,7 @@ const AccountForm = ({ switchTab, handleFinalSubmit }: any) => {
     </div>
 
 
-            <button type="submit" className="bg-[#688086] text-white font-semibold rounded-lg py-2 px-6" disabled={!otpVerified || !captchaValue ||!declarationAccepted|| loading.register}>
+            <button type="submit" className="bg-[#688086] text-white font-semibold rounded-lg py-2 px-6" disabled={!formData.otpVerified || !captchaValue ||!declarationAccepted|| loading.register}>
               {loading.register ? "Registering..." : "Register"}
             </button>
 

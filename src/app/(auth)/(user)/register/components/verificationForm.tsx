@@ -10,11 +10,12 @@ import CameraCaptureModal from "@/components/common/CameraCaptureModal";
 interface SignUpData {
   image: File | null;
   policeVerification?: File | null;
-  educationQualification: File | null;
+  educationDocument: File | null;
   bankPassbook: File | null;
   pwdCertificate: File | null;
   bplCertificate: File | null;
 }
+
 
 const MAX_FILE_SIZE_MB = 5;
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/jpg"];
@@ -26,12 +27,13 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
     formData.files || {
       image: null,
       policeVerification: null,
-      educationQualification: null,
+      educationDocument: null,
       bankPassbook: null,
       pwdCertificate: null,
       bplCertificate: null,
     }
   );
+  let filesPlaceHolder:any={image:"IMAGE",policeVerification:"POLICE VERIFICATION",educationDocument:"EDUCATION DOCUMENT",bankPassbook:"BANK PASSBOOK",pwdCertificate:"PWD CERTIFICATE",bplCertificate:"BPL CERTIFICATE"}
 
   const [showCameraModal, setShowCameraModal] = useState(false);
 
@@ -46,7 +48,7 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
   const fileRefs: any = {
     image: useRef(null),
     policeVerification: useRef(null),
-    educationQualification: useRef(null),
+    educationDocument: useRef(null),
     bankPassbook: useRef(null),
     pwdCertificate: useRef(null),
     bplCertificate: useRef(null),
@@ -194,7 +196,7 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
                     : ""
                 }`}
               >
-                <span>{key.replace(/_/g, " ").toUpperCase()}</span>
+                <span>{filesPlaceHolder[key]}</span>
                 <p className="text-gray-400">
                   {key === "policeVerification" ? "*not mandatory" : ""}
                 </p>

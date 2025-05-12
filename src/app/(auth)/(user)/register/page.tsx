@@ -7,6 +7,7 @@ import axios from "axios";
 import { USER_REGISTER } from "@/utils/constants";
 import { useRouter } from "next/navigation";
 import AuthLayout from "@/components/layout/AuthLayout";
+import SuccessModal from "@/components/ui/SuccessModal";
 
 type Tab = "basic" | "verification" | "account";
 
@@ -34,10 +35,15 @@ export type FormData = {
   ifsc: string;
   pwdCategory: string;
   entrepreneurshipInterest: string;
+  otpVerified:boolean;
+  otpSend:boolean;
+  otpResend:boolean;
+  otpLockActive:boolean;
+  otpMessage:string;
   files: {
     image?: File | null;
     policeVerification?: File | null;
-    educationQualification?: File | null;
+    educationDocument?: File | null;
     bankPassbook?: File|null,
     pwdCertificate?: File|null,
     bplCertificate?: File|null,
@@ -70,21 +76,37 @@ function Page() {
     ifsc: "",
     pwdCategory: "",
     entrepreneurshipInterest: "",
+    otpVerified:false,
+    otpSend:false,
+    otpResend:false,
+    otpLockActive:false,
+    otpMessage:"",
     files: {
       image: null,
       policeVerification: null,
-      educationQualification: null,
+      educationDocument: null,
       bankPassbook:null,
       pwdCertificate:null,
       bplCertificate:null,
     },
   });
-
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
   const [completedForms, setCompletedForms] = useState<any>({
     basic: false,
     verification: false,
     account: false,
   });
+  // Upadationg the parent form..
+  const updateFormData = (newData: Partial<FormData>) => {
+    setData((prev) => ({
+      ...prev,
+      ...newData,
+      files: { ...prev.files, ...newData.files },
+    }));
+  };
+
+  
 
   // Load stored data on mount
   useEffect(() => {
@@ -121,27 +143,24 @@ function Page() {
   useEffect(() => {
     localStorage.setItem("completedForms", JSON.stringify(completedForms));
   }, [completedForms]);
-    // Upadationg the parent form..
-  const updateFormData = (newData: Partial<FormData>) => {
-    setData((prev) => ({
-      ...prev,
-      ...newData,
-      files: { ...prev.files, ...newData.files },
-    }));
-  };
+  
 
 
   const markFormCompleted = (formName: Tab) => {
     setCompletedForms((prev:any) => ({ ...prev, [formName]: true }));
   };
 
-  // Control tab switching ....sd
-  const handleTabSwitch = (index: number, value: Tab) => {
-    if (completedForms[value] || index <= activeTab.index) {
-      setActiveTab({ index, value });
-    }
-  };
+ // Control tab switching ....sd
+ const handleTabSwitch = (index: number, value: Tab) => {
 
+  if (data.otpLockActive) {
+    alert("You can't switch tabs while OTP verification is in progress.");
+    return;
+  }
+  if (completedForms[value] || index <= activeTab.index) {
+    setActiveTab({ index, value });
+  }
+};
 
   const handleFinalSubmit = async (
     email: string,
@@ -195,6 +214,8 @@ function Page() {
         headers: { "Content-Type": "multipart/form-data" },
       });  
       if (response.data.success) {
+        setSuccessMessage("Candidate registered successfully!");
+        setShowSuccessModal(true);
         router.replace("/login");
       } else {
         handleError(response.data.message || "Something went wrong.");
@@ -246,6 +267,12 @@ function Page() {
       markFormCompleted={markFormCompleted}
     />
   </Suspense>
+   {/* Success Modal */}
+   <SuccessModal
+            isOpen={showSuccessModal}
+            onClose={() => setShowSuccessModal(false)}
+            message={successMessage}
+          />
 </AuthLayout>
 
          
@@ -276,7 +303,7 @@ const TabDispatcher = ({
     case "verification":
       return <VerificationForm switchTab={() => { markFormCompleted("verification"); switchTab({ index: 2, value: "account" }); }} formData={formData} updateFormData={updateFormData} />;
     case "account":
-      return <AccountForm switchTab={switchTab} handleFinalSubmit={handleFinalSubmit} updateFormData={updateFormData} />;
+      return <AccountForm switchTab={switchTab}  handleFinalSubmit={handleFinalSubmit} formData={formData} updateFormData={updateFormData}  />
     default:
       return <></>;
   }

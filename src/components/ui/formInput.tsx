@@ -1,7 +1,7 @@
 import { Controller, FieldError } from "react-hook-form";
 
 interface Props {
-  label?: string;  // Add label as an optional prop
+  label?: string;
   name: string;
   type: string;
   placeholder: string;
@@ -10,10 +10,11 @@ interface Props {
   defaultValue?: string;
   error?: FieldError | undefined;
   disabled?: boolean;
+  onChange?: (value: string) => void;  // ✅ Add onChange prop
 }
 
 function FormInput({
-  label,  // Accept label
+  label,
   name,
   type,
   placeholder,
@@ -22,17 +23,16 @@ function FormInput({
   defaultValue = "",
   error,
   disabled,
+  onChange,  // ✅ Accept onChange
 }: Props) {
   return (
     <div className="flex flex-col gap-2">
-      {/* Label */}
       {label && (
         <label htmlFor={name} className="text-sm font-medium text-gray-700">
           {label}
         </label>
       )}
 
-      {/* Input Field */}
       {control && name ? (
         <Controller
           control={control}
@@ -47,6 +47,10 @@ function FormInput({
               disabled={disabled}
               placeholder={placeholder}
               className="text-[14px] rounded-[10px] border placeholder:text-gray-500 border-gray-300 w-full py-2 px-4"
+              onChange={(e) => {
+                field.onChange(e);              // react-hook-form internal change
+                onChange?.(e.target.value);     // ✅ notify parent
+              }}
             />
           )}
         />
@@ -57,10 +61,11 @@ function FormInput({
           placeholder={placeholder}
           className="text-[14px] rounded-[10px] border placeholder:text-gray-500 border-gray-300 w-full py-2 px-4"
           defaultValue={defaultValue}
+          disabled={disabled}
+          onChange={(e) => onChange?.(e.target.value)}  // ✅ notify parent
         />
       )}
 
-      {/* Error Message */}
       {error && error.message && (
         <span className="text-red-500 text-sm">{error.message}</span>
       )}

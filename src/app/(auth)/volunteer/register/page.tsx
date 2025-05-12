@@ -6,6 +6,7 @@ import VerificationForm from "./components/verificationForm";
 import axios from "axios";
 import { VOLUNTEER_REGISTER } from "@/utils/constants";
 import { useRouter } from "next/navigation";
+import SuccessModal from "@/components/ui/SuccessModal";
 
 type Tab = "basic" | "verification" | "account";
 
@@ -33,6 +34,11 @@ export type FormData = {
   educationYearOfCompletion:string;
   employmentStatus:string;
   monthlyIncomeRange:string;
+  otpVerified:boolean;
+  otpSend:boolean;
+  otpResend:boolean;
+  otpLockActive:boolean;
+  otpMessage:string;
   files: {
     image?: File | null;
     policeVerification?: File | null;
@@ -67,6 +73,11 @@ function Page() {
     educationYearOfCompletion:"",
     employmentStatus:"",
     monthlyIncomeRange:"",
+    otpVerified:false,
+    otpSend:false,
+    otpResend:false,
+    otpLockActive:false,
+    otpMessage:"",
     files: {
       image: null,
       policeVerification: null,
@@ -74,6 +85,8 @@ function Page() {
       educationCertificate:null,
     },
   });
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const [completedForms, setCompletedForms] = useState<any>({
     basic: false,
@@ -132,6 +145,11 @@ function Page() {
 
   // Control tab switching ....sd
   const handleTabSwitch = (index: number, value: Tab) => {
+
+    if (data.otpLockActive) {
+      alert("You can't switch tabs while OTP verification is in progress.");
+      return;
+    }
     if (completedForms[value] || index <= activeTab.index) {
       setActiveTab({ index, value });
     }
@@ -175,6 +193,8 @@ function Page() {
         headers: { "Content-Type": "multipart/form-data" },
       });  
       if (response.data.success) {
+        setSuccessMessage("Volunteer registered successfully!");
+      setShowSuccessModal(true);
         router.replace("/volunteer/login");
       } else {
         handleError(response.data.message || "Something went wrong.");
@@ -227,7 +247,14 @@ function Page() {
           </Suspense>
         </div>
       </div>
+       {/* Success Modal */}
+       <SuccessModal
+            isOpen={showSuccessModal}
+            onClose={() => setShowSuccessModal(false)}
+            message={successMessage}
+          />
     </main>
+    
   );
 }
 
@@ -254,7 +281,7 @@ const TabDispatcher = ({
     case "verification":
       return <VerificationForm switchTab={() => { markFormCompleted("verification"); switchTab({ index: 2, value: "account" }); }} formData={formData} updateFormData={updateFormData} />;
     case "account":
-      return <AccountForm switchTab={switchTab} handleFinalSubmit={handleFinalSubmit} updateFormData={updateFormData} />;
+      return <AccountForm switchTab={switchTab} handleFinalSubmit={handleFinalSubmit} formData={formData} updateFormData={updateFormData}  />;
     default:
       return <></>;
   }

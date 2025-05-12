@@ -28,6 +28,9 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
       educationCertificate: null,
     }
   );
+
+  let filesPlaceHolder:any={image:"IMAGE",policeVerification:"POLICE VERIFICATION",educationCertificate:"EDUCATION CERTIFICATE",bankDocument:"BANK DOCUMENT",pwdCertificate:"PWD CERTIFICATE",bplCertificate:"BPL CERTIFICATE"}
+
   const [showCameraModal, setShowCameraModal] = useState(false);
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -73,8 +76,8 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
     setUploadedFiles((prev) => {
       const newFiles = { ...prev, [field]: file };
       updateFormData({ ...formData, files: newFiles }); // Ensure full formData is updated
-      localStorage.setItem("uploadedFiles", JSON.stringify(newFiles));
-      return newFiles;
+      // localStorage.setItem("uploadedFiles", JSON.stringify(newFiles));
+      return newFiles
     });
 
     setErrors((prev) => ({ ...prev, [field]: errorMsg }));
@@ -183,7 +186,7 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
                     : ""
                 }`}
               >
-                <span>{key.replace(/_/g, " ").toUpperCase()}</span>
+                <span>{filesPlaceHolder[key]}</span>
                 <p className="text-gray-400">
                   {key === "policeVerification" ? "*not mandatory" : ""}
                 </p>
