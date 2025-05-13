@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import adminApi from "@/utils/axios_Interceptors/adminApiService";
+import ConfirmationModal from "@/components/ui/ConfirmationModal";
 
 interface Admin {
   _id: string;
@@ -37,14 +38,17 @@ const AdminPaymentRequests = () => {
   const [paymentRequests, setPaymentRequests] = useState<PaymentRequest[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [confirmAction, setConfirmAction] = useState<{
+    id: string;
+    action: "approve" | "mark-paid" | "reject";
+  } | null>(null);
+
   const itemsPerPage = 10;
 
   const fetchPaymentRequests = async () => {
     try {
       setLoading(true);
-      const response = await adminApi.get(
-        "/payment-requests/all"
-      );
+      const response = await adminApi.get("/payment-requests/all");
       if (response.data.success) {
         setPaymentRequests(response.data.paymentRequests);
       }
@@ -61,9 +65,7 @@ const AdminPaymentRequests = () => {
 
   const handleAction = async (id: string, action: "approve" | "mark-paid" | "reject") => {
     try {
-      await adminApi.patch(
-        `/payment-requests/${action}/${id}`
-      );
+      await adminApi.patch(`/payment-requests/${action}/${id}`);
       fetchPaymentRequests();
     } catch (error) {
       console.error(`Failed to ${action} payment request`, error);
@@ -112,19 +114,19 @@ const AdminPaymentRequests = () => {
                 <td className="px-4 py-2 border-b capitalize">{request.status}</td>
                 <td className="px-4 py-2 border-b space-x-2">
                   <button
-                    onClick={() => handleAction(request._id, "approve")}
+                    onClick={() => setConfirmAction({ id: request._id, action: "approve" })}
                     className="px-3 py-1 rounded-md text-sm bg-blue-500 text-white hover:bg-blue-600"
                   >
                     Approve
                   </button>
                   <button
-                    onClick={() => handleAction(request._id, "mark-paid")}
+                    onClick={() => setConfirmAction({ id: request._id, action: "mark-paid" })}
                     className="px-3 py-1 rounded-md text-sm bg-green-500 text-white hover:bg-green-600"
                   >
                     Mark Paid
                   </button>
                   <button
-                    onClick={() => handleAction(request._id, "reject")}
+                    onClick={() => setConfirmAction({ id: request._id, action: "reject" })}
                     className="px-3 py-1 rounded-md text-sm bg-red-500 text-white hover:bg-red-600"
                   >
                     Reject
@@ -163,6 +165,21 @@ const AdminPaymentRequests = () => {
           Next
         </button>
       </div>
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={!!confirmAction}
+        onClose={() => setConfirmAction(null)}
+        onConfirm={async () => {
+          if (confirmAction) {
+            await handleAction(confirmAction.id, confirmAction.action);
+            setConfirmAction(null);
+          }
+        }}
+        title={`Confirm ${confirmAction?.action.replace("-", " ")}`}
+        message={`Are you sure you want to ${confirmAction?.action.replace("-", " ")} this payment request?`}
+        confirmButtonText={`Yes, ${confirmAction?.action.replace("-", " ")}`}
+      />
     </div>
   );
 };
