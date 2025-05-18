@@ -5,9 +5,7 @@ import { ChangeEvent, useEffect, useState } from "react";
 import Modal from "@/components/ui/Modal";
 import adminApi from "@/utils/axios_Interceptors/adminApiService";
 import ListLetterhead from "./components/ListLetterhead";
-import LetterHeadButton from "./components/LetterHeadButton";
 import Signature from "./components/Signature";
-import { iteratee } from "lodash";
 
 export interface signature {
   _id: string;
@@ -273,7 +271,6 @@ let dataView=[{name:"email",value:isMessageView.email},
           letterheadList={letterheadList}
           fetchLetterhead={fetchLetterhead}
         />
-        <LetterHeadButton signatures={signatures} />
         
         <Signature />
 

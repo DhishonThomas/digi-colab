@@ -10,6 +10,7 @@ import EditLetterHeadButton from "./EditLetterhead";
 import Modal from "@/components/ui/Modal";
 import SuccessModal from "@/components/ui/SuccessModal";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
+import LetterHeadButton from "./LetterHeadButton";
 interface PropsType {
   letterheadList: LetterHeadData[]; // ✅ renamed
   signatures: signature[];
@@ -105,6 +106,8 @@ const ListLetterhead = ({
         overFlow={true}
       >
         <div className="overflow-x-auto">
+        <LetterHeadButton signatures={signatures} />
+
           <div className="flex justify-end">
             <input
               type="text"
@@ -114,7 +117,9 @@ const ListLetterhead = ({
                 handleSearch(e.target.value)
               }
             />
+
           </div>
+          
           <table className="min-w-full bg-white bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat bg-contain border border-gray-200 ">
             <thead className="bg-gray-100 ">
               <tr>
