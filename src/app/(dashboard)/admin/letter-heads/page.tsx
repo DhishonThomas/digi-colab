@@ -7,6 +7,7 @@ import adminApi from "@/utils/axios_Interceptors/adminApiService";
 import ListLetterhead from "./components/ListLetterhead";
 import LetterHeadButton from "./components/LetterHeadButton";
 import Signature from "./components/Signature";
+import { iteratee } from "lodash";
 
 export interface signature {
   _id: string;
@@ -67,11 +68,14 @@ const LetterHeads = () => {
   const [signatures, setSignatures] = useState<signature[]>([]);
   const [isSentModalOpen,setIsSentModalOpen]=useState(false)
   const [showPdfModal,setShowPdfModal]=useState(false)
+  const [isMessageViewModalOpen,setIsMessageViewModalOpen]=useState(false)
+  const [isMessageView,setIsMessageView]=useState({email:"",subject:"",message:"",cloudinaryUrl:""})
   const [formData, setFormData] = useState({
   email: "",
   subject: "",
   message: "",
 });
+
 const [selectedLetterhead,setSelectedLetterhead]=useState<Letterhead|null>(null)
 const [letterheadPdf,setLetterheadPdf]=useState<Letterhead[]>([])
 const [filteredPdf,setFilteredPdf]=useState<Letterhead[]>([])
@@ -112,6 +116,8 @@ const fetchPdf=async()=>{
       const { data } = await adminApi.post("/pdf/list-sent-messages", {
         email: "",
       });
+      console.log(data);
+      
       if (data) {
 setMessage([...data].sort((a, b) => new Date(b.sentAt).getTime() - new Date(a.sentAt).getTime()));
       }
@@ -245,6 +251,18 @@ useEffect(()=>{
   );
   const totalPages = Math.ceil(filteredData.length / rolesPerPage);
 
+const handleMessageView = (id:any) => {
+
+  const result=paginateData.filter((item:SentMessage) => item._id === id)
+  setIsMessageViewModalOpen(true)
+  setIsMessageView(result[0])
+}
+
+
+let dataView=[{name:"email",value:isMessageView.email},
+{name:"subject",value:isMessageView.subject},{name:"message",value:isMessageView.message}]
+
+
 
 
   return (
@@ -293,6 +311,7 @@ useEffect(()=>{
                   <button
                     className="px-3 py-1 m-auto rounded-md text-sm bg-[#B56365] text-white hover:bg-[#b56364f8]"
                     title="View Email Details"
+                    onClick={() => handleMessageView(role._id)}
                   >
                     View
                   </button>
@@ -331,6 +350,73 @@ useEffect(()=>{
           Next
         </button>
       </div>
+
+{/* Modal forView mail form */}
+<Modal
+  isOpen={isMessageViewModalOpen}
+  onClose={() => {setIsMessageViewModalOpen(false)}}
+  title="View Message "
+  size="large">
+    <div
+        className="grid grid-cols-1 md:grid-cols-2 gap-6 border-4 border-[#B56365] rounded-lg bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat bg-contain text-left px-6 py-6 overflow-y-auto max-h-[90vh]"
+    >
+    <div className="space-y-4">
+      {dataView.map((value) => (
+        <div
+          key={value.name}
+          className="p-4 rounded-md bg-transparent shadow-lg border-0 border-b-4 border-b-gray-300"
+        >
+          <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">
+            {value.name}
+          </label>
+          <input
+            type="text"
+            name={value.name}
+            value={value.value}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#B56365]"
+          />
+        </div>
+      ))}
+     
+    </div>
+
+    <div className="flex flex-col justify-between space-y-6">
+      <div className="space-y-4">
+        <h3 className="text-base font-bold text-gray-700">
+          Attached letterhead
+        </h3>
+        
+        
+        {isMessageView?<div>
+           <iframe
+        src={isMessageView.cloudinaryUrl}
+        width="100%"
+        height="400px"
+        className="rounded"
+        // title={`pdf-${index}`}
+      />
+      <p className="mt-2 text-center text-sm font-medium">{isMessageView.subject}</p>
+        </div>:""}
+        <input
+          type="file"
+          accept="image/*"
+          className="hidden"
+        />
+      </div>
+
+      <div className="flex justify-end mt-4">
+        <button
+          type="button"
+          onClick={() => setIsMessageViewModalOpen(false)}
+          className="px-4 py-2 bg-[#B56365] text-white rounded-md hover:bg-[#b56364f8]"
+        >
+          close
+        </button>
+      </div>
+    </div>
+    </div>
+  </Modal>
 
 {/* Modal forSent mail form */}
   <Modal
