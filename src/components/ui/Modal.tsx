@@ -22,7 +22,6 @@ const Modal: React.FC<ModalProps> = ({
   showCloseButton = true,
   overlayClickClose = true,
   overFlow=false,
-
   size = "medium", // Default size
 }) => {
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -33,13 +32,14 @@ const Modal: React.FC<ModalProps> = ({
 
   const getSizeClasses = () => {
     if (fullscreen) return `h-full w-full m-4 ${overFlow?"overflow-y-auto":""}`; // Maintain existing fullscreen logic
+
     switch (size) {
       case "large":
-        return "w-[80vw] h-[80vh]";
+        return `w-[80vw] max-h-[95vh] ${overFlow?"overflow-y-auto":""}`;
       case "medium":
         return "w-[60vw] h-[70vh]";
       case "small":
-        return "w-[40vw] h-[50vh]";
+        return "w-[40vw] h-auto max-h-[70vh]";
       default:
         return "max-w-md md:max-w-lg lg:max-w-2xl max-h-[90vh] overflow-y-auto"; // Existing default
     }
