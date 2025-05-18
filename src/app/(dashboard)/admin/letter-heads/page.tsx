@@ -189,25 +189,6 @@ setIsSentModalOpen(false)      }
     // }
   }
 
-  const handleSearch = (searchTerm:string) => {
-  const term = searchTerm.toLowerCase();
-
-  const result = message.filter(item => {
-    // Match email (partial match)
-    const emailMatch = item.email.toLowerCase().includes(term);
-
-    // Format date as DD-MM-YYYY
-    const dateObj = new Date(item.sentAt);
-    const formattedDate = `${String(dateObj.getDate()).padStart(2, '0')}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${dateObj.getFullYear()}`;
-
-    // Match date (exact or partial match)
-    const dateMatch = formattedDate.includes(term);
-
-    return emailMatch || dateMatch;
-  });
-
-  setFilteredData(result);
-};
 
 const handlePdfSearch=(searchTerm:string)=>{
 const term = searchTerm.toLowerCase();
@@ -234,6 +215,37 @@ useEffect(()=>{
     fetchLetterhead();
     fetchPdf()
   }, []);
+  const [currentPage, setCurrentPage] = useState(1);
+  const handleSearch = (searchTerm:string) => {
+    const term = searchTerm.toLowerCase();
+  
+    const result = message.filter(item => {
+      // Match email (partial match)
+      const emailMatch = item.email.toLowerCase().includes(term);
+  
+      // Format date as DD-MM-YYYY
+      const dateObj = new Date(item.sentAt);
+      const formattedDate = `${String(dateObj.getDate()).padStart(2, '0')}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${dateObj.getFullYear()}`;
+  
+      // Match date (exact or partial match)
+      const dateMatch = formattedDate.includes(term);
+  
+      return emailMatch || dateMatch;
+    });
+  
+    setFilteredData(result);
+    setCurrentPage(1);
+  
+  };
+  const rolesPerPage = 10;
+
+  const paginateData = filteredData.slice(
+    (currentPage - 1) * rolesPerPage,
+    currentPage * rolesPerPage
+  );
+  const totalPages = Math.ceil(filteredData.length / rolesPerPage);
+
+
 
   return (
     <div>
@@ -272,7 +284,7 @@ useEffect(()=>{
             </tr>
           </thead>
           <tbody>
-            {filteredData.map((role: SentMessage, index: number) => (
+            {paginateData.map((role: SentMessage, index: number) => (
               <tr key={index} className="hover:bg-gray-50">
                 <td className="px-4 py-2 border-b">{role.email}</td>
                 <td className="px-4 py-2 border-b">{role.subject}</td>
@@ -289,6 +301,35 @@ useEffect(()=>{
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex justify-center items-center mt-6 space-x-4">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+          className={`px-4 py-2 rounded-md ${
+            currentPage === 1
+              ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+              : "bg-[#B56365] text-white hover:bg-[#b56364f8]"
+          }`}
+        >
+          Previous
+        </button>
+        <span className="text-sm font-medium">
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          disabled={currentPage === totalPages}
+          className={`px-4 py-2 rounded-md ${
+            currentPage === totalPages
+              ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+              : "bg-[#B56365] text-white hover:bg-[#b56364f8]"
+          }`}
+        >
+          Next
+        </button>
       </div>
 
 {/* Modal forSent mail form */}

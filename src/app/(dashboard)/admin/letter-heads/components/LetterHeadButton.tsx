@@ -4,7 +4,6 @@ import Modal from "@/components/ui/Modal";
 import adminApi from "@/utils/axios_Interceptors/adminApiService";
 import Image from "next/image";
 import { FiX } from "react-icons/fi";
-import { LetterHeadData } from "@/app/(dashboard)/admin/letter-heads/page";
 import { handleCreatePdf } from "./CreatePdf";
 
 export interface signature {
@@ -118,8 +117,7 @@ const LetterHeadButton = ({ signatures }: LetterHeadButtonProps) => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title="Letter Head"
-        size="fullscreen" // or "small", "large", "fullscreen"
-        fullscreen={true}
+        size="large" // or "small", "large", "fullscreen"
         overFlow={true}
       >
         <div className="flex justify-center p-4 bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat bg-contain">
@@ -141,7 +139,7 @@ const LetterHeadButton = ({ signatures }: LetterHeadButtonProps) => {
                   ANARA SKILLS FOUNDATION
                 </h1>
                 <p className="text-gray-600 text-lg">
-                  BUILDING SSKILLS, SHAPING TOMORROW
+                  BUILDING SKILLS, SHAPING TOMORROW
                 </p>
               </div>
               <div className="">

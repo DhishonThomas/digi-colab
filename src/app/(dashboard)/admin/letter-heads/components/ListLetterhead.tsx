@@ -56,6 +56,7 @@ const ListLetterhead = ({
     setSelectedSignature(signatures.find((item) => item._id === role.image_id));
     setViewPdfModalOpen(true);
   };
+  const [currentPage, setCurrentPage] = useState(1);
 
   const handleSearch = (term: string) => {
     const lowerTerm = term.toLowerCase();
@@ -68,7 +69,19 @@ const ListLetterhead = ({
     });
 
     setFilteredData(result);
+    setCurrentPage(1); // Reset to the first page when searching
   };
+
+  const rolesPerPage = 10;
+
+  const paginateData = filteredData.slice(
+    (currentPage - 1) * rolesPerPage,
+    currentPage * rolesPerPage
+  );
+  const totalPages = Math.ceil(filteredData.length / rolesPerPage);
+
+
+
 
   useEffect(() => {
     setFilteredData(letterheadList);
@@ -111,8 +124,8 @@ const ListLetterhead = ({
               </tr>
             </thead>
             <tbody>
-              {filteredData &&
-                filteredData.map((role: LetterHeadData, index: number) => (
+              {paginateData &&
+                paginateData.map((role: LetterHeadData, index: number) => (
                   <tr key={index} className="hover:bg-gray-50">
                     <td className="px-4 py-2 border-b">{role.subject}</td>
                     <td className="px-4 py-2 border-b">
@@ -147,6 +160,36 @@ const ListLetterhead = ({
             </tbody>
           </table>
         </div>
+
+              {/* Pagination */}
+      <div className="flex justify-center items-center mt-6 space-x-4">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+          className={`px-4 py-2 rounded-md ${
+            currentPage === 1
+              ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+              : "bg-[#B56365] text-white hover:bg-[#b56364f8]"
+          }`}
+        >
+          Previous
+        </button>
+        <span className="text-sm font-medium">
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          disabled={currentPage === totalPages}
+          className={`px-4 py-2 rounded-md ${
+            currentPage === totalPages
+              ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+              : "bg-[#B56365] text-white hover:bg-[#b56364f8]"
+          }`}
+        >
+          Next
+        </button>
+      </div>
+
       </Modal>
 
       {/* Modal for signature list */}

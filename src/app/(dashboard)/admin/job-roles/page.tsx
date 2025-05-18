@@ -90,7 +90,7 @@ const JobRolesPage = () => {
   );
   const totalPages = Math.ceil(filteredRoles.length / rolesPerPage);
 
-  const truncateText = (text: string, limit = 50) => {
+  const truncateText = (text: string, limit = 20) => {
     if (text.length <= limit) return text;
     return text.substring(0, limit) + "...";
   };

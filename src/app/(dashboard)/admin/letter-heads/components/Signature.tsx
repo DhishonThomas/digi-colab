@@ -150,6 +150,34 @@ const Signature = () => {
     //   setIsLoading(false);
     // }
   };
+
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // const handleSearch = (term: string) => {
+  //   const lowerTerm = term.toLowerCase();
+
+  //   const result = letterheadList.filter((item) => {
+  //     const subjectMatch = item.subject?.toLowerCase().includes(lowerTerm);
+
+  //     // Optional: Add other fields if needed later
+  //     return subjectMatch;
+  //   });
+
+  //   setFilteredData(result);
+  //   setCurrentPage(1); // Reset to the first page when searching
+  // };
+
+  const rolesPerPage = 10;
+
+  const paginateData = signatures.slice(
+    (currentPage - 1) * rolesPerPage,
+    currentPage * rolesPerPage
+  );
+  const totalPages = Math.ceil(signatures.length / rolesPerPage);
+
+
+
+
   useEffect(() => {
     fetchSignatures();
   }, []);
@@ -167,13 +195,12 @@ const Signature = () => {
         isOpen={isSignatureModalOpen}
         onClose={() => setIsSignatureModalOpen(false)}
         title="signature"
-        size="fullscreen" // or "small", "large", "fullscreen"
-        fullscreen={true}
+        size="large" // or "small", "large", "fullscreen"
         overFlow={true}
       >
         <div className="flex justify-end mx-20">
           <button
-            className="px-5 py-2 m-3 bg-[#B56365] text-white hover:bg-[#b56364f8]"
+            className="px-5 py-2 m-3 rounded-xl bg-[#B56365] text-white hover:bg-[#b56364f8]"
             onClick={() => setIsAddSignatureModal(true)}
           >
             add signature
@@ -226,6 +253,35 @@ const Signature = () => {
               ))}
           </tbody>
         </table>
+                      {/* Pagination */}
+      <div className="flex justify-center items-center mt-6 space-x-4">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+          className={`px-4 py-2 rounded-md ${
+            currentPage === 1
+              ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+              : "bg-[#B56365] text-white hover:bg-[#b56364f8]"
+          }`}
+        >
+          Previous
+        </button>
+        <span className="text-sm font-medium">
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          disabled={currentPage === totalPages}
+          className={`px-4 py-2 rounded-md ${
+            currentPage === totalPages
+              ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+              : "bg-[#B56365] text-white hover:bg-[#b56364f8]"
+          }`}
+        >
+          Next
+        </button>
+      </div>
+
       </Modal>
 
       {/* Modal for add signature form */}
