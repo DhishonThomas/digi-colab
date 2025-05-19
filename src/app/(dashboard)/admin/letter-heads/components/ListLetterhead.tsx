@@ -79,6 +79,7 @@ const ListLetterhead = ({
     (currentPage - 1) * rolesPerPage,
     currentPage * rolesPerPage
   );
+  console.log("paginated data", paginateData);
   const totalPages = Math.ceil(filteredData.length / rolesPerPage);
 
 
@@ -125,6 +126,8 @@ const ListLetterhead = ({
               <tr>
                 <th className="px-4 py-2 border-b text-start">Subject</th>
                 <th className="px-4 py-2 border-b text-start">Content</th>
+                <th className="px-4 py-2 border-b text-start">Date</th>
+                {/* //new Intl.DateTimeFormat('en-GB').format(new Date(role.sentAt)) */}
                 <th className="px-4 py-2 border-b w-72 text-start">Action</th>
               </tr>
             </thead>
@@ -138,6 +141,8 @@ const ListLetterhead = ({
                         ? role.body_text.slice(0, 20) + "..."
                         : role.body_text}
                     </td>{" "}
+                                        <td className="px-4 py-2 border-b">{new Intl.DateTimeFormat('en-GB').format(new Date(role.createdAt))}</td>
+
                     {/* <td className="px-4 py-2 border-b">{truncateText(role.description)}</td> */}
                     <td className="px-4 py-2 border-b w-72 space-x-2 flex gap-3">
                       <button
