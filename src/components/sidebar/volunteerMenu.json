@@ -2,31 +2,15 @@
     {
         "title":"Dashboard",
         "icon":"/icons/sidebar/icon-home.svg",
-        "path": "/admin/dashboard"
-    },
-    {
-        "title":"Opportunities",
-        "icon":"/icons/sidebar/icon-users.svg",
-        "path": "#"
-    },
-    {
-        "title":"Schedule",
+        "path": "/volunteer/dashboard"
+    },  {
+        "title":"Payments",
         "icon":"/icons/sidebar/icon-graph.svg",
-        "path": "#"
+        "path": "/volunteer/payments"
     },
-    {
-        "title":"Log Hours",
-        "icon":"/icons/sidebar/icon-job.svg",
-        "path": "#"
-    },
-    {
+        {
         "title":"Profile",
         "icon":"/icons/sidebar/icon-profile.svg",
-        "path": "#"
-    },
-    {
-        "title":"Settings",
-        "icon":"/icons/sidebar/icon-settings.svg",
-        "path": "#"
+        "path": "/volunteer/profile"
     }
 ]
