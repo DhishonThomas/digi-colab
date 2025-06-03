@@ -19,34 +19,38 @@ const tabs = [
 
 export type FormData = {
   name: string;
-  email:string;
-  password:string;
+  email: string;
+  password: string;
   guardian: string;
   address: string;
-  currentAddress:string;
+  currentAddress: string;
+  state: string;
+  district: string;
+  city: string;
+  pincode: string;
   dob: string;
-  age: number|string;
+  age: number | string;
   gender: string;
   phone: string;
-  volunteerRegNum:string;
-  educationQualification:string;
-  bankAccNumber:string;
+  volunteerRegNum: string;
+  educationQualification: string;
+  bankAccNumber: string;
   bankName: string;
   ifsc: string;
   pwdCategory: string;
   entrepreneurshipInterest: string;
-  otpVerified:boolean;
-  otpSend:boolean;
-  otpResend:boolean;
-  otpLockActive:boolean;
-  otpMessage:string;
+  otpVerified: boolean;
+  otpSend: boolean;
+  otpResend: boolean;
+  otpLockActive: boolean;
+  otpMessage: string;
   files: {
     image?: File | null;
     policeVerification?: File | null;
     educationDocument?: File | null;
-    bankPassbook?: File|null,
-    pwdCertificate?: File|null,
-    bplCertificate?: File|null,
+    bankPassbook?: File | null;
+    pwdCertificate?: File | null;
+    bplCertificate?: File | null;
   };
 };
 
@@ -56,38 +60,42 @@ function Page() {
     value: "basic",
   });
 
-  const router=useRouter()
+  const router = useRouter();
 
   const [data, setData] = useState<FormData>({
     name: "",
-    email:"",
-    password:"",
+    email: "",
+    password: "",
     guardian: "",
     address: "",
-    currentAddress:"",
+    currentAddress: "",
+    state: "",
+    district: "",
+    city: "",
+    pincode: "",
     dob: "",
     age: "",
     gender: "",
     phone: "",
-    volunteerRegNum:"",
-    educationQualification:"",
-    bankAccNumber:"",
+    volunteerRegNum: "",
+    educationQualification: "",
+    bankAccNumber: "",
     bankName: "",
     ifsc: "",
     pwdCategory: "",
     entrepreneurshipInterest: "",
-    otpVerified:false,
-    otpSend:false,
-    otpResend:false,
-    otpLockActive:false,
-    otpMessage:"",
+    otpVerified: false,
+    otpSend: false,
+    otpResend: false,
+    otpLockActive: false,
+    otpMessage: "",
     files: {
       image: null,
       policeVerification: null,
       educationDocument: null,
-      bankPassbook:null,
-      pwdCertificate:null,
-      bplCertificate:null,
+      bankPassbook: null,
+      pwdCertificate: null,
+      bplCertificate: null,
     },
   });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -106,8 +114,6 @@ function Page() {
     }));
   };
 
-  
-
   // Load stored data on mount
   useEffect(() => {
     const savedData = localStorage.getItem("formData");
@@ -116,51 +122,61 @@ function Page() {
       setData((prevData) => ({
         ...parsedData, // Load text fields from localStorage
         files: prevData.files || {}, // Retain existing `files`
+        otpVerified: false,
+        otpSend: false,
+        otpResend: false,
+        otpLockActive: false,
+        otpMessage: "",
       }));
     }
-  
+
     const savedTab = localStorage.getItem("activeTab");
     if (savedTab) {
       setActiveTab(JSON.parse(savedTab));
     }
-  
+
     const savedCompletion = localStorage.getItem("completedForms");
     if (savedCompletion) {
       setCompletedForms(JSON.parse(savedCompletion));
     }
   }, []);
-  
-  // Save data on form change (excluding `files`)
+
+  // Save data on form change (excluding `files` and 'otp' fields)
   useEffect(() => {
-    const { files, ...textData } = data; // Exclude the `files` field
+    const {
+      files,
+      otpMessage,
+      otpResend,
+      otpSend,
+      otpVerified,
+      otpLockActive,
+      ...textData
+    } = data; // Exclude the `files` and 'otp' related fields
     localStorage.setItem("formData", JSON.stringify(textData));
   }, [data]);
-  
+
   useEffect(() => {
     localStorage.setItem("activeTab", JSON.stringify(activeTab));
   }, [activeTab]);
-  
+
   useEffect(() => {
     localStorage.setItem("completedForms", JSON.stringify(completedForms));
   }, [completedForms]);
-  
-
 
   const markFormCompleted = (formName: Tab) => {
-    setCompletedForms((prev:any) => ({ ...prev, [formName]: true }));
+    setCompletedForms((prev: any) => ({ ...prev, [formName]: true }));
   };
 
- // Control tab switching ....sd
- const handleTabSwitch = (index: number, value: Tab) => {
-
-  if (data.otpLockActive) {
-    alert("You can't switch tabs while OTP verification is in progress.");
-    return;
-  }
-  if (completedForms[value] || index <= activeTab.index) {
-    setActiveTab({ index, value });
-  }
-};
+  // Control tab switching ....sd
+  const handleTabSwitch = (index: number, value: Tab) => {
+    if (data.otpLockActive) {
+      alert("You can't switch tabs while OTP verification is in progress.");
+      return;
+    }
+    if (completedForms[value] || index <= activeTab.index) {
+      setActiveTab({ index, value });
+    }
+  };
 
   const handleFinalSubmit = async (
     email: string,
@@ -168,7 +184,6 @@ function Page() {
     undertaking: boolean,
     handleError: (message: string) => void
   ) => {
-  
     const formData = new FormData();
 
     const calculateAge = (dobString: string): number => {
@@ -176,12 +191,15 @@ function Page() {
       const birthDate = new Date(dobString);
       let age = today.getFullYear() - birthDate.getFullYear();
       const monthDiff = today.getMonth() - birthDate.getMonth();
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      if (
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < birthDate.getDate())
+      ) {
         age--;
       }
       return age;
     };
-  
+
     const age = calculateAge(data.dob);
 
     formData.append("name", data.name);
@@ -190,6 +208,10 @@ function Page() {
     formData.append("guardian", data.guardian);
     formData.append("address", data.address);
     formData.append("currentAddress", data.currentAddress);
+    formData.append("state", data.state);
+    formData.append("district", data.district);
+    formData.append("city", data.city);
+    formData.append("pincode", data.pincode);
     formData.append("dob", data.dob);
     formData.append("age", String(age));
     formData.append("gender", data.gender);
@@ -201,8 +223,8 @@ function Page() {
     formData.append("educationQualification", data.educationQualification);
     formData.append("pwdCategory", data.pwdCategory);
     formData.append("entrepreneurshipInterest", data.entrepreneurshipInterest);
-    formData.append("undertaking",undertaking+"")
-    
+    formData.append("undertaking", undertaking + "");
+
     // Append only files
     Object.entries(data.files || {}).forEach(([key, file]) => {
       if (file instanceof File) {
@@ -212,7 +234,7 @@ function Page() {
     try {
       const response = await axios.post(USER_REGISTER, formData, {
         headers: { "Content-Type": "multipart/form-data" },
-      });  
+      });
       if (response.data.success) {
         setSuccessMessage("Candidate registered successfully!");
         setShowSuccessModal(true);
@@ -223,60 +245,57 @@ function Page() {
     } catch (error: any) {
       let errorMessage = "An unexpected error occurred. Please try again.";
       if (axios.isAxiosError(error)) {
-        errorMessage = error.response?.data?.message || "Server error occurred.";
+        errorMessage =
+          error.response?.data?.message || "Server error occurred.";
       }
       handleError(errorMessage);
       console.error("Error:", error);
     }
   };
   return (
-
-<AuthLayout backgroundImage="/images/watermark_logo.png" maxWidth="510px">
-  <h1 className="text-text-primary text-[36px] font-semibold text-center mb-6">
-    Register
-  </h1>
-  <div className="flex items-center justify-center mb-[24px] gap-[65px]">
-    {tabs.map((tab: any, i) => (
-      <div
-        key={i}
-        onClick={() => handleTabSwitch(i, tab.value)}
-        className={`flex flex-col items-center cursor-pointer ${
-          !completedForms[tab.value] && i > activeTab.index
-            ? "opacity-50 cursor-not-allowed"
-            : ""
-        }`}
-      >
-        <div
-          className={`text-[10px] font-[600] border border-[#DADADA] w-[32px] flex items-center justify-center rounded-full aspect-square ${
-            activeTab.index >= i ? "bg-[#688086] text-white" : ""
-          }`}
-        >
-          {i + 1}
-        </div>
-        <div className="text-[8px]">{tab.label}</div>
+    <AuthLayout backgroundImage="/images/watermark_logo.png" maxWidth="510px">
+      <h1 className="text-text-primary text-[36px] font-semibold text-center mb-6">
+        Register
+      </h1>
+      <div className="flex items-center justify-center mb-[24px] gap-[65px]">
+        {tabs.map((tab: any, i) => (
+          <div
+            key={i}
+            onClick={() => handleTabSwitch(i, tab.value)}
+            className={`flex flex-col items-center cursor-pointer ${
+              !completedForms[tab.value] && i > activeTab.index
+                ? "opacity-50 cursor-not-allowed"
+                : ""
+            }`}
+          >
+            <div
+              className={`text-[10px] font-[600] border border-[#DADADA] w-[32px] flex items-center justify-center rounded-full aspect-square ${
+                activeTab.index >= i ? "bg-[#688086] text-white" : ""
+              }`}
+            >
+              {i + 1}
+            </div>
+            <div className="text-[8px]">{tab.label}</div>
+          </div>
+        ))}
       </div>
-    ))}
-  </div>
-  <Suspense>
-    <TabDispatcher
-      switchTab={setActiveTab}
-      activeTab={activeTab.value}
-      formData={data}
-      updateFormData={updateFormData}
-      handleFinalSubmit={handleFinalSubmit}
-      markFormCompleted={markFormCompleted}
-    />
-  </Suspense>
-   {/* Success Modal */}
-   <SuccessModal
-            isOpen={showSuccessModal}
-            onClose={() => setShowSuccessModal(false)}
-            message={successMessage}
-          />
-</AuthLayout>
-
-         
-     
+      <Suspense>
+        <TabDispatcher
+          switchTab={setActiveTab}
+          activeTab={activeTab.value}
+          formData={data}
+          updateFormData={updateFormData}
+          handleFinalSubmit={handleFinalSubmit}
+          markFormCompleted={markFormCompleted}
+        />
+      </Suspense>
+      {/* Success Modal */}
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        message={successMessage}
+      />
+    </AuthLayout>
   );
 }
 
@@ -294,16 +313,47 @@ const TabDispatcher = ({
   updateFormData: (data: Partial<FormData>) => void;
   activeTab: string;
   switchTab: any;
-  handleFinalSubmit: (email:string,password:string,undertaking:boolean,handleLoading:()=>void,handleError:()=>void) => Promise<any>;
+  handleFinalSubmit: (
+    email: string,
+    password: string,
+    undertaking: boolean,
+    handleLoading: () => void,
+    handleError: () => void
+  ) => Promise<any>;
   markFormCompleted: (formName: Tab) => void;
 }) => {
   switch (activeTab) {
     case "basic":
-      return <BasicForm switchTab={() => { markFormCompleted("basic"); switchTab({ index: 1, value: "verification" }); }} formData={formData} updateFormData={updateFormData} />;
+      return (
+        <BasicForm
+          switchTab={() => {
+            markFormCompleted("basic");
+            switchTab({ index: 1, value: "verification" });
+          }}
+          formData={formData}
+          updateFormData={updateFormData}
+        />
+      );
     case "verification":
-      return <VerificationForm switchTab={() => { markFormCompleted("verification"); switchTab({ index: 2, value: "account" }); }} formData={formData} updateFormData={updateFormData} />;
+      return (
+        <VerificationForm
+          switchTab={() => {
+            markFormCompleted("verification");
+            switchTab({ index: 2, value: "account" });
+          }}
+          formData={formData}
+          updateFormData={updateFormData}
+        />
+      );
     case "account":
-      return <AccountForm switchTab={switchTab}  handleFinalSubmit={handleFinalSubmit} formData={formData} updateFormData={updateFormData}  />
+      return (
+        <AccountForm
+          switchTab={switchTab}
+          handleFinalSubmit={handleFinalSubmit}
+          formData={formData}
+          updateFormData={updateFormData}
+        />
+      );
     default:
       return <></>;
   }

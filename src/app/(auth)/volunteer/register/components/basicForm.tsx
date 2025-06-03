@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import { useForm, Controller, SubmitHandler, useWatch } from "react-hook-form";
 import Image from "next/image";
 import right_arrow from "@/../public/icons/arrow_right.svg";
 import FormInput from "@/components/ui/formInput";
+import { STATE_OPTIONS, DISTRICT_OPTIONS } from "@/utils/constants";
+
 import {
   validateAddress,
   validateAge,
@@ -23,6 +25,10 @@ interface SignUpData {
   guardian: string;
   address: string;
   currentAddress: string;
+  state: string;
+  district: string;
+  city: string;
+  pincode: string;
   dob: string;
   age: string;
   gender: string;
@@ -47,13 +53,12 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
   });
 
   const [block, setBlock] = useState(false);
-  
+
   const [isEmployed, setIsEmployed] = useState(false);
 
   useEffect(() => {
     reset(formData);
   }, [formData, reset]);
-
 
   const onSubmit: SubmitHandler<SignUpData> = async (data) => {
     updateFormData(data);
@@ -135,6 +140,99 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
             error={errors.address}
           />
 
+          {/* State Field */}
+          <Controller
+            name="state"
+            control={control}
+            rules={{ required: "State is required" }}
+            render={({ field }) => (
+              <select
+                {...field}
+                className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-2 px-4 bg-[#413C340D] ${
+                  errors.state ? "border-red-500" : ""
+                }`}
+              >
+                <option value="">SELECT STATE</option>
+                {STATE_OPTIONS.map((state: string) => (
+                  <option key={state} value={state}>
+                    {state}
+                  </option>
+                ))}
+              </select>
+            )}
+          />
+          {errors.state && (
+            <p className="text-red-500 text-xs mt-1">{errors.state.message}</p>
+          )}
+
+          {/* District Field */}
+          <Controller
+            name="district"
+            control={control}
+            rules={{ required: "District is required" }}
+            render={({ field }) => {
+              const selectedState = useWatch({
+                control,
+                name: "state",
+              });
+              return (
+                <select
+                  {...field}
+                  className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-2 px-4 bg-[#413C340D] ${
+                    errors.state ? "border-red-500" : ""
+                  }`}
+                >
+                  <option value="">SELECT DISTRICT</option>
+                  {(DISTRICT_OPTIONS[selectedState] || []).map(
+                    (district: string) => (
+                      <option key={district} value={district}>
+                        {district}
+                      </option>
+                    )
+                  )}
+                </select>
+              );
+            }}
+          />
+          {errors.district && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.district.message}
+            </p>
+          )}
+
+          {/* City Field */}
+          <FormInput
+            name="city"
+            type="text"
+            placeholder="CITY"
+            control={control}
+            rules={{
+              required: "City is required",
+            }}
+            error={errors.city}
+          />
+
+          {/* Pincode Field */}
+          <FormInput
+            name="pincode"
+            type="text"
+            placeholder="PINCODE"
+            control={control}
+            rules={{
+              required: "Pincode is required",
+              validate: (value: any) => {
+                const pincodeRegex = /^[1-9][0-9]{5}$/;
+                if (!pincodeRegex.test(value)) {
+                  setBlock(true);
+                  return "Please enter a valid 6-digit pincode";
+                }
+                setBlock(false);
+                return true;
+              },
+            }}
+            error={errors.pincode}
+          />
+
           {/* Date of Birth Field */}
           <FormInput
             name="dob"
@@ -157,28 +255,6 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
             error={errors.dob}
           />
 
-          {/* Age Number Field */}
-          <FormInput
-            name="age"
-            type="number"
-            placeholder="Age"
-            control={control}
-            rules={{
-              required: "Age is required",
-              validate: (value: any) => {
-                let ageValidate = validateAge(value);
-                if (ageValidate) {
-                  setBlock(true);
-                  return ageValidate;
-                } else {
-                  setBlock(false);
-                  return true;
-                }
-              },
-            }}
-            error={errors.age}
-          />
-
           {/* Gender Field */}
           <Controller
             name="gender"
@@ -187,7 +263,7 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
             render={({ field }) => (
               <select
                 {...field}
-                className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-3 px-5 bg-[#413C340D] ${
+                className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-2 px-4 bg-[#413C340D] ${
                   errors.gender ? "border-red-500" : ""
                 }`}
               >
@@ -201,52 +277,8 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
           {errors.gender && (
             <p className="text-red-500 text-xs mt-1">{errors.gender.message}</p>
           )}
-
-          {/* Education Degree Dropdown */}
-          <Controller
-            name="educationDegree"
-            control={control}
-            rules={{ required: "Education degree is required" }}
-            render={({ field }) => (
-              <select
-                {...field}
-                className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-3 px-5 bg-[#413C340D] ${
-                  errors.educationDegree ? "border-red-500" : ""
-                }`}
-              >
-                <option value="">SELECT EDUCATION DEGREE</option>
-                <option value="Class XII">Class XII</option>
-                <option value="Diploma">Diploma</option>
-                <option value="Bachelor's">Bachelor's</option>
-                <option value="Master's">Master's</option>
-                <option value="Ph.D.">Ph.D.</option>
-                <option value="Other">Other</option>
-              </select>
-            )}
-          />
-          {errors.educationDegree && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.educationDegree.message}
-            </p>
-          )}
         </div>
         <div className="flex flex-col gap-4">
-          {/* Education Year of Completion Field */}
-          <FormInput
-            name="educationYearOfCompletion"
-            type="number"
-            placeholder="Year of Completion"
-            control={control}
-            rules={{
-              required: "Year of completion is required",
-              validate: (value: any) => {
-                let yearValidate = validateEducationYearOfCompletion(value);
-                return yearValidate || true;
-              },
-            }}
-            error={errors.educationYearOfCompletion}
-          />
-
           {/* Phone Number Field */}
           <FormInput
             name="phone"
@@ -267,6 +299,22 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
               },
             }}
             error={errors.phone}
+          />
+
+          {/* Education Year of Completion Field */}
+          <FormInput
+            name="educationYearOfCompletion"
+            type="number"
+            placeholder="Year of Completion"
+            control={control}
+            rules={{
+              required: "Year of completion is required",
+              validate: (value: any) => {
+                let yearValidate = validateEducationYearOfCompletion(value);
+                return yearValidate || true;
+              },
+            }}
+            error={errors.educationYearOfCompletion}
           />
 
           {/* Current Address Field */}
@@ -357,6 +405,56 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
             error={errors.ifsc}
           />
 
+          {/* Education Degree Dropdown */}
+          <Controller
+            name="educationDegree"
+            control={control}
+            rules={{ required: "Education degree is required" }}
+            render={({ field }) => (
+              <select
+                {...field}
+                className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-2 px-4 bg-[#413C340D] ${
+                  errors.educationDegree ? "border-red-500" : ""
+                }`}
+              >
+                <option value="">SELECT EDUCATION DEGREE</option>
+                <option value="Class XII">Class XII</option>
+                <option value="Diploma">Diploma</option>
+                <option value="Bachelor's">Bachelor's</option>
+                <option value="Master's">Master's</option>
+                <option value="Ph.D.">Ph.D.</option>
+                <option value="Other">Other</option>
+              </select>
+            )}
+          />
+          {errors.educationDegree && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.educationDegree.message}
+            </p>
+          )}
+
+          {/* Age Number Field */}
+          <FormInput
+            name="age"
+            type="number"
+            placeholder="Age"
+            control={control}
+            rules={{
+              required: "Age is required",
+              validate: (value: any) => {
+                let ageValidate = validateAge(value);
+                if (ageValidate) {
+                  setBlock(true);
+                  return ageValidate;
+                } else {
+                  setBlock(false);
+                  return true;
+                }
+              },
+            }}
+            error={errors.age}
+          />
+
           {/* Employment Status Dropdown */}
           <Controller
             name="employmentStatus"
@@ -369,7 +467,7 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
                   field.onChange(e); // Update form state
                   setIsEmployed(e.target.value === "Employed"); // Track employment status
                 }}
-                className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-3 px-5 bg-[#413C340D] ${
+                className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-2 px-4 bg-[#413C340D] ${
                   errors.employmentStatus ? "border-red-500" : ""
                 }`}
               >
@@ -394,7 +492,7 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
               render={({ field }) => (
                 <select
                   {...field}
-                  className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-3 px-5 bg-[#413C340D] ${
+                  className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-2 px-4 bg-[#413C340D] ${
                     errors.monthlyIncomeRange ? "border-red-500" : ""
                   }`}
                 >

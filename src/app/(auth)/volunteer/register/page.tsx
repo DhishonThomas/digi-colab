@@ -18,32 +18,36 @@ const tabs = [
 
 export type FormData = {
   name: string;
-  email:string;
-  password:string;
+  email: string;
+  password: string;
   guardian: string;
   address: string;
-  currentAddress:string;
-  age:number|string;
+  currentAddress: string;
+  state: string;
+  district: string;
+  city: string;
+  pincode: string;
+  age: number | string;
   dob: string;
   gender: string;
   phone: string;
-  bankAccNumber:string;
+  bankAccNumber: string;
   bankName: string;
   ifsc: string;
   educationDegree: string;
-  educationYearOfCompletion:string;
-  employmentStatus:string;
-  monthlyIncomeRange:string;
-  otpVerified:boolean;
-  otpSend:boolean;
-  otpResend:boolean;
-  otpLockActive:boolean;
-  otpMessage:string;
+  educationYearOfCompletion: string;
+  employmentStatus: string;
+  monthlyIncomeRange: string;
+  otpVerified: boolean;
+  otpSend: boolean;
+  otpResend: boolean;
+  otpLockActive: boolean;
+  otpMessage: string;
   files: {
     image?: File | null;
     policeVerification?: File | null;
-    bankDocument?: File|null,
-    educationCertificate?: File|null,
+    bankDocument?: File | null;
+    educationCertificate?: File | null;
   };
 };
 
@@ -53,36 +57,40 @@ function Page() {
     value: "basic",
   });
 
-  const router=useRouter()
+  const router = useRouter();
 
   const [data, setData] = useState<FormData>({
     name: "",
-    email:"",
-    password:"",
+    email: "",
+    password: "",
     guardian: "",
     address: "",
-    currentAddress:"",
+    currentAddress: "",
+    state: "",
+    district: "",
+    city: "",
+    pincode: "",
     dob: "",
-    age:"",
+    age: "",
     gender: "",
     phone: "",
-    bankAccNumber:"",
+    bankAccNumber: "",
     bankName: "",
     ifsc: "",
-    educationDegree:"",
-    educationYearOfCompletion:"",
-    employmentStatus:"",
-    monthlyIncomeRange:"",
-    otpVerified:false,
-    otpSend:false,
-    otpResend:false,
-    otpLockActive:false,
-    otpMessage:"",
+    educationDegree: "",
+    educationYearOfCompletion: "",
+    employmentStatus: "",
+    monthlyIncomeRange: "",
+    otpVerified: false,
+    otpSend: false,
+    otpResend: false,
+    otpLockActive: false,
+    otpMessage: "",
     files: {
       image: null,
       policeVerification: null,
-      bankDocument:null,
-      educationCertificate:null,
+      bankDocument: null,
+      educationCertificate: null,
     },
   });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -102,34 +110,47 @@ function Page() {
       setData((prevData) => ({
         ...parsedData, // Load text fields from localStorage
         files: prevData.files || {}, // Retain existing `files`
+        otpVerified: false,
+        otpSend: false,
+        otpResend: false,
+        otpLockActive: false,
+        otpMessage: "",
       }));
     }
-  
+
     const savedTab = localStorage.getItem("activeTab");
     if (savedTab) {
       setActiveTab(JSON.parse(savedTab));
     }
-  
+
     const savedCompletion = localStorage.getItem("completedForms");
     if (savedCompletion) {
       setCompletedForms(JSON.parse(savedCompletion));
     }
   }, []);
-  
-  // Save data on form change (excluding `files`)
+
+  // Save data on form change (excluding `files` and 'otp' fields)
   useEffect(() => {
-    const { files, ...textData } = data; // Exclude the `files` field
+    const {
+      files,
+      otpMessage,
+      otpResend,
+      otpSend,
+      otpVerified,
+      otpLockActive,
+      ...textData
+    } = data; // Exclude the `files` and 'otp' related fields
     localStorage.setItem("formData", JSON.stringify(textData));
   }, [data]);
-  
+
   useEffect(() => {
     localStorage.setItem("activeTab", JSON.stringify(activeTab));
   }, [activeTab]);
-  
+
   useEffect(() => {
     localStorage.setItem("completedForms", JSON.stringify(completedForms));
   }, [completedForms]);
-    // Upadationg the parent form..
+  // Upadationg the parent form..
   const updateFormData = (newData: Partial<FormData>) => {
     setData((prev) => ({
       ...prev,
@@ -138,14 +159,12 @@ function Page() {
     }));
   };
 
-
   const markFormCompleted = (formName: Tab) => {
-    setCompletedForms((prev:any) => ({ ...prev, [formName]: true }));
+    setCompletedForms((prev: any) => ({ ...prev, [formName]: true }));
   };
 
   // Control tab switching ....sd
   const handleTabSwitch = (index: number, value: Tab) => {
-
     if (data.otpLockActive) {
       alert("You can't switch tabs while OTP verification is in progress.");
       return;
@@ -155,14 +174,12 @@ function Page() {
     }
   };
 
-
   const handleFinalSubmit = async (
     email: string,
     password: string,
     undertaking: boolean,
     handleError: (message: string) => void
   ) => {
-  
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("email", email);
@@ -170,6 +187,10 @@ function Page() {
     formData.append("guardian", data.guardian);
     formData.append("address", data.address);
     formData.append("currentAddress", data.currentAddress);
+    formData.append("state", data.state);
+    formData.append("district", data.district);
+    formData.append("city", data.city);
+    formData.append("pincode", data.pincode);
     formData.append("dob", data.dob);
     formData.append("age", data.age ? String(Number(data.age)) : "0");
     formData.append("gender", data.gender);
@@ -178,10 +199,13 @@ function Page() {
     formData.append("bankName", data.bankName);
     formData.append("ifsc", data.ifsc);
     formData.append("educationDegree", data.educationDegree);
-    formData.append("educationYearOfCompletion", data.educationYearOfCompletion);
+    formData.append(
+      "educationYearOfCompletion",
+      data.educationYearOfCompletion
+    );
     formData.append("employmentStatus", data.employmentStatus);
     formData.append("monthlyIncomeRange", data.monthlyIncomeRange);
-    formData.append("undertaking",undertaking+"")
+    formData.append("undertaking", undertaking + "");
     // Append only files
     Object.entries(data.files || {}).forEach(([key, file]) => {
       if (file instanceof File) {
@@ -191,10 +215,10 @@ function Page() {
     try {
       const response = await axios.post(VOLUNTEER_REGISTER, formData, {
         headers: { "Content-Type": "multipart/form-data" },
-      });  
+      });
       if (response.data.success) {
         setSuccessMessage("Volunteer registered successfully!");
-      setShowSuccessModal(true);
+        setShowSuccessModal(true);
         router.replace("/volunteer/login");
       } else {
         handleError(response.data.message || "Something went wrong.");
@@ -202,7 +226,8 @@ function Page() {
     } catch (error: any) {
       let errorMessage = "An unexpected error occurred. Please try again.";
       if (axios.isAxiosError(error)) {
-        errorMessage = error.response?.data?.message || "Server error occurred.";
+        errorMessage =
+          error.response?.data?.message || "Server error occurred.";
       }
       handleError(errorMessage);
       console.error("Error:", error);
@@ -216,12 +241,14 @@ function Page() {
             Register
           </h1>
           <div className="flex items-center justify-center mb-[24px] gap-[65px]">
-            {tabs.map((tab:any, i) => (
+            {tabs.map((tab: any, i) => (
               <div
                 key={i}
                 onClick={() => handleTabSwitch(i, tab.value)}
                 className={`flex flex-col items-center cursor-pointer ${
-                  !completedForms[tab.value] && i > activeTab.index ? "opacity-50 cursor-not-allowed" : ""
+                  !completedForms[tab.value] && i > activeTab.index
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
                 }`}
               >
                 <div
@@ -247,14 +274,13 @@ function Page() {
           </Suspense>
         </div>
       </div>
-       {/* Success Modal */}
-       <SuccessModal
-            isOpen={showSuccessModal}
-            onClose={() => setShowSuccessModal(false)}
-            message={successMessage}
-          />
+      {/* Success Modal */}
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        message={successMessage}
+      />
     </main>
-    
   );
 }
 
@@ -272,16 +298,46 @@ const TabDispatcher = ({
   updateFormData: (data: Partial<FormData>) => void;
   activeTab: string;
   switchTab: any;
-  handleFinalSubmit: (email:string,password:string,undertaking:boolean,handleError:()=>void) => Promise<any>;
+  handleFinalSubmit: (
+    email: string,
+    password: string,
+    undertaking: boolean,
+    handleError: () => void
+  ) => Promise<any>;
   markFormCompleted: (formName: Tab) => void;
 }) => {
   switch (activeTab) {
     case "basic":
-      return <BasicForm switchTab={() => { markFormCompleted("basic"); switchTab({ index: 1, value: "verification" }); }} formData={formData} updateFormData={updateFormData} />;
+      return (
+        <BasicForm
+          switchTab={() => {
+            markFormCompleted("basic");
+            switchTab({ index: 1, value: "verification" });
+          }}
+          formData={formData}
+          updateFormData={updateFormData}
+        />
+      );
     case "verification":
-      return <VerificationForm switchTab={() => { markFormCompleted("verification"); switchTab({ index: 2, value: "account" }); }} formData={formData} updateFormData={updateFormData} />;
+      return (
+        <VerificationForm
+          switchTab={() => {
+            markFormCompleted("verification");
+            switchTab({ index: 2, value: "account" });
+          }}
+          formData={formData}
+          updateFormData={updateFormData}
+        />
+      );
     case "account":
-      return <AccountForm switchTab={switchTab} handleFinalSubmit={handleFinalSubmit} formData={formData} updateFormData={updateFormData}  />;
+      return (
+        <AccountForm
+          switchTab={switchTab}
+          handleFinalSubmit={handleFinalSubmit}
+          formData={formData}
+          updateFormData={updateFormData}
+        />
+      );
     default:
       return <></>;
   }

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import { useForm, Controller, SubmitHandler, useWatch } from "react-hook-form";
 import Image from "next/image";
 import right_arrow from "@/../public/icons/arrow_right.svg";
 import FormInput from "@/components/ui/formInput";
+import { STATE_OPTIONS, DISTRICT_OPTIONS } from "@/utils/constants";
 import {
   validateAddress,
   validateAge,
@@ -34,6 +35,10 @@ interface SignUpData {
   ifsc: string;
   pwdCategory: string;
   entrepreneurshipInterest: string;
+  state: string;
+  city: string;
+  district: string;
+  pincode: string;
 }
 
 function BasicForm({ switchTab, formData, updateFormData }: any) {
@@ -133,6 +138,99 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
             error={errors.address}
           />
 
+          {/* State Field */}
+          <Controller
+            name="state"
+            control={control}
+            rules={{ required: "State is required" }}
+            render={({ field }) => (
+              <select
+                {...field}
+                className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-2 px-4 bg-[#413C340D] ${
+                  errors.state ? "border-red-500" : ""
+                }`}
+              >
+                <option value="">SELECT STATE</option>
+                {STATE_OPTIONS.map((state: string) => (
+                  <option key={state} value={state}>
+                    {state}
+                  </option>
+                ))}
+              </select>
+            )}
+          />
+          {errors.state && (
+            <p className="text-red-500 text-xs mt-1">{errors.state.message}</p>
+          )}
+
+          {/* District Field */}
+          <Controller
+            name="district"
+            control={control}
+            rules={{ required: "District is required" }}
+            render={({ field }) => {
+              const selectedState = useWatch({
+                control,
+                name: "state",
+              });
+              return (
+                <select
+                  {...field}
+                  className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-2 px-4 bg-[#413C340D] ${
+                    errors.state ? "border-red-500" : ""
+                  }`}
+                >
+                  <option value="">SELECT DISTRICT</option>
+                  {(DISTRICT_OPTIONS[selectedState] || []).map(
+                    (district: string) => (
+                      <option key={district} value={district}>
+                        {district}
+                      </option>
+                    )
+                  )}
+                </select>
+              );
+            }}
+          />
+          {errors.district && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.district.message}
+            </p>
+          )}
+
+          {/* City Field */}
+          <FormInput
+            name="city"
+            type="text"
+            placeholder="CITY"
+            control={control}
+            rules={{
+              required: "City is required",
+            }}
+            error={errors.city}
+          />
+
+          {/* Pincode Field */}
+          <FormInput
+            name="pincode"
+            type="text"
+            placeholder="PINCODE"
+            control={control}
+            rules={{
+              required: "Pincode is required",
+              validate: (value: any) => {
+                const pincodeRegex = /^[1-9][0-9]{5}$/;
+                if (!pincodeRegex.test(value)) {
+                  setBlock(true);
+                  return "Please enter a valid 6-digit pincode";
+                }
+                setBlock(false);
+                return true;
+              },
+            }}
+            error={errors.pincode}
+          />
+
           {/* Date of Birth Field */}
           <FormInput
             name="dob"
@@ -154,73 +252,6 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
             }}
             error={errors.dob}
           />
-
-          {/* Volunteer Selection Dropdown (Styled Like Other Inputs) */}
-          <Controller
-            name="volunteerRegNum"
-            control={control}
-            rules={{
-              required: "Volunteer Register Number is required",
-              validate: (value: any) => {
-                let registerNumValidate = validateVolunteerRegNum(value);
-                if (registerNumValidate) {
-                  setBlock(true);
-                  return registerNumValidate;
-                } else {
-                  setBlock(false);
-                  return true;
-                }
-              },
-            }}
-            render={({ field }) => (
-              <input
-                {...field}
-                type="text"
-                placeholder="Volunteer Register Number"
-                className={`text-[12px] placeholder:text-gray-500 bg-white leading-[14px] rounded-[10px] border w-full py-3 px-4 bg-[#413C340D] ${
-                  errors.volunteerRegNum
-                    ? "border-red-500"
-                    : "border-[#423B3125]"
-                }`}
-              />
-            )}
-          />
-
-          {errors.volunteerRegNum && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.volunteerRegNum.message}
-            </p>
-          )}
-          {/* Education Qualification Field */}
-          <Controller
-            name="educationQualification"
-            control={control}
-            rules={{ required: "Education Qualification is required" }}
-            render={({ field }) => (
-              <select
-                {...field}
-                className={`text-[14px] placeholder:text-gray-500 leading-[14px] rounded-[10px] border w-full py-3 px-4 bg-[#413C340D] ${
-                  errors.educationQualification
-                    ? "border-red-500"
-                    : "border-[#423B3125]"
-                }`}
-              >
-                <option value="">Select Education Qualification</option>
-                <option value="5th">5th</option>
-                <option value="6th">6th</option>
-                <option value="7th">7th</option>
-                <option value="8th">8th</option>
-                <option value="9th">9th</option>
-                <option value="10th">10th</option>
-                <option value="ITI">ITI</option>
-              </select>
-            )}
-          />
-          {errors.educationQualification && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.educationQualification.message}
-            </p>
-          )}
           {/* Entrepreneurship Interest */}
           <Controller
             name="entrepreneurshipInterest"
@@ -229,7 +260,7 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
             render={({ field }) => (
               <select
                 {...field}
-                className={`w-full border rounded-lg px-4 py-3 bg-white ${
+                className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-2 px-4 bg-[#413C340D] ${
                   errors.entrepreneurshipInterest ? "border-red-500" : ""
                 }`}
               >
@@ -364,7 +395,7 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
             render={({ field }) => (
               <select
                 {...field}
-                className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-3 px-5 bg-[#413C340D] ${
+                className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-2 px-4 bg-[#413C340D] ${
                   errors.gender ? "border-red-500" : ""
                 }`}
               >
@@ -386,7 +417,7 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
             render={({ field }) => (
               <select
                 {...field}
-                className={`w-full border rounded-lg px-4 py-3 bg-white ${
+                className={`text-[14px] leading-[14px] rounded-[10px] border border-[#423B3125] w-full py-2 px-4 bg-[#413C340D] ${
                   errors.pwdCategory ? "border-red-500" : ""
                 }`}
               >
@@ -399,6 +430,73 @@ function BasicForm({ switchTab, formData, updateFormData }: any) {
           {errors.pwdCategory && (
             <p className="text-red-500 text-xs mt-1">
               {errors.pwdCategory.message}
+            </p>
+          )}
+
+          {/* Volunteer Selection Dropdown (Styled Like Other Inputs) */}
+          <Controller
+            name="volunteerRegNum"
+            control={control}
+            rules={{
+              required: "Volunteer Register Number is required",
+              validate: (value: any) => {
+                let registerNumValidate = validateVolunteerRegNum(value);
+                if (registerNumValidate) {
+                  setBlock(true);
+                  return registerNumValidate;
+                } else {
+                  setBlock(false);
+                  return true;
+                }
+              },
+            }}
+            render={({ field }) => (
+              <input
+                {...field}
+                type="text"
+                placeholder="Volunteer Register Number"
+                className={`text-[12px] placeholder:text-gray-500 bg-white leading-[14px] rounded-[10px] border w-full py-3 px-4 bg-[#413C340D] ${
+                  errors.volunteerRegNum
+                    ? "border-red-500"
+                    : "border-[#423B3125]"
+                }`}
+              />
+            )}
+          />
+
+          {errors.volunteerRegNum && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.volunteerRegNum.message}
+            </p>
+          )}
+          {/* Education Qualification Field */}
+          <Controller
+            name="educationQualification"
+            control={control}
+            rules={{ required: "Education Qualification is required" }}
+            render={({ field }) => (
+              <select
+                {...field}
+                className={`text-[14px] placeholder:text-gray-500 leading-[14px] rounded-[10px] border w-full py-2 px-4 bg-[#413C340D] ${
+                  errors.educationQualification
+                    ? "border-red-500"
+                    : "border-[#423B3125]"
+                }`}
+              >
+                <option value="">Select Education Qualification</option>
+                <option value="5th">5th</option>
+                <option value="6th">6th</option>
+                <option value="7th">7th</option>
+                <option value="8th">8th</option>
+                <option value="9th">9th</option>
+                <option value="10th">10th</option>
+                <option value="ITI">ITI</option>
+              </select>
+            )}
+          />
+          {errors.educationQualification && (
+            <p className="text-red-500 text-xs mt-1">
+              {errors.educationQualification.message}
             </p>
           )}
         </div>
