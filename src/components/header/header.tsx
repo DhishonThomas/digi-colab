@@ -3,14 +3,11 @@ import React, {
   useState,
   useRef,
   MutableRefObject,
-  useContext,
 } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
-import { data } from "@/app/(dashboard)/admin/dashboard/components/statisticsChart";
 
 type Props = {};
 
@@ -29,7 +26,6 @@ export const Header: React.FC<Props> = ({}) => {
       setUserData(volunteerData);
     } else {
       setUserData(user);
-      console.log("this is data from the store >", user);
     }
   }, [pathName, adminData, volunteerData, user]);
 
@@ -44,7 +40,6 @@ export const Header: React.FC<Props> = ({}) => {
     pathName.includes("/ar") || pathName.includes("/en")
       ? pathName.slice(3)
       : pathName;
-  // console.log("pathName",updatedProfileData)
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -66,7 +61,6 @@ export const Header: React.FC<Props> = ({}) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isPopupVisible]);
-  // console.log("profiledata",updatedProfileData)
 
   return (
     <div

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import Image from "next/image";
 import menu from "./data.json";
 import Link from "next/link";
@@ -9,7 +9,6 @@ export const SideMenuMobile = () => {
   const handleSignOut = async () => {
   };
 
-  console.log(menu)
 
   return (
     <div className="h-[calc(100vh-30px)] rounded-[5px] bg-sideMenuBg border-[0.5px] border-secondary pt-8 px-[10px] mt-[15px] transition duration-700 ease-in-out">

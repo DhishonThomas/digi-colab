@@ -15,11 +15,11 @@ interface LoginFormData {
 }
 
 interface LoginFormProps {
-  onSubmit: (data: LoginFormData) => void; 
-  errorMessage?:string|null
+  onSubmit: (data: LoginFormData) => void;
+  errorMessage?: string | null;
 }
 
-function LoginForm({ onSubmit,errorMessage }: LoginFormProps) {
+function LoginForm({ onSubmit, errorMessage }: LoginFormProps) {
   const {
     control,
     handleSubmit,
@@ -31,18 +31,14 @@ function LoginForm({ onSubmit,errorMessage }: LoginFormProps) {
     },
   });
 
-const pathName=usePathname()
-let accountType=""
+  const pathName = usePathname();
+  let accountType = "";
 
-if(pathName.startsWith("/admin")){
-  accountType="admin"
-}else if(pathName.startsWith("/volunteer")){
-  accountType="volunteer"
-
-}
-
-
-
+  if (pathName.startsWith("/admin")) {
+    accountType = "admin";
+  } else if (pathName.startsWith("/volunteer")) {
+    accountType = "volunteer";
+  }
 
   return (
     <form
@@ -51,7 +47,12 @@ if(pathName.startsWith("/admin")){
     >
       <div className="flex flex-col gap-2 mb-[67px]">
         <h1 className="text-text-primary text-[36px] leading-[40px] md:leading-[56px] font-semibold">
-          Login
+          {accountType === "admin"
+            ? "Admin"
+            : accountType === ""
+            ? "Candidate"
+            : "Volunteer"}
+          {" Login"}
         </h1>
       </div>
 
@@ -61,9 +62,7 @@ if(pathName.startsWith("/admin")){
           <Controller
             name="email"
             control={control}
-            render={({ field }) => (
-              <InputText placeholder="EMAIL" {...field} />
-            )}
+            render={({ field }) => <InputText placeholder="EMAIL" {...field} />}
           />
           {errors.email && (
             <p className="text-red-500 text-xs">{errors.email.message}</p>
@@ -88,8 +87,8 @@ if(pathName.startsWith("/admin")){
           )}
         </div>
       </div>
-              {/* Error Message */}
-      
+      {/* Error Message */}
+
       {errorMessage && (
         <p className="text-red-500 text-sm text-center mb-4">{errorMessage}</p>
       )}
@@ -103,31 +102,35 @@ if(pathName.startsWith("/admin")){
       </button>
 
       {accountType !== "admin" && (
-  <div className="flex flex-col items-center text-[14px] gap-6">
-    {/* Sign Up Section */}
-    <div className="flex gap-2">
-      <span>Don't Have An Account?</span>
-      <Link
-        className="text-[#688086] text-[14px] font-[700]"
-        href={accountType == "volunteer" ? `/volunteer/register` : "/register"}
-      >
-        Sign Up
-      </Link>
-    </div>
-    {/* Forget Password Section */}
-    <div className="flex gap-2">
-      <span>Forget Password?</span>
-      <Link
-        className="text-[#688086] text-[14px] font-[700]"
-        href={accountType == "volunteer" ? `/volunteer/forget-password` : "/forget-password"}
-      >
-        Reset
-      </Link>
-    </div>
-  </div>
-)}
-
-
+        <div className="flex flex-col items-center text-[14px] gap-6">
+          {/* Sign Up Section */}
+          <div className="flex gap-2">
+            <span>Don't Have An Account?</span>
+            <Link
+              className="text-[#688086] text-[14px] font-[700]"
+              href={
+                accountType == "volunteer" ? `/volunteer/register` : "/register"
+              }
+            >
+              Sign Up
+            </Link>
+          </div>
+          {/* Forget Password Section */}
+          <div className="flex gap-2">
+            <span>Forgot Password?</span>
+            <Link
+              className="text-[#688086] text-[14px] font-[700]"
+              href={
+                accountType == "volunteer"
+                  ? `/volunteer/forget-password`
+                  : "/forget-password"
+              }
+            >
+              Reset
+            </Link>
+          </div>
+        </div>
+      )}
     </form>
   );
 }

@@ -9,7 +9,6 @@ import { VOLUNTEER_RESET_PASSWORD } from "@/utils/constants";
 
 const Page = () => {
   const { token } = useParams(); // ✅ Get token from URL path
-  console.log("Token from URL:", token);
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);

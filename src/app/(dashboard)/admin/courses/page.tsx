@@ -45,7 +45,6 @@ const [imageFile,setImageFile]=useState<File | null>(null);
     setIsLoading(true);
     try {
       const { data } = await adminApi.get("/courses");
-      console.log("Courses data:", data);
      
       if (data.success) {
         setCourses(data.courses);
@@ -178,7 +177,6 @@ const [imageFile,setImageFile]=useState<File | null>(null);
   };
 
   const openViewModal = (course: Course) => {
-    console.log("this is courses", course);
     
     setSelectedCourse(course);
     setViewModalOpen(true);

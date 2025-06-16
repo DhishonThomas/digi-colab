@@ -10,7 +10,6 @@ import SuccessModal from "@/components/ui/SuccessModal";
 
 const Signature = () => {
   const admin:any = useSelector((state: RootState) => state.admin);
-  // console.log(admin?.admin?._id);
 
   const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
   const [isAddSignatureModal, setIsAddSignatureModal] = useState(false);
@@ -41,9 +40,7 @@ const Signature = () => {
       const { data } = await adminApi.get("/uploads/list");
 
       if (data) {
-        console.log(data);
         setSignatures(data.images);
-        console.log(signatures);
 
         // setFilteredRoles(data.roles);
       }
@@ -59,8 +56,6 @@ const Signature = () => {
 
   const handleSubmitSignature = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    console.log(signatureName);
 
     if (!signatureName || !signatureFile) {
       alert("Please provide both name and signature image.");
@@ -79,7 +74,6 @@ const Signature = () => {
         },
       });
 
-      console.log("Upload success:", response.data);
 
       // Optional: Refresh signature list or close modal
       setIsAddSignatureModal(false);
@@ -98,8 +92,6 @@ const Signature = () => {
       const { data } = await adminApi.delete(`uploads/delete/${idForDelete}`);
 
       if (data) {
-        console.log(data);
-        console.log(signatures);
         setIdForDelete(null);
         setSuccessMessage(data.message);
         setShowSuccessModal(true);
@@ -115,11 +107,9 @@ const Signature = () => {
 
   // ========== For edit signature ===========
   const handleUpdateSignature = async (e: React.FormEvent) => {
-    console.log(selectedSignature?.public_id)
     e.preventDefault();
     const formData = new FormData();
     formData.append("name", signatureName);
-    console.log(1111, signatureName);
 
     if (signatureFile) {
       formData.append("image", signatureFile);
@@ -137,7 +127,6 @@ const Signature = () => {
       );
 
       if (data) {
-        console.log(data);
         setIsUpdateSignature(false);
         setSignatureName("");
         setSignatureFile(null);

@@ -34,6 +34,7 @@ export type FormData = {
   phone: string;
   volunteerRegNum: string;
   educationQualification: string;
+  educationYearOfCompletion: string;
   bankAccNumber: string;
   bankName: string;
   ifsc: string;
@@ -97,6 +98,7 @@ function Page() {
       pwdCertificate: null,
       bplCertificate: null,
     },
+    educationYearOfCompletion: "",
   });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
@@ -221,6 +223,7 @@ function Page() {
     formData.append("bankName", data.bankName);
     formData.append("ifsc", data.ifsc);
     formData.append("educationQualification", data.educationQualification);
+    formData.append("educationYearOfCompletion", data.educationYearOfCompletion);
     formData.append("pwdCategory", data.pwdCategory);
     formData.append("entrepreneurshipInterest", data.entrepreneurshipInterest);
     formData.append("undertaking", undertaking + "");
@@ -255,7 +258,7 @@ function Page() {
   return (
     <AuthLayout backgroundImage="/images/watermark_logo.png" maxWidth="510px">
       <h1 className="text-text-primary text-[36px] font-semibold text-center mb-6">
-        Register
+        Candidate Register
       </h1>
       <div className="flex items-center justify-center mb-[24px] gap-[65px]">
         {tabs.map((tab: any, i) => (

@@ -16,7 +16,6 @@ const Page = () => {
     setErrorMessage(null);
     setSuccessMessage(null);
     setLoading(true);
-console.log(data);
 
     try {
       const response = await axios.post(USER_FORGET_PASSWORD, { email: data.email });

@@ -19,7 +19,6 @@ const checkCssStatus=async()=>{
     }else{
       setIsCCCUploaded(false)
     }
-console.log("this is ccc-status>data.",response)
 
   }
 

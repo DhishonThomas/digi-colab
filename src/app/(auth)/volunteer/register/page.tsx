@@ -238,7 +238,7 @@ function Page() {
       <div className="flex w-full min-h-[100vh] justify-center gap-[173px] container py-[140px]">
         <div className="w-full max-w-[510px]">
           <h1 className="text-text-primary text-[36px] font-semibold text-center mb-6">
-            Register
+            Volunteer Register
           </h1>
           <div className="flex items-center justify-center mb-[24px] gap-[65px]">
             {tabs.map((tab: any, i) => (

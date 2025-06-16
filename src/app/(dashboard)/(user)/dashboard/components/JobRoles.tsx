@@ -52,7 +52,6 @@ setIsSubmitted(false);
       const response = await userApi.post("/update-job-courses", {
         courseId: selectedCourseId,
       });
-      console.log("this is the response>update-job-courses", response.data);
       setIsSubmitted(true);
     }
   };

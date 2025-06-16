@@ -9,7 +9,6 @@ const useUserAuth = () => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 const token=useSelector((state:RootState)=>state.user.token)
-console.log(token)
 
   useEffect(() => {
     if(!token){
@@ -19,7 +18,6 @@ console.log(token)
     async function checkUserAuth() {
       try {
         const response = await userApi.get("/me");
-        console.log("User Data:", response.data);
 
         if (!response.data.success) {
         

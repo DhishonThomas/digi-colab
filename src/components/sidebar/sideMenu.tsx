@@ -27,7 +27,6 @@ export const SideMenu = ({
   const menuList = pathname.startsWith("/admin")?adminMenu:pathname.startsWith("/volunteer")?volunteerMenu:userMenu
   //const {setUserProfile} = useUserProfile()||{}
 
-  // console.log(activeLink)
   const admin=useSelector((state:RootState)=>state.admin)
   const user=useSelector((state:RootState)=>state.user)
   const volunteer=useSelector((state:RootState)=>state.volunteer)

@@ -39,7 +39,6 @@ const ListLetterhead = ({
       const { data } = await adminApi.delete(`/uploads/delete-file/${id}`);
 
       if (data) {
-        // console.log(data);
         setIdForDelete(null);
         setSuccessMessage(data.message);
         setShowSuccessModal(true);
@@ -79,7 +78,6 @@ const ListLetterhead = ({
     (currentPage - 1) * rolesPerPage,
     currentPage * rolesPerPage
   );
-  console.log("paginated data", paginateData);
   const totalPages = Math.ceil(filteredData.length / rolesPerPage);
 
 

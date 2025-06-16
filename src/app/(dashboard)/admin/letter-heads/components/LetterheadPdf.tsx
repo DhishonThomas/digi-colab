@@ -7,7 +7,6 @@ interface PropsType {
 }
 
 const LetterheadPdf = ({ data, signature }: PropsType) => {
-  console.log(101010,data);
   const hasFiles = Array.isArray(data?.file_link) && data.file_link.length > 0;
 
   return (

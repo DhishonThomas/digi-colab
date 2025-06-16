@@ -93,11 +93,9 @@ const fetchPdf=async()=>{
       const { data } = await adminApi.post("/pdf/list-letterheads", {
         id: "",
       });
-      console.log(1111, data);
       if (data) {
         
         setLetterheadPdf([...data].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
-        console.log(1111, data);
       }
     } catch (error) {
       console.error("not getting", error);
@@ -114,7 +112,6 @@ const fetchPdf=async()=>{
       const { data } = await adminApi.post("/pdf/list-sent-messages", {
         email: "",
       });
-      console.log(data);
       
       if (data) {
 setMessage([...data].sort((a, b) => new Date(b.sentAt).getTime() - new Date(a.sentAt).getTime()));
@@ -134,7 +131,6 @@ setMessage([...data].sort((a, b) => new Date(b.sentAt).getTime() - new Date(a.se
       const { data } = await adminApi.get("/uploads/list-files");
 
       if (data) {
-        console.log(1111,data);
         setLetterheadList(data.files);
       }
     } catch (error) {
@@ -151,9 +147,7 @@ setMessage([...data].sort((a, b) => new Date(b.sentAt).getTime() - new Date(a.se
       const { data } = await adminApi.get("/uploads/list");
 
       if (data) {
-        // console.log(data);
         setSignatures(data.images);
-        // console.log(signatures);
 
         // setFilteredRoles(data.roles);
       }
@@ -176,10 +170,8 @@ setMessage([...data].sort((a, b) => new Date(b.sentAt).getTime() - new Date(a.se
     cloudinaryUrl:selectedLetterhead?.cloudinary_url,
     letterHeadId:selectedLetterhead?.letter_head_id
   }
-  console.log(mailData);
   
       const { data } = await adminApi.post("/pdf/send-mail", mailData);
-      console.log(2222, data);
       if (data) {
         setSuccessMessage(data.message)
         setShowSuccessModal(true)

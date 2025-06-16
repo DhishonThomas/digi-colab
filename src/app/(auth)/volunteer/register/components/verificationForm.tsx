@@ -29,7 +29,7 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
     }
   );
 
-  let filesPlaceHolder:any={image:"IMAGE",policeVerification:"POLICE VERIFICATION",educationCertificate:"EDUCATION CERTIFICATE",bankDocument:"BANK DOCUMENT",pwdCertificate:"PWD CERTIFICATE",bplCertificate:"BPL CERTIFICATE"}
+  let filesPlaceHolder:any={image:"IMAGE",policeVerification:"POLICE VERIFICATION",educationCertificate:"EDUCATIONAL DOCUMENT",bankDocument:"BANK DOCUMENT",pwdCertificate:"PWD CERTIFICATE",bplCertificate:"BPL CERTIFICATE"}
 
   const [showCameraModal, setShowCameraModal] = useState(false);
 
@@ -154,11 +154,9 @@ function VerificationForm({ switchTab, updateFormData, formData }: any) {
       Object.values(blockSubmit).some((status) => status === false) ||
       Object.keys(blockSubmit).length < 1
     ) {
-      console.log("Form contains errors, submission blocked.");
       return;
     }
 
-    console.log("Uploaded files:", uploadedFiles);
     switchTab && switchTab({ index: 2, value: "account" });
   };
 

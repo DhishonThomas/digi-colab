@@ -23,7 +23,7 @@ const CandidateDetailsContent: React.FC<Props> = ({ user }) => {
     if (!url) {
       return <p className="text-red-500 text-sm">Not uploaded</p>;
     }
-  
+
     // Use a base URL (adjust as needed for your environment)
     let isPdf = false;
     try {
@@ -33,7 +33,7 @@ const CandidateDetailsContent: React.FC<Props> = ({ user }) => {
       console.error("Invalid URL passed to renderDoc:", url);
       return <p className="text-red-500 text-sm">Invalid file URL</p>;
     }
-  
+
     return (
       <a
         href={url}
@@ -57,7 +57,6 @@ const CandidateDetailsContent: React.FC<Props> = ({ user }) => {
       </a>
     );
   };
-  
 
   return (
     <div className="max-w-5xl mx-auto p-6 bg-white rounded-2xl shadow-xl space-y-10">
@@ -86,12 +85,20 @@ const CandidateDetailsContent: React.FC<Props> = ({ user }) => {
         {renderField("Email", user?.email)}
         {renderField("Phone", user?.phone)}
         {renderField("Education Qualification", user?.educationQualification)}
+        {renderField("Completion Year", user?.educationYearOfCompletion)}
         {renderField("Address", user?.address)}
         {renderField("Current Address", user?.currentAddress)}
+        {renderField("State", user?.state)}
+        {renderField("District", user?.district)}
+        {renderField("City", user?.city)}
+        {renderField("Pin Code", user?.pincode)}
         {renderField("Volunteer Reg No", user?.volunteerRegNum)}
         {renderField("CCC Certified", user?.cccCertified)}
         {renderField("PWD Category", user?.pwdCategory)}
-        {renderField("Entrepreneurship Interest", user?.entrepreneurshipInterest)}
+        {renderField(
+          "Entrepreneurship Interest",
+          user?.entrepreneurshipInterest
+        )}
         {renderField("Bank Name", user?.bankName)}
         {renderField("IFSC", user?.ifsc)}
         {renderField("Bank Account No.", user?.bankAccNumber)}

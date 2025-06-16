@@ -104,7 +104,6 @@ export default function Page() {
   };
 
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-  console.log(data);
 
   async function handleView(regNumber: string) {
     const encodedRegNumber = encodeURIComponent(regNumber);
@@ -129,14 +128,11 @@ export default function Page() {
     if (!blockTarget) return;
 
     const encodedReg = encodeURIComponent(blockTarget.regNumber);
-    console.log("blockTarget", blockTarget);
-    console.log("encodedReg", encodedReg);
 
     try {
       const response = await adminApi.put(`/volunteer/block/${encodedReg}`, {
         block: blockTarget.isBlocked ? "false" : "true",
       });
-      console.log(response.data);
       if (response.data.success) {
         // Update the state directly
         setData((prevData: any[]) =>

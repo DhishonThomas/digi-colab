@@ -12,7 +12,6 @@ export default function page() {
     const checkIsSubmitted=async()=>{
       const response=await userApi.get("/course-selection");
     
-      console.log("this is course selection data",response.data);
       if(response.data.success&&response.data.hasSelectedCourse){
         setIsSubmitted(true)
       }else{

@@ -112,6 +112,10 @@ const VolunteerDetailsContent: React.FC<Props> = ({ data }) => {
             {renderField("Phone", volunteer?.phone)}
             {renderField("Address", volunteer?.address)}
             {renderField("Current Address", volunteer?.currentAddress)}
+            {renderField("State", volunteer?.state)}
+            {renderField("District", volunteer?.district)}
+            {renderField("City", volunteer?.city)}
+            {renderField("Pin Code", volunteer?.pincode)}
             {renderField("Reg Number", volunteer?.tempRegNumber)}
             {renderField("Employment", volunteer?.employmentStatus)}
             {renderField("Monthly Income", volunteer?.monthlyIncomeRange)}
@@ -215,6 +219,7 @@ const VolunteerDetailsContent: React.FC<Props> = ({ data }) => {
                       onClose={() => setModalCandidate(false)}
                       title="Candidate Details"
                       fullscreen
+                      overFlow={true}
                     >
                       <CandidateDetailsContent user={user} />
                     </Modal>

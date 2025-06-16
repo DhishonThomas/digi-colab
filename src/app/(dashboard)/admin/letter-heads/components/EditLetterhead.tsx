@@ -117,7 +117,6 @@ const EditLetterHeadButton = ({
       setShowSuccessModal(true);
       handleCreatePdf(response.data.data, signatures);
       // Handle the response
-      console.log("Files uploaded successfully:", response.data);
     } catch (error) {
       // Handle error
       console.error("Error uploading files:", error);

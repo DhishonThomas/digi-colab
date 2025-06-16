@@ -17,7 +17,6 @@ export default function Page() {
     try {
       setLoading(true);
       const candidates = await adminApi.get("/users");
-      console.log("candidates", candidates.data);
       setData(candidates.data.data);
     } catch (error) {
       console.error("Error fetching candidates:", error);
@@ -70,15 +69,12 @@ export default function Page() {
     if (!blockTarget) return;
 
     const encodedReg = encodeURIComponent(blockTarget.regNumber);
-    console.log("blockTarget", blockTarget);
-    console.log("encodedReg", encodedReg);
 
     try {
       const response = await adminApi.put(`/user/block/${encodedReg}`, {
         block: blockTarget.isBlocked ? "false" : "true",
       });
 
-      console.log(response.data);
 
       if (response.data.success) {
         // Update the state directly
