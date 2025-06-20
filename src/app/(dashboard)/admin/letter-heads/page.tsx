@@ -7,6 +7,7 @@ import adminApi from "@/utils/axios_Interceptors/adminApiService";
 import ListLetterhead from "./components/ListLetterhead";
 import Signature from "./components/Signature";
 import NoData from "@/components/ui/NoData";
+import SpinLoading from "@/components/loading/spinLoading";
 
 export interface signature {
   _id: string;
@@ -86,7 +87,7 @@ const LetterHeads = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(true);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -99,7 +100,6 @@ const LetterHeads = () => {
       const { data } = await adminApi.post("/pdf/list-letterheads", {
         id: "",
       });
-      console.log("data pdf..ss", data);
       if (data) {
         setLetterheadPdf(
           [...data].sort(
@@ -120,7 +120,7 @@ const LetterHeads = () => {
   const fetchMessages = async () => {
     // setIsLoading(true);
     try {
-      const { data } = await adminApi.post("/pdf/list-send-messages", {
+      const { data } = await adminApi.post("/pdf/list-sent-messages", {
         email: "",
       });
 
@@ -131,6 +131,7 @@ const LetterHeads = () => {
               new Date(b.sendAt).getTime() - new Date(a.sendAt).getTime()
           )
         );
+        setIsLoading(false);
       }
     } catch (error) {
       console.error("not getting", error);
@@ -236,7 +237,26 @@ const LetterHeads = () => {
     { name: "subject", value: isMessageView.subject },
     { name: "message", value: isMessageView.message },
   ];
+const formattedDate = (dateString:any) => {
+  const parsedDate = new Date(dateString);
+  return isNaN(parsedDate.getTime())
+    ? "N/A" // Fallback for invalid dates
+    : new Intl.DateTimeFormat("en-GB", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      }).format(parsedDate);
+};
 
+
+if(isLoading) {
+  return(
+    <SpinLoading/>
+  )
+}
   return (
     <div>
       <div className="flex gap-10">
@@ -296,14 +316,14 @@ const LetterHeads = () => {
                 </tr>
               </thead>
               <tbody>
-                {paginateData.map((role: SendMessage, index: number) => (
+                {paginateData.map((role: any, index: number) => (
                   <tr key={index} className="hover:bg-gray-50">
                     <td className="px-4 py-2 border-b">{role.email}</td>
                     <td className="px-4 py-2 border-b">{role.subject}</td>
                     <td className="px-4 py-2 border-b">
-                      {new Intl.DateTimeFormat("en-GB").format(
-                        new Date(role.sendAt)
-                      )}
+                     {
+  role.sentAt ? formattedDate(role.sentAt) : "N/A"
+}
                     </td>
                     <td className="px-4 py-2 border-b space-x-2 flex gap-3">
                       <button
