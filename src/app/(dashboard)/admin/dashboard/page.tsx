@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { STATE_OPTIONS, DISTRICT_OPTIONS } from "@/utils/constants";
 import adminApi from "@/utils/axios_Interceptors/adminApiService";
+import SpinLoading from "@/components/loading/spinLoading";
 
 export default function Page() {
   const [state, setState] = useState<string>("");
@@ -126,9 +127,7 @@ export default function Page() {
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4 text-center">Consolidated Data</h1>
       {loading && (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-teal-600"></div>
-        </div>
+       <SpinLoading/>
       )}
       {!loading && (
         <div>

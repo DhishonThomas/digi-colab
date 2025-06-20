@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import Modal from "@/components/ui/Modal";
 import CandidateDetailsContent from "./components/CandidateDetailsContent";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
+import NoData from "@/components/ui/NoData";
 
 export default function Page() {
   const [data, setData] = useState<any>([]);
@@ -119,7 +120,15 @@ export default function Page() {
             onChange={(e) => setSearch(e.target.value)}
             className="w-full p-2 mb-6 border border-gray-300 rounded-md"
           />
-          <div className="overflow-x-auto">
+          {paginatedData.length === 0 ?(
+             <NoData
+          message="No Candidates Found"
+          description="It looks like there are no candidates to display at the moment. You can add new candidates or refresh the page to see updates."
+          actionText="Add Your First Candidate"
+        />
+          ):(
+            <div>
+               <div className="overflow-x-auto">
             <table className="min-w-full bg-white bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat bg-contain border border-gray-200 text-center">
               <thead className="bg-gray-100">
                 <tr>
@@ -209,6 +218,10 @@ export default function Page() {
               Next
             </button>
           </div>
+
+            </div>
+          )}
+         
           <Modal
             fullscreen
             isOpen={isModalOpen}

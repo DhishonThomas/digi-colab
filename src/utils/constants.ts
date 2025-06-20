@@ -1,5 +1,5 @@
 const MAIN_URL=process.env.NEXT_PUBLIC_SERVER_URL
-
+const LOGO_URL=process.env.NEXT_PUBLIC_LOGO_URL
 //Captcha - google 
 export const CAPTCHA_API=process.env.NEXT_PUBLIC_CAPTCHA_API
 
@@ -37,6 +37,7 @@ export const VOLUNTEER_FORGET_PASSWORD=`${VOLUNTEER_URL}/forgot-password`
 export const USER_RESET_PASSWORD=`${USER_URL}/reset-password`
 export const VOLUNTEER_RESET_PASSWORD=`${VOLUNTEER_URL}/reset-password`
 
+export let logo_anara= LOGO_URL;
 
 //States
 export const STATE_OPTIONS: string[] = [

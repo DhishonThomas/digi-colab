@@ -22,6 +22,7 @@ export interface signature {
 interface LetterHeadButtonProps {
   signatures: signature[];
   letterhead: LetterHeadData;
+  fetchLetterhead: () => void;
 }
 
 type FileWithCustomName = {
@@ -32,6 +33,7 @@ type FileWithCustomName = {
 const EditLetterHeadButton = ({
   signatures,
   letterhead,
+  fetchLetterhead
 }: LetterHeadButtonProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
@@ -49,7 +51,7 @@ const EditLetterHeadButton = ({
 
   const [selectedFiles, setSelectedFiles] = useState<FileWithCustomName[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<FileWithCustomName[]>([]);
-
+const [loading,setLoading] = useState<boolean>(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -90,6 +92,7 @@ const EditLetterHeadButton = ({
 
     // Add files and custom names to formData
     uploadedFiles.forEach((item, index) => {
+      setLoading(true);
       formData.append(`files[${index}][file]`, item.file);
       formData.append(`files[${index}][name]`, item.customName);
     });
@@ -111,7 +114,7 @@ const EditLetterHeadButton = ({
           },
         }
       );
-
+      fetchLetterhead(); // Fetch updated letterhead list
       setIsModalOpen(false);
       setSuccessMessage(response.data.message);
       setShowSuccessModal(true);
@@ -120,6 +123,8 @@ const EditLetterHeadButton = ({
     } catch (error) {
       // Handle error
       console.error("Error uploading files:", error);
+    }finally{
+      setLoading(false);
     }
   };
   // ================================================================
@@ -180,23 +185,35 @@ const EditLetterHeadButton = ({
             }}
           >
             {/* Letterhead Header */}
-            <div className="  pb-4 p-10 text-center bg-gradient-to-r from-slate-100 to-white">
-              <div className="mb-6">
-                <h1 className="text-4xl font-light text-gray-800 underline ">
-                  ANARA SKILLS FOUNDATION
-                </h1>
-                <p className="text-gray-600 text-lg">
-                  BUILDING SSKILLS, SHAPING TOMORROW
-                </p>
-              </div>
-              <div className="">
-                <p className="text-gray-600 ">(CIN:U88900KA2024NPL193940)</p>
-                <p className="text-gray-600 text-sm">
-                  A Company incorporated in Bengaluru,Karnataka under Section 8
-                  of the companies Act,2013
-                </p>
-              </div>
-            </div>
+        <div className="flex items-center justify-between h-[180px] px-6"   style={{
+            background: 'linear-gradient(to right, #c4c4c4 35%, #ffffff 60%)'
+          }}
+        >
+          {/* Text Section - vertically stacked, centered */}
+          <div className="pl-16 flex flex-col justify-center text-center flex-1">
+            <h1 className="text-4xl font-light text-gray-800 underline mb-2">
+              ANARA SKILLS FOUNDATION
+            </h1>
+            <p className="text-gray-600 text-lg mb-4">
+              www.anaraskills.org
+            </p>
+            <p className="text-gray-600 text-base">
+              (CIN:U88900KA2024NPL193940)
+            </p>
+          </div>
+        
+          {/* Logo Image */}
+          <div className="flex-shrink-0 pl-10">
+            <Image
+              src="/images/login_banner.png"
+              alt="Anara Skills Foundation Logo"
+              width={160}
+              height={50}
+            />
+          </div>
+        </div>
+        
+
 
             {/* Letter Content */}
             <div className="mb-8 ">
@@ -431,8 +448,10 @@ const EditLetterHeadButton = ({
           <button
             className="px-4 py-2 bg-[#B56365] text-white rounded-md hover:bg-[#b56364f8]"
             onClick={handleEditLetterhead}
+            disabled={loading} // Disable button while loading
           >
-            Update
+            {loading ? "Updating..." : "Update"}
+
           </button>
           <button
             className="px-4 py-2 bg-[#B56365] text-white rounded-md hover:bg-[#b56364f8]"

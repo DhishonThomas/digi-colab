@@ -5,6 +5,7 @@ import adminApi from "@/utils/axios_Interceptors/adminApiService";
 import Image from "next/image";
 import { FiX } from "react-icons/fi";
 import { handleCreatePdf } from "./CreatePdf";
+import NoData from "@/components/ui/NoData";
 
 export interface signature {
   _id: string;
@@ -16,6 +17,7 @@ export interface signature {
 
 interface LetterHeadButtonProps {
   signatures: signature[];
+  fetchLetterHead: () => void;
 }
 
 type FileWithCustomName = {
@@ -23,7 +25,10 @@ type FileWithCustomName = {
   customName: string;
 };
 
-const LetterHeadButton = ({ signatures }: LetterHeadButtonProps) => {
+const LetterHeadButton = ({
+  signatures,
+  fetchLetterHead,
+}: LetterHeadButtonProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
 
@@ -32,7 +37,7 @@ const LetterHeadButton = ({ signatures }: LetterHeadButtonProps) => {
   const [selectedSignature, setSelectedSignature] = useState<signature | null>(
     null
   );
-
+  const [loading, setLoading] = useState<boolean>(false);
   const [selectedFiles, setSelectedFiles] = useState<FileWithCustomName[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<FileWithCustomName[]>([]);
 
@@ -66,6 +71,7 @@ const LetterHeadButton = ({ signatures }: LetterHeadButtonProps) => {
 
   // =============for create letterhead template=========
   const handleUploadLetterhead = async () => {
+    setLoading(true);
     const formData = new FormData();
     if (!selectedSignature) return;
 
@@ -88,10 +94,18 @@ const LetterHeadButton = ({ signatures }: LetterHeadButtonProps) => {
         },
       });
 
+      handleCreatePdf(response.data.data, signatures);
+      fetchLetterHead();
       setIsModalOpen(false);
-      handleCreatePdf(response.data.data,signatures);
+      setLoading(false);
+      setLetterContent("");
+      setLetterSubject("");
+      setSelectedSignature(null);
+      setSelectedFiles([]);
     } catch (error) {
       console.error("Error uploading files:", error);
+    } finally {
+      setLoading(false);
     }
   };
   const handleRemoveFile = (index: number) => {
@@ -102,6 +116,30 @@ const LetterHeadButton = ({ signatures }: LetterHeadButtonProps) => {
     setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
+  
+    const [currentPage, setCurrentPage] = useState(1);
+  
+    // const handleSearch = (term: string) => {
+    //   const lowerTerm = term.toLowerCase();
+  
+    //   const result = letterheadList.filter((item) => {
+    //     const subjectMatch = item.subject?.toLowerCase().includes(lowerTerm);
+  
+    //     // Optional: Add other fields if needed later
+    //     return subjectMatch;
+    //   });
+  
+    //   setFilteredData(result);
+    //   setCurrentPage(1); // Reset to the first page when searching
+    // };
+  
+    const rolesPerPage = 10;
+  
+    const paginateData = signatures.slice(
+      (currentPage - 1) * rolesPerPage,
+      currentPage * rolesPerPage
+    );
+    const totalPages = Math.ceil(signatures.length / rolesPerPage);
   
   return (
     <div>
@@ -133,21 +171,34 @@ const LetterHeadButton = ({ signatures }: LetterHeadButtonProps) => {
             }}
           >
             {/* Letterhead Header */}
-            <div className="  pb-4 p-10 text-center bg-gradient-to-r from-slate-100 to-white">
-              <div className="mb-6">
-                <h1 className="text-4xl font-light text-gray-800 underline ">
+            <div
+              className="flex items-center justify-between h-[180px] px-6"
+              style={{
+                background:
+                  "linear-gradient(to right, #c4c4c4 35%, #ffffff 60%)",
+              }}
+            >
+              {/* Text Section - vertically stacked, centered */}
+              <div className="pl-16 flex flex-col justify-center text-center flex-1">
+                <h1 className="text-4xl font-light text-gray-800 underline mb-2">
                   ANARA SKILLS FOUNDATION
                 </h1>
-                <p className="text-gray-600 text-lg">
-                  BUILDING SKILLS, SHAPING TOMORROW
+                <p className="text-gray-600 text-lg mb-4">
+                  www.anaraskills.org
+                </p>
+                <p className="text-gray-600 text-base">
+                  (CIN:U88900KA2024NPL193940)
                 </p>
               </div>
-              <div className="">
-                <p className="text-gray-600 ">(CIN:U88900KA2024NPL193940)</p>
-                <p className="text-gray-600 text-sm">
-                  A Company incorporated in Bengaluru,Karnataka under Section 8
-                  of the companies Act,2013
-                </p>
+
+              {/* Logo Image */}
+              <div className="flex-shrink-0 pl-10">
+                <Image
+                  src="/images/login_banner.png"
+                  alt="Anara Skills Foundation Logo"
+                  width={160}
+                  height={50}
+                />
               </div>
             </div>
 
@@ -365,8 +416,9 @@ const LetterHeadButton = ({ signatures }: LetterHeadButtonProps) => {
           <button
             className="px-4 py-2 bg-[#B56365] text-white rounded-md hover:bg-[#b56364f8]"
             onClick={handleUploadLetterhead}
+            disabled={loading}
           >
-            Save Letterhead
+            {loading ? "Creating..." : "Create Letter Head"}
           </button>
         </div>
       </Modal>
@@ -378,7 +430,14 @@ const LetterHeadButton = ({ signatures }: LetterHeadButtonProps) => {
         title="signature"
         size="small" // or "small", "large", "fullscreen"
       >
-        <div className="overflow-y-auto">
+         {paginateData.length === 0 ? (
+          <NoData
+            message="No Signatures Found"
+            description="It seems there are no signatures available at the moment. Add a new signature to use it in your documents."
+            actionText="Add a Signature"
+          />
+        ) : (
+           <div className="overflow-y-auto">
           <table className="min-w-full bg-white bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat bg-contain border border-gray-200 text-center">
             <thead className="bg-gray-100">
               <tr>
@@ -388,8 +447,8 @@ const LetterHeadButton = ({ signatures }: LetterHeadButtonProps) => {
               </tr>
             </thead>
             <tbody>
-              {signatures.length > 0 &&
-                signatures.map((role, index: number) => (
+              {paginateData.length > 0 &&
+                paginateData.map((role, index: number) => (
                   <tr key={index} className="hover:bg-gray-50">
                     <td className=" w-32 h-[20px]">
                       <Image
@@ -409,10 +468,45 @@ const LetterHeadButton = ({ signatures }: LetterHeadButtonProps) => {
                       </button>
                     </td>
                   </tr>
+
+                  
                 ))}
             </tbody>
           </table>
+
+           {/* Pagination */}
+            <div className="flex justify-center items-center mt-6 space-x-4">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className={`px-4 py-2 rounded-md ${
+                  currentPage === 1
+                    ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                    : "bg-[#B56365] text-white hover:bg-[#b56364f8]"
+                }`}
+              >
+                Previous
+              </button>
+              <span className="text-sm font-medium">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                className={`px-4 py-2 rounded-md ${
+                  currentPage === totalPages
+                    ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                    : "bg-[#B56365] text-white hover:bg-[#b56364f8]"
+                }`}
+              >
+                Next
+              </button>
+            </div>
         </div>
+        )}
+       
       </Modal>
     </div>
   );

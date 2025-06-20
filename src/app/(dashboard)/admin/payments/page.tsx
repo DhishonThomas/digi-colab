@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import adminApi from "@/utils/axios_Interceptors/adminApiService";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
+import NoData from "@/components/ui/NoData";
 
 interface Admin {
   _id: string;
@@ -89,8 +90,17 @@ const AdminPaymentRequests = () => {
   return (
     <div className="px-4 py-8">
       <h2 className="text-2xl font-bold mb-6">Admin Payment Requests</h2>
+{paginateData.length === 0 ? (
+  <NoData
+  message="No Payments Recorded"
+  description="It looks like there are no payment records to display. Once payments are made, they will appear here."
+  actionText="Add a Payment Record"
+/>
 
-      <div className="overflow-x-auto">
+):(
+
+  <div>
+    <div className="overflow-x-auto">
         <table className="min-w-full bg-white bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat bg-contain border border-gray-200 text-center">
           <thead className="bg-gray-100">
             <tr>
@@ -165,6 +175,9 @@ const AdminPaymentRequests = () => {
           Next
         </button>
       </div>
+  </div>
+)}
+      
 
       {/* Confirmation Modal */}
       <ConfirmationModal

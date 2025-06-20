@@ -7,15 +7,17 @@ import { signature } from "@/app/(dashboard)/admin/letter-heads/page";
 import { RootState } from "@/store/store";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import SuccessModal from "@/components/ui/SuccessModal";
+import { set } from "lodash";
+import NoData from "@/components/ui/NoData";
 
 const Signature = () => {
-  const admin:any = useSelector((state: RootState) => state.admin);
+  const admin: any = useSelector((state: RootState) => state.admin);
 
   const [isSignatureModalOpen, setIsSignatureModalOpen] = useState(false);
   const [isAddSignatureModal, setIsAddSignatureModal] = useState(false);
   const [isUpdateSignature, setIsUpdateSignature] = useState(false);
   const [signatures, setSignatures] = useState<signature[]>([]);
-
+  const [loading, setLoading] = useState<boolean>(false);
   // for edit signature
   const [selectedSignature, setSelectedSignature] = useState<signature | null>(
     null
@@ -29,7 +31,7 @@ const Signature = () => {
   const [idForDelete, setIdForDelete] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-
+const  [isDelete, setIsDelete] = useState(false);
   const signatureInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string>("");
   const defaultSignatureImage = "/images/signature-dummy.png";
@@ -55,9 +57,12 @@ const Signature = () => {
   // ========= for signature form submit =========
 
   const handleSubmitSignature = async (e: React.FormEvent) => {
+    setLoading(true);
     e.preventDefault();
 
     if (!signatureName || !signatureFile) {
+      setLoading(false);
+
       alert("Please provide both name and signature image.");
       return;
     }
@@ -74,7 +79,6 @@ const Signature = () => {
         },
       });
 
-
       // Optional: Refresh signature list or close modal
       setIsAddSignatureModal(false);
       setSignatureName("");
@@ -83,12 +87,16 @@ const Signature = () => {
     } catch (error) {
       console.error("Upload failed:", error);
       alert("Failed to upload signature.");
+    } finally {
+      setLoading(false);
+      
     }
   };
 
   // ========= For delete signature ==========
   const deleteSignature = async () => {
     try {
+      setIsDelete(true);
       const { data } = await adminApi.delete(`uploads/delete/${idForDelete}`);
 
       if (data) {
@@ -100,9 +108,9 @@ const Signature = () => {
     } catch (error) {
       console.error(error);
     }
-    //  finally {
-    //   setIsLoading(false);
-    // }
+     finally {
+      setIsDelete(false);
+    }
   };
 
   // ========== For edit signature ===========
@@ -164,9 +172,6 @@ const Signature = () => {
   );
   const totalPages = Math.ceil(signatures.length / rolesPerPage);
 
-
-
-
   useEffect(() => {
     fetchSignatures();
   }, []);
@@ -179,7 +184,7 @@ const Signature = () => {
         Signatures
       </button>
 
-{/* Modal for list all signatures */}
+      {/* Modal for list all signatures */}
       <Modal
         isOpen={isSignatureModalOpen}
         onClose={() => setIsSignatureModalOpen(false)}
@@ -187,97 +192,107 @@ const Signature = () => {
         size="large" // or "small", "large", "fullscreen"
         overFlow={true}
       >
-        <div className="flex justify-end mx-20">
-          <button
-            className="px-5 py-2 m-3 rounded-xl bg-[#B56365] text-white hover:bg-[#b56364f8]"
-            onClick={() => setIsAddSignatureModal(true)}
-          >
-            add signature
-          </button>
-        </div>
-        <table className="min-w-full bg-white bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat bg-contain border border-gray-200 text-center">
-          <thead className="bg-gray-100">
-            <tr>
-              <th></th>
-              <th className="px-4 py-2 border-b">Name</th>
-              <th className="px-4 py-2 border-b">action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {signatures.length > 0 &&
-              signatures.map((role, index: number) => (
-                <tr key={index} className="hover:bg-gray-50">
-                  <td className="px-5 py-2 w-32 h-[20px]">
-                    <Image
-                      src={role.url}
-                      alt="Profile Picture"
-                      width={60}
-                      height={10}
-                    />
-                  </td>
-                  <td className="px-4 py-2 border-b">{role.name}</td>
-                  <td>
-                    <button
-                      className="px-3 mx-2 py-1 rounded-md text-sm bg-[#B56365] text-white hover:bg-[#b56364f8]"
-                      onClick={() => {
-                        setIsUpdateSignature(true);
-                        setSelectedSignature(role);
-                        setSignatureFile(null);
-                        setSignatureName(role.name);
-                      }}
-                    >
-                      edit
-                    </button>
-                    <button
-                      className="px-3 mx-2 py-1 rounded-md text-sm bg-red-500 text-white hover:bg-red-600"
-                      onClick={() => {
-                        setIdForDelete(role.public_id);
-                        setDeleteConformation(true);
-                      }}
-                    >
-                      delete
-                    </button>
-                  </td>
+        <button
+          className="px-5 py-2 m-3 rounded-xl bg-[#B56365] text-white hover:bg-[#b56364f8]"
+          onClick={() => setIsAddSignatureModal(true)}
+        >
+          add signature
+        </button>
+        {paginateData.length === 0 ? (
+          <NoData
+            message="No Signatures Found"
+            description="It seems there are no signatures available at the moment. Add a new signature to use it in your documents."
+            actionText="Add a Signature"
+          />
+        ) : (
+          <div>
+            <div className="flex justify-end mx-20"></div>
+            <table className="min-w-full bg-white bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat bg-contain border border-gray-200 text-center">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th></th>
+                  <th className="px-4 py-2 border-b">Name</th>
+                  <th className="px-4 py-2 border-b">action</th>
                 </tr>
-              ))}
-          </tbody>
-        </table>
-                      {/* Pagination */}
-      <div className="flex justify-center items-center mt-6 space-x-4">
-        <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-          className={`px-4 py-2 rounded-md ${
-            currentPage === 1
-              ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-              : "bg-[#B56365] text-white hover:bg-[#b56364f8]"
-          }`}
-        >
-          Previous
-        </button>
-        <span className="text-sm font-medium">
-          Page {currentPage} of {totalPages}
-        </span>
-        <button
-          onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-          disabled={currentPage === totalPages}
-          className={`px-4 py-2 rounded-md ${
-            currentPage === totalPages
-              ? "bg-gray-300 text-gray-600 cursor-not-allowed"
-              : "bg-[#B56365] text-white hover:bg-[#b56364f8]"
-          }`}
-        >
-          Next
-        </button>
-      </div>
-
+              </thead>
+              <tbody>
+                {paginateData.length > 0 &&
+                  paginateData.map((role, index: number) => (
+                    <tr key={index} className="hover:bg-gray-50">
+                      <td className="px-5 py-2 w-32 h-[20px]">
+                        <Image
+                          src={role.url}
+                          alt="Profile Picture"
+                          width={60}
+                          height={10}
+                        />
+                      </td>
+                      <td className="px-4 py-2 border-b">{role.name}</td>
+                      <td>
+                        <button
+                          className="px-3 mx-2 py-1 rounded-md text-sm bg-[#B56365] text-white hover:bg-[#b56364f8]"
+                          onClick={() => {
+                            setIsUpdateSignature(true);
+                            setSelectedSignature(role);
+                            setSignatureFile(null);
+                            setSignatureName(role.name);
+                          }}
+                        >
+                          edit
+                        </button>
+                        <button
+                          className="px-3 mx-2 py-1 rounded-md text-sm bg-red-500 text-white hover:bg-red-600"
+                          onClick={() => {
+                            setIdForDelete(role.public_id);
+                            setDeleteConformation(true);
+                          }}
+                        >
+                          delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+            {/* Pagination */}
+            <div className="flex justify-center items-center mt-6 space-x-4">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className={`px-4 py-2 rounded-md ${
+                  currentPage === 1
+                    ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                    : "bg-[#B56365] text-white hover:bg-[#b56364f8]"
+                }`}
+              >
+                Previous
+              </button>
+              <span className="text-sm font-medium">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                className={`px-4 py-2 rounded-md ${
+                  currentPage === totalPages
+                    ? "bg-gray-300 text-gray-600 cursor-not-allowed"
+                    : "bg-[#B56365] text-white hover:bg-[#b56364f8]"
+                }`}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </Modal>
 
       {/* Modal for add signature form */}
       <Modal
         isOpen={isAddSignatureModal}
         onClose={() => setIsAddSignatureModal(false)}
-        title="Signature"
+        title="Add Signature"
         size="small"
       >
         <form
@@ -336,8 +351,9 @@ const Signature = () => {
             <button
               type="submit"
               className="px-4 py-2 bg-[#B56365] text-white rounded-md hover:bg-[#b56364f8]"
+              disabled={loading} // Disable button while loading
             >
-              Save Signature
+              {loading ? " Creating Signature...." : "Create Signature"}
             </button>
           </div>
         </form>
@@ -347,7 +363,7 @@ const Signature = () => {
       <Modal
         isOpen={isUpdateSignature}
         onClose={() => setIsUpdateSignature(false)}
-        title="Signature"
+        title="Update Signature"
         size="small"
       >
         <form
@@ -379,8 +395,8 @@ const Signature = () => {
             >
               <img
                 src={
-                  signatureFile
-                    ? URL.createObjectURL(signatureFile)
+                  selectedSignature && selectedSignature.url
+                    ? selectedSignature.url
                     : defaultSignatureImage
                 }
                 alt="Signature Preview"
@@ -418,7 +434,7 @@ const Signature = () => {
         onConfirm={deleteSignature}
         title="Delete Job Role"
         message="Are you sure you want to delete this job role?"
-        confirmButtonText="Yes, Delete"
+        confirmButtonText={isDelete ? "Deleting..." : "Yes, Delete"}
       />
       <SuccessModal
         isOpen={showSuccessModal}

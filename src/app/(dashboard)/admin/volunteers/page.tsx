@@ -5,6 +5,9 @@ import Modal from "@/components/ui/Modal";
 import VolunteerDetailsContent from "./components/VolunteerDetailsContent";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import { STATE_OPTIONS, DISTRICT_OPTIONS } from "@/utils/constants";
+import SpinLoading from "@/components/loading/spinLoading";
+import NoData from "@/components/ui/NoData";
+
 
 export default function Page() {
   const [data, setData] = useState<any>([]);
@@ -162,10 +165,8 @@ export default function Page() {
     <div className="p-6">
       <h1 className="text-2xl font-bold text-center">Volunteers</h1>
       {loading && (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-teal-600"></div>
-        </div>
-      )}
+        <SpinLoading/>
+)}
       {!loading && (
         <div className="mt-4">
           {/* Filters for Consolidated Report */}
@@ -239,7 +240,17 @@ export default function Page() {
             onChange={(e) => setSearch(e.target.value)}
             className="w-full p-2 mb-6 border border-gray-300 rounded-md"
           />
-          <div className="overflow-x-auto">
+
+{paginatedData.length === 0 ? (
+  <NoData
+  message="No Volunteers Registered"
+  description="It looks like there are no volunteers available right now. Invite volunteers or check back later."
+  actionText="Invite Volunteers"
+/>
+
+):(
+  <div>
+     <div className="overflow-x-auto">
             <table className="min-w-full bg-white bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat bg-contain border border-gray-200 text-center">
               <thead className="bg-gray-100">
                 <tr>
@@ -422,12 +433,17 @@ export default function Page() {
               Next
             </button>
           </div>
+  </div>
+)}
+
+         
 
           <Modal
             isOpen={modalOpen}
             onClose={() => setModalOpen(false)}
             title="Volunteer Details"
             fullscreen
+            overFlow={true}
           >
             {selectedVolunteer && (
               <VolunteerDetailsContent data={selectedVolunteer} />

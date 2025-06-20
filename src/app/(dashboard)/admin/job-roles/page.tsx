@@ -4,6 +4,8 @@ import Modal from "@/components/ui/Modal";
 import ConfirmationModal from "@/components/ui/ConfirmationModal";
 import SuccessModal from "@/components/ui/SuccessModal";
 import adminApi from "@/utils/axios_Interceptors/adminApiService";
+import NoData from "@/components/ui/NoData";
+import SpinLoading from "@/components/loading/spinLoading";
 
 export interface JobRole {
   _id: string;
@@ -15,7 +17,7 @@ export interface JobRole {
 const JobRolesPage = () => {
   const [jobRoles, setJobRoles] = useState<JobRole[]>([]);
   const [filteredRoles, setFilteredRoles] = useState<JobRole[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<JobRole | null>(null);
@@ -29,18 +31,17 @@ const JobRolesPage = () => {
   const rolesPerPage = 5;
 
   const fetchJobRoles = async () => {
-    setIsLoading(true);
     try {
       const { data } = await adminApi.get("/jobroles");
       if (data.success) {
         setJobRoles(data.roles);
         setFilteredRoles(data.roles);
+            setIsLoading(false);
+
       }
     } catch (error) {
       console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
+    } 
   };
 
   useEffect(() => {
@@ -95,6 +96,11 @@ const JobRolesPage = () => {
     return text.substring(0, limit) + "...";
   };
 
+if(isLoading){
+  return(
+    <SpinLoading/>
+  )
+}
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4 text-center">Manage Job Roles</h1>
@@ -103,7 +109,7 @@ const JobRolesPage = () => {
         <h1 className="text-2xl font-bold">Manage Job Roles</h1>
         <button
           onClick={() => setCreateModalOpen(true)}
-          className="px-5 py-2 bg-[#B56365] text-white hover:bg-[#b56364f8]"
+          className="px-5 py-2 bg-[#B56365] rounded-md text-white hover:bg-[#b56364f8]"
         >
           + Add Job Role
         </button>
@@ -116,8 +122,16 @@ const JobRolesPage = () => {
         onChange={handleSearchChange}
         className="w-full p-2 mb-6 border border-gray-300 rounded-md"
       />
+{paginateData.length === 0 ?(
+  <NoData
+  message="No Job Roles Found"
+  description="It seems there are no job roles listed at the moment. Add a new job role to get started or check back later."
+  actionText="Add a Job Role"
+/>
 
-      {/* Table */}
+):(
+  <div>
+    {/* Table */}
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat bg-contain border border-gray-200 text-center">
           <thead className="bg-gray-100">
@@ -183,6 +197,9 @@ const JobRolesPage = () => {
           Next
         </button>
       </div>
+  </div>
+)}
+      
       {/* Create Modal */}
       <Modal isOpen={createModalOpen} onClose={() => setCreateModalOpen(false)} title="Add New Job Role">
         <div className="space-y-8 rounded-xl bg-white bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat bg-contain border border-gray-200 overflow-y-auto">

@@ -1,5 +1,7 @@
 import React from "react";
 import { LetterHeadData,signature } from "@/app/(dashboard)/admin/letter-heads/page";
+import Image from "next/image";
+import { logo_anara } from "@/utils/constants";
 
 interface PropsType {
   data: LetterHeadData;
@@ -22,28 +24,38 @@ const LetterheadPdf = ({ data, signature }: PropsType) => {
           }}
         >
           {/* Header */}
-          <div
-  style={{
-    background: 'linear-gradient(to right, #f1f5f9 45%, #f1f5f9 46%, #ffffff 54%, #ffffff 55%)',
-    padding: '2.5rem',
-    textAlign: 'center',
+<div className="flex items-center justify-between h-[180px] px-6"   style={{
+    background: 'linear-gradient(to right, #c4c4c4 35%, #ffffff 60%)'
   }}
 >
-  <div style={{ marginBottom: '1.5rem' }}>
-    <h1 style={{ fontSize: '2.25rem', fontWeight: 300, color: '#1f2937', textDecoration: 'underline' }}>
+  {/* Text Section - vertically stacked, centered */}
+  <div className="pl-16 flex flex-col justify-center text-center flex-1">
+    <h1 className="text-4xl font-light text-gray-800 underline mb-2">
       ANARA SKILLS FOUNDATION
     </h1>
-    <p style={{ color: '#4b5563', fontSize: '1.125rem' }}>
-      BUILDING SKILLS, SHAPING TOMORROW
+    <p className="text-gray-600 text-lg mb-4">
+      www.anaraskills.org
+    </p>
+    <p className="text-gray-600 text-base">
+      (CIN:U88900KA2024NPL193940)
     </p>
   </div>
-  <div>
-    <p style={{ color: '#4b5563' }}>(CIN:U88900KA2024NPL193940)</p>
-    <p style={{ color: '#4b5563', fontSize: '0.875rem' }}>
-      A Company incorporated in Bengaluru, Karnataka under Section 8 of the Companies Act, 2013
-    </p>
+
+  {/* Logo Image */}
+  <div className="flex-shrink-0 pl-10">
+   <img
+      src={logo_anara}
+      alt="Anara Skills Foundation Logo"
+      style={{
+        width: '170px',
+        height: 'auto',
+        display: 'block',
+      }}
+    />
+
   </div>
 </div>
+
 
 
 
