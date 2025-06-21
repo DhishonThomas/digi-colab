@@ -94,7 +94,7 @@ const LetterHeadButton = ({
         },
       });
 
-      const pdfResponse: any = handleCreatePdf(response.data.data, signatures);
+      const pdfResponse: any = await handleCreatePdf(response.data.data, signatures);
       if (pdfResponse.status) {
         fetchLetterHead();
         setIsModalOpen(false);
