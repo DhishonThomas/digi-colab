@@ -57,6 +57,7 @@ import { LetterHeadData, signature } from "@/app/(dashboard)/admin/letter-heads/
       );
 console.log("PDF generated successfully:", response.data);
       // Handle PDF response (download it)
+      return response.data; // Assuming the API returns the PDF URL or blob
     } catch (error) {
       console.error("Error sending to external API:", error);
     }

@@ -94,14 +94,16 @@ const LetterHeadButton = ({
         },
       });
 
-      handleCreatePdf(response.data.data, signatures);
-      fetchLetterHead();
-      setIsModalOpen(false);
-      setLoading(false);
-      setLetterContent("");
-      setLetterSubject("");
-      setSelectedSignature(null);
-      setSelectedFiles([]);
+      const pdfResponse: any = handleCreatePdf(response.data.data, signatures);
+      if (pdfResponse.status) {
+        fetchLetterHead();
+        setIsModalOpen(false);
+        setLoading(false);
+        setLetterContent("");
+        setLetterSubject("");
+        setSelectedSignature(null);
+        setSelectedFiles([]);
+      }
     } catch (error) {
       console.error("Error uploading files:", error);
     } finally {
@@ -116,31 +118,30 @@ const LetterHeadButton = ({
     setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
-  
-    const [currentPage, setCurrentPage] = useState(1);
-  
-    // const handleSearch = (term: string) => {
-    //   const lowerTerm = term.toLowerCase();
-  
-    //   const result = letterheadList.filter((item) => {
-    //     const subjectMatch = item.subject?.toLowerCase().includes(lowerTerm);
-  
-    //     // Optional: Add other fields if needed later
-    //     return subjectMatch;
-    //   });
-  
-    //   setFilteredData(result);
-    //   setCurrentPage(1); // Reset to the first page when searching
-    // };
-  
-    const rolesPerPage = 10;
-  
-    const paginateData = signatures.slice(
-      (currentPage - 1) * rolesPerPage,
-      currentPage * rolesPerPage
-    );
-    const totalPages = Math.ceil(signatures.length / rolesPerPage);
-  
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // const handleSearch = (term: string) => {
+  //   const lowerTerm = term.toLowerCase();
+
+  //   const result = letterheadList.filter((item) => {
+  //     const subjectMatch = item.subject?.toLowerCase().includes(lowerTerm);
+
+  //     // Optional: Add other fields if needed later
+  //     return subjectMatch;
+  //   });
+
+  //   setFilteredData(result);
+  //   setCurrentPage(1); // Reset to the first page when searching
+  // };
+
+  const rolesPerPage = 10;
+
+  const paginateData = signatures.slice(
+    (currentPage - 1) * rolesPerPage,
+    currentPage * rolesPerPage
+  );
+  const totalPages = Math.ceil(signatures.length / rolesPerPage);
+
   return (
     <div>
       <button
@@ -430,51 +431,49 @@ const LetterHeadButton = ({
         title="signature"
         size="small" // or "small", "large", "fullscreen"
       >
-         {paginateData.length === 0 ? (
+        {paginateData.length === 0 ? (
           <NoData
             message="No Signatures Found"
             description="It seems there are no signatures available at the moment. Add a new signature to use it in your documents."
             actionText="Add a Signature"
           />
         ) : (
-           <div className="overflow-y-auto">
-          <table className="min-w-full bg-white bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat bg-contain border border-gray-200 text-center">
-            <thead className="bg-gray-100">
-              <tr>
-                <th></th>
-                <th className="px-4 py-2 border-b">Name</th>
-                <th className="px-4 py-2 border-b">action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginateData.length > 0 &&
-                paginateData.map((role, index: number) => (
-                  <tr key={index} className="hover:bg-gray-50">
-                    <td className=" w-32 h-[20px]">
-                      <Image
-                        src={role.url}
-                        alt="Signature"
-                        width={60}
-                        height={10}
-                      />
-                    </td>
-                    <td className="px-4 py-2 border-b">{role.name}</td>
-                    <td className="px-4 py-2 border-b">
-                      <button
-                        onClick={() => handleSelectSignature(role)}
-                        className="px-4 py-2 bg-[#B56365] text-white rounded-md hover:bg-[#b56364f8]"
-                      >
-                        add
-                      </button>
-                    </td>
-                  </tr>
+          <div className="overflow-y-auto">
+            <table className="min-w-full bg-white bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat bg-contain border border-gray-200 text-center">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th></th>
+                  <th className="px-4 py-2 border-b">Name</th>
+                  <th className="px-4 py-2 border-b">action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginateData.length > 0 &&
+                  paginateData.map((role, index: number) => (
+                    <tr key={index} className="hover:bg-gray-50">
+                      <td className=" w-32 h-[20px]">
+                        <Image
+                          src={role.url}
+                          alt="Signature"
+                          width={60}
+                          height={10}
+                        />
+                      </td>
+                      <td className="px-4 py-2 border-b">{role.name}</td>
+                      <td className="px-4 py-2 border-b">
+                        <button
+                          onClick={() => handleSelectSignature(role)}
+                          className="px-4 py-2 bg-[#B56365] text-white rounded-md hover:bg-[#b56364f8]"
+                        >
+                          add
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
 
-                  
-                ))}
-            </tbody>
-          </table>
-
-           {/* Pagination */}
+            {/* Pagination */}
             <div className="flex justify-center items-center mt-6 space-x-4">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -504,9 +503,8 @@ const LetterHeadButton = ({
                 Next
               </button>
             </div>
-        </div>
+          </div>
         )}
-       
       </Modal>
     </div>
   );
