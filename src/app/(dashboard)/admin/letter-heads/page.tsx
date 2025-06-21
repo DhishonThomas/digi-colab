@@ -66,6 +66,7 @@ const LetterHeads = () => {
   const [filteredData, setFilteredData] = useState<SendMessage[]>([]);
   const [isSendModalOpen, setIsSendModalOpen] = useState(false);
   const [showPdfModal, setShowPdfModal] = useState(false);
+  const [loading,setLoading] = useState(false);
   const [isMessageViewModalOpen, setIsMessageViewModalOpen] = useState(false);
   const [isMessageView, setIsMessageView] = useState({
     email: "",
@@ -144,7 +145,7 @@ const LetterHeads = () => {
   // ========= For send email ============
   const handleSendMail = async (e: React.FormEvent) => {
     e.preventDefault();
-    // setIsLoading(true);
+    setLoading(true);
 
     try {
       const mailData = {
@@ -155,17 +156,20 @@ const LetterHeads = () => {
 
       const { data } = await adminApi.post("/pdf/send-mail", mailData);
       if (data) {
+        setSelectedLetterhead(null)
+        setFormData((prev:any)=>({...prev,email:"",message:"",subject:""}))
         setSuccessMessage(data.message);
         setShowSuccessModal(true);
+        setLoading(false)
         fetchMessages();
-        setIsSendModalOpen(false);
+        setIsSendModalOpen(false)
       }
     } catch (error) {
       console.error("not getting", error);
     }
-    //  finally {
-    //   setIsLoading(false);
-    // }
+     finally {
+        setLoading(false)
+    }
   };
 
   const handlePdfSearch = (searchTerm: string) => {
@@ -512,8 +516,9 @@ if(isLoading) {
               <button
                 type="submit"
                 className="px-4 py-2 bg-[#B56365] text-white rounded-md hover:bg-[#b56364f8]"
+              disabled={loading}
               >
-                send mail
+                {loading?"sending mail...":"send mail"}
               </button>
             </div>
           </div>
@@ -577,7 +582,7 @@ if(isLoading) {
                 {item.subject}
               </p>
               <button
-                className="px-5 py-2 bg-[#B56365] text-white hover:bg-[#b56364f8]"
+                className="px-5 rounded-md py-2 bg-[#B56365] text-white hover:bg-[#b56364f8]"
                 onClick={() => {
                   setSelectedLetterhead(item);
                   setShowPdfModal(false);

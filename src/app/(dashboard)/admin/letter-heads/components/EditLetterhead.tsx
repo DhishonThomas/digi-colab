@@ -48,7 +48,6 @@ const EditLetterHeadButton = ({
   const [deletedFiles, setDeletedFile] = useState<string[]>([]);
   const [selectedSignature, setSelectedSignature] =
     useState<signature | null>();
-
   const [selectedFiles, setSelectedFiles] = useState<FileWithCustomName[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<FileWithCustomName[]>([]);
 const [loading,setLoading] = useState<boolean>(false);
