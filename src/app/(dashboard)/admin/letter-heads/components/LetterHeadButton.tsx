@@ -403,13 +403,6 @@ const LetterHeadButton = ({
                 )}
               </div>
             </div>
-
-            {/* Optional Footer */}
-            <div className="absolute bottom-10 left-0 right-0 text-center text-xs text-gray-500">
-              <p>
-                Company Registration Number: 12345678 • VAT Number: GB123456789
-              </p>
-            </div>
           </div>
         </div>
 
