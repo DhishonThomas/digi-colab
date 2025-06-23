@@ -29,6 +29,11 @@
         "icon":"/icons/sidebar/courses-icon.svg",
         "path": "/admin/letter-heads"
     },
+     {
+        "title":"Donations",
+        "icon":"/icons/sidebar/courses-icon.svg",
+        "path": "/admin/donations"
+    },
     {
         "title":"Payments",
         "icon":"/icons/sidebar/icon-graph.svg",
