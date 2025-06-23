@@ -19,25 +19,6 @@ import { LetterHeadData, signature } from "@/app/(dashboard)/admin/letter-heads/
       <LetterheadPdf data={data} signature={sig} />
     );
 
-    // Wrap in full HTML structure
-    const fullHtml = `
-        <!DOCTYPE html>
-        <html lang="en">
-          <head>
-            <meta charset="UTF-8" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <title>Letterhead</title>
-            <style>
-              body { font-family: sans-serif; }
-              /* Optionally inline some custom styles */
-            </style>
-              <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-          </head>
-          <body>
-            ${htmlContent}
-          </body>
-        </html>
-      `;
 
     // Send to external API
     try {
@@ -45,7 +26,7 @@ import { LetterHeadData, signature } from "@/app/(dashboard)/admin/letter-heads/
         "/pdf/generatepdf",
 
         {
-          htmlContent: fullHtml,
+          htmlContent: htmlContent,
           subject: data.subject,
           letterHeadId: data._id,
         }, // or use FormData if required
