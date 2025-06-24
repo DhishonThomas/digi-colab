@@ -165,295 +165,232 @@ const [loading,setLoading] = useState<boolean>(false);
       </button>
 
       {/* Modal foe Letter head */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Letter Head"
-        size="large" // or "small", "large", "fullscreen"
-        overFlow={true}
-      >
-        <div className="flex justify-center p-4">
-          {/* A5 Container */}
-          <div
-            className="bg-white shadow-lg"
-            style={{
-              width: "210mm", // A4 width
-              height: "297mm", // A4 height
-              padding: "", // Standard letterhead padding
-              position: "relative",
-              boxSizing: "border-box",
-            }}
-          >
-            {/* Letterhead Header */}
-        <div className="flex items-center justify-between h-[180px] px-6"   style={{
-            background: 'linear-gradient(to right, #c4c4c4 35%, #ffffff 60%)'
+     {/* Modal for Edit Letterhead */}
+<Modal
+  isOpen={isModalOpen}
+  onClose={() => setIsModalOpen(false)}
+  title="Edit Letter Head"
+  size="large" // or "small", "large", "fullscreen"
+  overFlow={true}
+>
+  <div className="flex justify-center p-4 bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat bg-contain">
+    {/* A4 Container */}
+    <div
+      className="bg-white shadow-lg relative"
+ style={{
+          width: "210mm", // A4 width
+          minHeight: "297mm", // Minimum height for A4
+          boxSizing: "border-box",
+        }}    >
+      {/* Letterhead Header */}
+       <div
+          className="flex items-center justify-between h-[180px] px-6"
+          style={{
+            background: "linear-gradient(to right, #c4c4c4 35%, #ffffff 60%)",
           }}
         >
-          {/* Text Section - vertically stacked, centered */}
+        {/* Text Section */}
           <div className="pl-16 flex flex-col justify-center text-center flex-1">
             <h1 className="text-4xl font-light text-gray-800 underline mb-2">
               ANARA SKILLS FOUNDATION
             </h1>
-            <p className="text-gray-600 text-lg mb-4">
-              www.anaraskills.org
-            </p>
+            <p className="text-gray-600 text-lg mb-4">www.anaraskills.org</p>
             <p className="text-gray-600 text-base">
               (CIN:U88900KA2024NPL193940)
             </p>
           </div>
-        
-          {/* Logo Image */}
-          <div className="flex-shrink-0 pl-10">
-            <Image
-              src="/images/login_banner.png"
-              alt="Anara Skills Foundation Logo"
-              width={160}
-              height={50}
-            />
-          </div>
+
+        {/* Logo Image */}
+        <div className="flex-shrink-0 pl-10">
+          <Image
+            src="/images/login_banner.png"
+            alt="Anara Skills Foundation Logo"
+            width={160}
+            height={50}
+          />
         </div>
-        
+      </div>
 
-
-            {/* Letter Content */}
-            <div className="mb-8 ">
-              <div className="grid grid-cols-10">
-                <div className="col-span-3  h-full border-r-4 border-zinc-500  p-3">
-                  <div className="w-full h-40">
-                    <h3 className="text-md font-semibold">Subodh Saxena</h3>
-                    <h5 className="text-[10px] font-light">
-                      Founder & Chief Executive Officer (CEO)
-                    </h5>
-                  </div>
-
-                  <div className="w-full h-40">
-                    <h3 className="text-md font-semibold">Sumita Saxena</h3>
-                    <h5 className="text-[10px] font-light tracking-tight">
-                      Founder & Chief People Officer (CPO)
-                    </h5>
-                  </div>
-
-                  <div className="w-full h-40">
-                    <h3 className="text-md font-semibold">Dipa Padmakumar</h3>
-                    <h5 className="text-[10px] font-light">
-                      Founder & Chief Operating Officer (COO)
-                    </h5>
-                  </div>
-
-                  <div className="w-full h-40">
-                    <h3 className="text-md font-semibold">Baiju K J</h3>
-                    <h5 className="text-[10px] font-light">
-                      Founder & Chief Technology Officer (CTO)
-                    </h5>
-                  </div>
-
-                  <div className="w-full h-40">
-                    <h3 className="text-md font-semibold">Shruti Lokre</h3>
-                    <h5 className="text-[10px] font-light">
-                      Founder & Chief Legal Officer (CLO)
-                    </h5>
-                  </div>
-                  <button
-                    className="px-4 py-2 bg-[#B56365] text-white rounded-md hover:bg-[#b56364f8]"
-                    onClick={() => setIsSignatureModalOpen(true)}
-                  >
-                    add signature
-                  </button>
-                </div>
-                <div className="col-span-7">
-                  <div className="col-span-7 p-4">
-                    {/* Subject Field */}
-                    <div
-                      contentEditable
-                      suppressContentEditableWarning
-                      onInput={(e) =>
-                        setLetterSubject(e.currentTarget.innerText)
-                      }
-                      className="mb-4 p-2 border border-gray-300 rounded text-sm outline-none"
-                    >
-                      {letterSubject}
-                    </div>
-
-                    {/* Content Field */}
-                    <div
-                      contentEditable
-                      suppressContentEditableWarning
-                      onInput={(e) =>
-                        setLetterContent(e.currentTarget.innerText)
-                      }
-                      className="p-4 border border-gray-300 rounded text-sm outline-none min-h-[200px]"
-                    >
-                      {letterContent}
-                    </div>
-
-                    {/* Uploaded Files Display */}
-
-                    <div className="mt-6">
-                      <h3 className="text-sm font-semibold mb-2">
-                        Attached Files:
-                      </h3>
-                      <ul>
-                        {file.map((item, index) => (
-                          <li
-                            key={item.public_id}
-                            className="text-blue-700 flex items-center justify-between"
-                          >
-                            {item.file_name}
-                            <button
-                              onClick={() => removeFile(item.public_id)}
-                              className="ml-2 text-red-500 hover:text-red-700 text-sm"
-                            >
-                              Remove
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
-
-                      {uploadedFiles.length > 0 && (
-                        <ul className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                          {uploadedFiles.map((item, index) => (
-                            <li
-                              key={index}
-                              className="text-center relative group"
-                            >
-                              <img
-                                src={URL.createObjectURL(item.file)}
-                                alt={item.customName}
-                                className="w-32 h-32 object-cover rounded mx-auto"
-                              />
-                              <p className="mt-1 text-sm text-blue-600">
-                                {item.customName}
-                              </p>
-                              <button
-                                onClick={() => handleRemoveUploadedFile(index)}
-                                className="absolute top-1 right-1 bg-white rounded-full text-red-500 p-1 hover:bg-red-100"
-                                title="Remove"
-                              >
-                                <FiX size={16} />
-                              </button>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-
-                    {/* File Upload */}
-
-                    <div className="mt-4 space-y-4">
-                      {/* File Input */}
-                      <div>
-                        <label className="block mb-2 text-sm font-medium text-gray-700">
-                          Attach files:
-                        </label>
-
-                        <div
-                          className="w-full border-2 border-dashed border-[#B56365] rounded-lg p-6 text-center 
-               hover:bg-[#fdf0f0] transition duration-300 ease-in-out cursor-pointer"
-                        >
-                          <input
-                            type="file"
-                            multiple
-                            onChange={handleFileChange}
-                            className="w-full text-sm text-gray-500
-                 file:mr-4 file:py-2 file:px-4
-                 file:rounded-full file:border-0
-                 file:text-sm file:font-semibold
-                 file:bg-[#B56365] file:text-white
-                 hover:file:bg-[#b56364f8]"
-                          />
-                          <p className="mt-2 text-xs text-gray-400">
-                            You can select multiple files
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* List of Selected Files */}
-                      {selectedFiles.length > 0 && (
-                        <div>
-                          <h3 className="text-sm font-semibold mb-2">
-                            Selected Files:
-                          </h3>
-                          <ul className="space-y-3">
-                            {selectedFiles.map((item, index) => (
-                              <li
-                                key={index}
-                                className="flex items-center gap-3"
-                              >
-                                <span className="flex items-center gap-2 text-sm text-gray-600">
-                                  {item.file.name}
-                                  <button
-                                    onClick={() => handleRemoveFile(index)}
-                                    className="text-red-500 hover:underline text-xs"
-                                  >
-                                    Remove
-                                  </button>
-                                </span>
-
-                                <span>
-                                  <label
-                                    htmlFor="filename"
-                                    className="font-semibold"
-                                  >
-                                    Filename
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={item.customName}
-                                    onChange={(e) =>
-                                      handleNameChange(index, e.target.value)
-                                    }
-                                    className="border border-gray-300 rounded px-2 py-1 text-sm my-1"
-                                    placeholder="Enter custom name"
-                                  />
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
-
-                          <button
-                            onClick={handleUpload}
-                            className="mt-3 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-                          >
-                            Upload
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                {selectedSignature && (
-                  <div className=" absolute bottom-32 left-64 right-0mb-4 ml-4 flex flex-col items-center gap-2">
-                    <Image
-                      src={selectedSignature.url}
-                      alt="Profile Picture"
-                      width={60}
-                      height={10}
-                    />
-                    <h1>{selectedSignature.name}</h1>
-                  </div>
-                )}
+      {/* Letter Content */}
+      <div className="p-6">
+         <div className="grid grid-cols-10 gap-4">
+        {/* Left Column */}
+            <div className="col-span-3 gap-56 border-r-4 border-zinc-500 p-3">
+            {[
+              {
+                name: "Subodh Saxena",
+                title: "Founder & Chief Executive Officer (CEO)",
+              },
+              {
+                name: "Sumita Saxena",
+                title: "Founder & Chief People Officer (CPO)",
+              },
+              {
+                name: "Dipa Padmakumar",
+                title: "Founder & Chief Operating Officer (COO)",
+              },
+              {
+                name: "Baiju K J",
+                title: "Founder & Chief Technology Officer (CTO)",
+              },
+              {
+                name: "Shruti Lokre",
+                title: "Founder & Chief Legal Officer (CLO)",
+              },
+            ].map((person, index) => (
+              <div className="mb-44" key={index}>
+                <h3 className="text-md font-semibold">{person.name}</h3>
+                <h5 className="text-[10px] font-light tracking-tight">
+                  {person.title}
+                </h5>
               </div>
-            </div>
+            ))}
+          <button
+            className="mt-4 px-4 py-2 bg-[#B56365] text-white rounded-md hover:bg-[#b56364f8] self-center"
+            onClick={() => setIsSignatureModalOpen(true)}
+          >
+            Add Signature
+          </button>
+        </div>
+
+        {/* Right Column */}
+        <div className="col-span-7">
+          {/* Subject Field */}
+          <div
+            contentEditable
+            suppressContentEditableWarning
+            onInput={(e) => setLetterSubject(e.currentTarget.innerText)}
+            className="mb-4 p-2 border border-gray-300 rounded text-sm outline-none"
+          >
+            {letterSubject}
           </div>
-        </div>
 
-        <div className="flex justify-end gap-6 mt-4 mr-32">
-          <button
-            className="px-4 py-2 bg-[#B56365] text-white rounded-md hover:bg-[#b56364f8]"
-            onClick={handleEditLetterhead}
-            disabled={loading} // Disable button while loading
+          {/* Content Field */}
+          <div
+            contentEditable
+            suppressContentEditableWarning
+            onInput={(e) => setLetterContent(e.currentTarget.innerText)}
+            className="p-4 border border-gray-300 rounded text-sm outline-none min-h-[200px]"
           >
-            {loading ? "Updating..." : "Update"}
+            {letterContent}
+          </div>
 
-          </button>
-          <button
-            className="px-4 py-2 bg-[#B56365] text-white rounded-md hover:bg-[#b56364f8]"
-            onClick={() => setIsModalOpen(false)}
-          >
-            cancel
-          </button>
+          {/* Uploaded Files Display */}
+          {file.length > 0 && (
+            <div className="mt-6">
+              <h3 className="text-sm font-semibold mb-2">Attached Files:</h3>
+              <ul>
+                {file.map((item, index) => (
+                  <li
+                    key={item.public_id}
+                    className="text-blue-700 flex items-center justify-between"
+                  >
+                    {item.file_name}
+                    <button
+                      onClick={() => removeFile(item.public_id)}
+                      className="ml-2 text-red-500 hover:text-red-700 text-sm"
+                    >
+                      Remove
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {uploadedFiles.length > 0 && (
+            <ul className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+              {uploadedFiles.map((item, index) => (
+                <li key={index} className="text-center relative group">
+                  <img
+                    src={URL.createObjectURL(item.file)}
+                    alt={item.customName}
+                    className="w-32 h-32 object-cover rounded mx-auto"
+                  />
+                  <p className="mt-1 text-sm text-blue-600">
+                    {item.customName}
+                  </p>
+                  <button
+                    onClick={() => handleRemoveUploadedFile(index)}
+                    className="absolute top-1 right-1 bg-white rounded-full text-red-500 p-1 hover:bg-red-100"
+                    title="Remove"
+                  >
+                    <FiX size={16} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {/* File Upload */}
+          <div className="mt-4 space-y-4">
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              Attach files:
+            </label>
+            <div
+              className="w-full border-2 border-dashed border-[#B56365] rounded-lg p-6 text-center 
+               hover:bg-[#fdf0f0] transition duration-300 ease-in-out cursor-pointer"
+            >
+              <input
+                type="file"
+                multiple
+                onChange={handleFileChange}
+                className="w-full text-sm text-gray-500
+               file:mr-4 file:py-2 file:px-4
+               file:rounded-full file:border-0
+               file:text-sm file:font-semibold
+               file:bg-[#B56365] file:text-white
+               hover:file:bg-[#b56364f8]"
+              />
+              <p className="mt-2 text-xs text-gray-400">
+                You can select multiple files
+              </p>
+            </div>
+            
+          </div>
+          
+          {/* Signature Section */}
+          {selectedSignature && (
+            <div className="mt-6 flex flex-col items-center">
+              <Image
+                src={selectedSignature.url}
+                alt="Signature"
+                width={100}
+                height={50}
+                className="object-contain"
+              />
+              <h1 className="text-sm font-medium">{selectedSignature.name}</h1>
+            </div>
+          )}
         </div>
-      </Modal>
+        
+      </div>
+      </div>
+     
+
+      {/* Action Buttons */}
+      <div className="flex justify-end gap-6 mt-4 p-4">
+        <button
+          className="px-4 py-2 bg-[#B56365] text-white rounded-md hover:bg-[#b56364f8]"
+          onClick={handleEditLetterhead}
+          disabled={loading}
+        >
+          {loading ? "Updating..." : "Update"}
+        </button>
+        <button
+          className="px-4 py-2 bg-[#B56365] text-white rounded-md hover:bg-[#b56364f8]"
+          onClick={() => setIsModalOpen(false)}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+</div>
+
+
+
+</Modal>
+
 
       {/* Modal for signature list */}
       <Modal

@@ -17,9 +17,8 @@ const LetterheadPdf = ({ data, signature }: PropsType) => {
         <div
           className="bg-white shadow-lg"
           style={{
-            width: "210mm",
-            height: "297mm", // Adjusted to standard A4 height
-            position: "relative",
+            width: "210mm", // Standard A4 width
+            minHeight: "297mm", // Minimum height for A4 but can expand
             boxSizing: "border-box",
           }}
         >
@@ -56,10 +55,10 @@ const LetterheadPdf = ({ data, signature }: PropsType) => {
           </div>
 
           {/* Body */}
-          <div className="mb-8">
-            <div className="grid grid-cols-10">
+          <div className="mb-8 px-6">
+            <div className="grid grid-cols-10 gap-4">
               {/* Left Column */}
-              <div className="col-span-3 h-full border-r-4 border-zinc-500 p-3">
+              <div className="col-span-3 border-r-4 border-zinc-500 p-3">
                 {[
                   {
                     name: "Subodh Saxena",
@@ -82,7 +81,7 @@ const LetterheadPdf = ({ data, signature }: PropsType) => {
                     title: "Founder & Chief Legal Officer (CLO)",
                   },
                 ].map((person, index) => (
-                  <div className="w-full h-40" key={index}>
+                  <div className="mb-44" key={index}>
                     <h3 className="text-md font-semibold">{person.name}</h3>
                     <h5 className="text-[10px] font-light tracking-tight">
                       {person.title}
@@ -91,46 +90,48 @@ const LetterheadPdf = ({ data, signature }: PropsType) => {
                 ))}
               </div>
 
-              {/* Right Column */}
-              <div className="col-span-7 p-4">
-                <div className="mb-4 p-2 text-sm">{data.subject}</div>
-                <div className="p-4 text-sm min-h-[200px]">{data.body_text}</div>
+            {/* Right Column */}
+<div className="col-span-7">
+  {/* Subject Section */}
+  <div className="mb-4 text-sm">{data.subject}</div>
 
-                {/* Files Section */}
-                {hasFiles && (
-                  <div className="mt-6">
-                    <h3 className="text-sm font-semibold mb-2">Attached Files:</h3>
-                    <ul className="mt-5 mx-8">
-                      {data.file_link.map((item: any, index: number) => (
-                        <li key={index} className="text-blue-700 m-2">
-                          <a href={item.url}>{item.file_name}</a>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+  {/* Body Section */}
+  <div className="text-sm">{data.body_text}</div>
 
-                {/* Signature Section */}
-                <div
-                  className="absolute bottom-8 left-16"
-                  style={{
-                    width: "100px",
-                    height: "auto",
-                  }}
-                >
-                  <img
-                    src={signature.url}
-                    alt="Signature"
-                    style={{ width: "60px", height: "auto" }}
-                  />
-                </div>
-              </div>
+  {/* Files Section */}
+  {hasFiles && (
+    <div className="mt-6">
+      <h3 className="text-sm font-semibold mb-2">Attached Files:</h3>
+      <ul className="mt-5 mx-8">
+        {data.file_link.map((item: any, index: number) => (
+          <li key={index} className="text-blue-700 m-2">
+            <a href={item.url}>{item.file_name}</a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )}
+
+  {/* Signature Section */}
+  <div className="mt-8 flex flex-col items-center">
+    <img
+      src={signature.url}
+      alt="Signature"
+      style={{ width: "60px", height: "auto" }}
+    />
+    <h1 className="text-sm font-medium mt-2">{signature.name}</h1>
+  </div>
+</div>
+
+
             </div>
           </div>
+
         </div>
       </div>
     </div>
   );
 };
+
 
 export default LetterheadPdf;

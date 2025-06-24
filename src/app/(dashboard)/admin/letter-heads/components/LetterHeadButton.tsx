@@ -40,7 +40,6 @@ const LetterHeadButton = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [selectedFiles, setSelectedFiles] = useState<FileWithCustomName[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<FileWithCustomName[]>([]);
-
   const handleSelectSignature = (item: signature) => {
     setSelectedSignature(item);
     setIsSignatureModalOpen(false);
@@ -71,9 +70,10 @@ const LetterHeadButton = ({
 
   // =============for create letterhead template=========
   const handleUploadLetterhead = async () => {
-    setLoading(true);
+    
     const formData = new FormData();
     if (!selectedSignature) return;
+    setLoading(true);
 
     // Add files and custom names to formData
     uploadedFiles.forEach((item, index) => {
@@ -144,137 +144,123 @@ const LetterHeadButton = ({
 
   return (
     <div>
-      <button
-        className="px-5 py-2 bg-[#B56365] text-white hover:bg-[#b56364f8] rounded-lg"
-        onClick={() => setIsModalOpen(true)}
-      >
-        Create Letter Head
-      </button>
+  <button
+    className="px-5 py-2 bg-[#B56365] text-white hover:bg-[#b56364f8] rounded-lg"
+    onClick={() => setIsModalOpen(true)}
+  >
+    Create Letter Head
+  </button>
 
-      {/* Modal foe create Letter head */}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title="Letter Head"
-        size="large" // or "small", "large", "fullscreen"
-        overFlow={true}
+  {/* Modal for Create Letterhead */}
+  <Modal
+    isOpen={isModalOpen}
+    onClose={() => setIsModalOpen(false)}
+    title="Letter Head"
+    size="large"
+    overFlow={true}
+  >
+    <div className="flex justify-center p-4 bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat bg-contain">
+      <div
+        className="bg-white shadow-lg"
+        style={{
+          width: "210mm", // A4 width
+          minHeight: "297mm", // Minimum height for A4
+          boxSizing: "border-box",
+        }}
       >
-        <div className="flex justify-center p-4 bg-[url('/images/watermark_logo.png')] bg-center bg-no-repeat bg-contain">
-          {/* A5 Container */}
-          <div
-            className="bg-white shadow-lg"
-            style={{
-              width: "210mm", // A4 width
-              height: "297mm", // A4 height
-              padding: "", // Standard letterhead padding
-              position: "relative",
-              boxSizing: "border-box",
-            }}
-          >
-            {/* Letterhead Header */}
-            <div
-              className="flex items-center justify-between h-[180px] px-6"
-              style={{
-                background:
-                  "linear-gradient(to right, #c4c4c4 35%, #ffffff 60%)",
-              }}
-            >
-              {/* Text Section - vertically stacked, centered */}
-              <div className="pl-16 flex flex-col justify-center text-center flex-1">
-                <h1 className="text-4xl font-light text-gray-800 underline mb-2">
-                  ANARA SKILLS FOUNDATION
-                </h1>
-                <p className="text-gray-600 text-lg mb-4">
-                  www.anaraskills.org
-                </p>
-                <p className="text-gray-600 text-base">
-                  (CIN:U88900KA2024NPL193940)
-                </p>
-              </div>
+        {/* Header */}
+        <div
+          className="flex items-center justify-between h-[180px] px-6"
+          style={{
+            background: "linear-gradient(to right, #c4c4c4 35%, #ffffff 60%)",
+          }}
+        >
+          {/* Text Section */}
+          <div className="pl-16 flex flex-col justify-center text-center flex-1">
+            <h1 className="text-4xl font-light text-gray-800 underline mb-2">
+              ANARA SKILLS FOUNDATION
+            </h1>
+            <p className="text-gray-600 text-lg mb-4">www.anaraskills.org</p>
+            <p className="text-gray-600 text-base">
+              (CIN:U88900KA2024NPL193940)
+            </p>
+          </div>
 
-              {/* Logo Image */}
-              <div className="flex-shrink-0 pl-10">
-                <Image
-                  src="/images/login_banner.png"
-                  alt="Anara Skills Foundation Logo"
-                  width={160}
-                  height={50}
-                />
-              </div>
+          {/* Logo Image */}
+          <div className="flex-shrink-0 pl-10">
+            <Image
+              src="/images/login_banner.png"
+              alt="Anara Skills Foundation Logo"
+              width={160}
+              height={50}
+            />
+          </div>
+        </div>
+
+        {/* Letter Content */}
+        <div className="p-6">
+          <div className="grid grid-cols-10 gap-4">
+            {/* Left Column */}
+            <div className="col-span-3 gap-56 border-r-4 border-zinc-500 p-3">
+              {[
+                {
+                  name: "Subodh Saxena",
+                  title: "Founder & Chief Executive Officer (CEO)",
+                },
+                {
+                  name: "Sumita Saxena",
+                  title: "Founder & Chief People Officer (CPO)",
+                },
+                {
+                  name: "Dipa Padmakumar",
+                  title: "Founder & Chief Operating Officer (COO)",
+                },
+                {
+                  name: "Baiju K J",
+                  title: "Founder & Chief Technology Officer (CTO)",
+                },
+                {
+                  name: "Shruti Lokre",
+                  title: "Founder & Chief Legal Officer (CLO)",
+                },
+              ].map((person, index) => (
+                <div className="mb-44" key={index}>
+                  <h3 className="text-md font-semibold">{person.name}</h3>
+                  <h5 className="text-[10px] font-light tracking-tight">
+                    {person.title}
+                  </h5>
+                </div>
+              ))}
+              <button
+                className=" p-2 bg-[#B56365] text-white rounded-md hover:bg-[#b56364f8]"
+                onClick={() => setIsSignatureModalOpen(true)}
+              >
+                Add Signature
+              </button>
             </div>
 
-            {/* Letter Content */}
-            <div className="mb-8 ">
-              <div className="grid grid-cols-10">
-                <div className="col-span-3  h-full border-r-4 border-zinc-500  p-3">
-                  <div className="w-full h-40">
-                    <h3 className="text-md font-semibold">Subodh Saxena</h3>
-                    <h5 className="text-[10px] font-light">
-                      Founder & Chief Executive Officer (CEO)
-                    </h5>
-                  </div>
-
-                  <div className="w-full h-40">
-                    <h3 className="text-md font-semibold">Sumita Saxena</h3>
-                    <h5 className="text-[10px] font-light tracking-tight">
-                      Founder & Chief People Officer (CPO)
-                    </h5>
-                  </div>
-
-                  <div className="w-full h-40">
-                    <h3 className="text-md font-semibold">Dipa Padmakumar</h3>
-                    <h5 className="text-[10px] font-light">
-                      Founder & Chief Operating Officer (COO)
-                    </h5>
-                  </div>
-
-                  <div className="w-full h-40">
-                    <h3 className="text-md font-semibold">Baiju K J</h3>
-                    <h5 className="text-[10px] font-light">
-                      Founder & Chief Technology Officer (CTO)
-                    </h5>
-                  </div>
-
-                  <div className="w-full h-40">
-                    <h3 className="text-md font-semibold">Shruti Lokre</h3>
-                    <h5 className="text-[10px] font-light">
-                      Founder & Chief Legal Officer (CLO)
-                    </h5>
-                  </div>
-                  <button
-                    className="px-4 py-2 bg-[#B56365] text-white rounded-md hover:bg-[#b56364f8]"
-                    onClick={() => setIsSignatureModalOpen(true)}
-                  >
-                    add signature
-                  </button>
+            {/* Right Column */}
+            <div className="col-span-7">
+              <div>
+                <div
+                  contentEditable
+                  suppressContentEditableWarning
+                  onInput={(e) => setLetterSubject(e.currentTarget.innerText)}
+                  className="mb-4 p-2 border border-gray-300 rounded text-sm outline-none"
+                >
+                  Subject: Type your subject here...
                 </div>
-                <div className="col-span-7">
-                  <div className="col-span-7 p-4">
-                    {/* Subject Field */}
-                    <div
-                      contentEditable
-                      suppressContentEditableWarning
-                      onInput={(e) =>
-                        setLetterSubject(e.currentTarget.innerText)
-                      }
-                      className="mb-4 p-2 border border-gray-300 rounded text-sm outline-none"
-                    >
-                      Subject: Type your subject here...
-                    </div>
 
-                    {/* Content Field */}
-                    <div
-                      contentEditable
-                      suppressContentEditableWarning
-                      onInput={(e) =>
-                        setLetterContent(e.currentTarget.innerText)
-                      }
-                      className="p-4 border border-gray-300 rounded text-sm outline-none min-h-[200px]"
-                    >
-                      Type your letter content here...
-                    </div>
+                <div
+                  contentEditable
+                  suppressContentEditableWarning
+                  onInput={(e) => setLetterContent(e.currentTarget.innerText)}
+                  className="p-4 border border-gray-300 rounded text-sm outline-none min-h-[200px]"
+                >
+                  Type your letter content here...
+                </div>
 
-                    {/* Uploaded Files Display */}
+               {/* Uploaded Files Display */}
                     {uploadedFiles.length > 0 && (
                       <div className="mt-6">
                         <h3 className="text-sm font-semibold mb-2">
@@ -388,25 +374,28 @@ const LetterHeadButton = ({
                         </div>
                       )}
                     </div>
-                  </div>
-                </div>
-                {selectedSignature && (
-                  <div className=" absolute bottom-32 left-64 right-0mb-4 ml-4 flex flex-col items-center gap-2">
-                    <Image
-                      src={selectedSignature.url}
-                      alt="Profile Picture"
-                      width={60}
-                      height={10}
-                    />
-                    <h1>{selectedSignature.name}</h1>
-                  </div>
-                )}
+
               </div>
+
+              {/* Signature Section */}
+              {selectedSignature && (
+                <div className="mt-8 flex flex-col items-center">
+                  <Image
+                    src={selectedSignature.url}
+                    alt="Profile Picture"
+                    width={60}
+                    height={10}
+                  />
+                  <h1>{selectedSignature.name}</h1>
+                </div>
+              )}
             </div>
+
           </div>
         </div>
 
-        <div className="flex justify-end mt-4">
+        {/* Submit Button */}
+        <div className="flex justify-end mt-4 mb-4">
           <button
             className="px-4 py-2 bg-[#B56365] text-white rounded-md hover:bg-[#b56364f8]"
             onClick={handleUploadLetterhead}
@@ -415,9 +404,11 @@ const LetterHeadButton = ({
             {loading ? "Creating..." : "Create Letter Head"}
           </button>
         </div>
-      </Modal>
+      </div>
+    </div>
+  </Modal>
 
-      {/* Modal for signature list */}
+    {/* Modal for signature list */}
       <Modal
         isOpen={isSignatureModalOpen}
         onClose={() => setIsSignatureModalOpen(false)}
@@ -499,7 +490,8 @@ const LetterHeadButton = ({
           </div>
         )}
       </Modal>
-    </div>
+</div>
+
   );
 };
 
