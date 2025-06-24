@@ -118,7 +118,7 @@ const [loading,setLoading] = useState<boolean>(false);
       setIsModalOpen(false);
       setSuccessMessage(response.data.message);
       setShowSuccessModal(true);
-      handleCreatePdf(response.data.data, signatures);
+      handleCreatePdf(response.data.data, signatures,"edit");
       // Handle the response
     } catch (error) {
       // Handle error

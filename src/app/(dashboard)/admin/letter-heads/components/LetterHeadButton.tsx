@@ -94,7 +94,7 @@ const LetterHeadButton = ({
         },
       });
 
-      const pdfResponse: any = await handleCreatePdf(response.data.data, signatures);
+      const pdfResponse: any = await handleCreatePdf(response.data.data, signatures, "create");
       if (pdfResponse.status) {
         fetchLetterHead();
         setIsModalOpen(false);
@@ -224,7 +224,7 @@ const LetterHeadButton = ({
                   title: "Founder & Chief Legal Officer (CLO)",
                 },
               ].map((person, index) => (
-                <div className="mb-44" key={index}>
+                <div className="mb-28" key={index}>
                   <h3 className="text-md font-semibold">{person.name}</h3>
                   <h5 className="text-[10px] font-light tracking-tight">
                     {person.title}

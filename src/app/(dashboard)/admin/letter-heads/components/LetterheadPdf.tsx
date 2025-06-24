@@ -81,7 +81,7 @@ const LetterheadPdf = ({ data, signature }: PropsType) => {
                     title: "Founder & Chief Legal Officer (CLO)",
                   },
                 ].map((person, index) => (
-                  <div className="mb-44" key={index}>
+                  <div className="mb-28" key={index}>
                     <h3 className="text-md font-semibold">{person.name}</h3>
                     <h5 className="text-[10px] font-light tracking-tight">
                       {person.title}
