@@ -226,6 +226,7 @@ export default function Page() {
             fullscreen
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
+            overFlow={true}
           >
             {selectedUser && <CandidateDetailsContent user={selectedUser} />}
           </Modal>

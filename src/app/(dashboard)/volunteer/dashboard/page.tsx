@@ -1,72 +1,51 @@
-"use client"
+"use client";
 
-import DashboardCard from "@/components/common/dashboardCard"
-import JobStatistics from "./components/jobStatistics"
-import JobStatus from "./components/jobStatus"
-import CandidateSource from "./components/candidateSource"
-import ScheduleTable from "./components/scheduleTable"
-import useVolunteerAuth from "@/app/hooks/useVolunteer"
+import useVolunteerAuth from "@/app/hooks/useVolunteer";
+import SpinLoading from "@/components/loading/spinLoading";
+import volunteerApi from "@/utils/axios_Interceptors/volunteerApiService";
+import { useEffect, useState } from "react";
+import CandidatesTable from "./components/CandidatesTable";
+import NoData from "@/components/ui/NoData";
 
+export default function Page() {
+  const { loading: authLoading } = useVolunteerAuth();
+  const [candidates, setCandidates] = useState<[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-const overView = [
-    {
-        title: "Total Candidates",
-        value: "500",
-        icon: "/images/dashboard/dash-users.png",
-    },
-    {
-        title: "Job Openings",
-        value: "200",
-        icon: "/images/dashboard/dash-box.png",
-    },
-    {
-        title: "Interviewed",
-        value: "150",
-        icon: "/images/dashboard/dash-graph.png",
-    },
-    {
-        title: "Rejected",
-        value: "110",
-        icon: "/images/dashboard/dash-reset.png",
-    },
-]
-export default function page() {
+  // Fetch candidates from the API
+  async function fetchUsers() {
+    try {
+      const { data } = await volunteerApi.get("/users-details");
 
+      if (data.success) {
+        setCandidates(data.users);
+      }
+    } catch (error) {
+      console.error("Failed to fetch candidates:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
-    const {loading}=useVolunteerAuth()
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
-    if(loading)return( <div>Loading... </div> )
-        
-    return (
-        <div>
-            <h3 className="text-[#333333] font-[600] text-[22px] ">Quick Status</h3>
-            <div className="mt-2">
-                <ul className="grid grid-cols-2 lg:grid-cols-4 gap-[20px]">
-                    {overView.map((data, i) =>
-                        <li>
-                            <DashboardCard {...data} key={i} />
-                        </li>
-                    )}
-                </ul>
-            </div>
-            <div className="mt-5 flex flex-col gap-[20px]">
-                <ul className="grid h-full items-stretch grid-cols-1 lg:grid-cols-4 gap-[20px]">
-                        <li className="col-span-3  h-full flex">
-                            <JobStatistics/>
-                        </li>
-                        <li className=" h-full flex">
-                            <JobStatus />
-                        </li>
-                </ul>
-                <ul className="grid h-full items-stretch grid-cols-1 lg:grid-cols-4 gap-[20px]">
-                        <li className=" h-full flex">
-                            <CandidateSource />
-                        </li>
-                        <li className="col-span-3  h-full flex">
-                            <ScheduleTable/>
-                        </li>
-                </ul>
-            </div>
-        </div>
-    )
+  if (authLoading || isLoading) {
+    return <SpinLoading />;
+  }
+
+  return (
+    <div>
+      {candidates.length === 0 ? (
+        <NoData
+          message="No Candidates Found"
+          description="It seems there are no candidates registered under this volunteer at the moment. Please check back later or encourage candidates to register."
+          actionText="Add a Candidate"
+        />
+      ) : (
+        <CandidatesTable candidates={candidates} />
+      )}
+    </div>
+  );
 }
