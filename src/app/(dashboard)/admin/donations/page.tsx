@@ -129,7 +129,7 @@ const Page = () => {
                       >
                         View
                       </button>
-                    </td>
+                    </td> 
                   </tr>
                 ))}
               </tbody>
