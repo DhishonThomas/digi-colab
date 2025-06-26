@@ -16,16 +16,35 @@ type DonationDetailsViewProps = {
     donorAddress: string;
     paymentImageURL: string;
     transactionId: string;
-    status:any
+    statusUpdatedBy?: {
+      name: string;
+      email: string;
+    };
+    statusUpdatedAt?: Date;
+    status: "Pending" | "Verified" | "Rejected";
   };
-  handleParentChange: (newStatus: string) => void;
+  handleParentChange: (updatedDetails: {
+    status: string;
+    statusUpdatedBy?: {
+      name: string;
+      email: string;
+    };
+    statusUpdatedAt?: Date;
+  }) => void;
 };
 
-const formatDate = (iso: string) => {
-  const d = new Date(iso);
-  return `${d.getDate().toString().padStart(2, "0")}-${(d.getMonth() + 1)
-    .toString()
-    .padStart(2, "0")}-${d.getFullYear()}`;
+const formatDateTime = (date: Date | string) => {
+  const d = new Date(date);
+  return d.toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  });
 };
 
 const DonationDetailsView: React.FC<DonationDetailsViewProps> = ({
@@ -40,10 +59,8 @@ const DonationDetailsView: React.FC<DonationDetailsViewProps> = ({
           newStatus,
         }
       );
-      console.log("Status updated successfully:", response.data);
-      handleParentChange(newStatus);
+      handleParentChange(response.data.data);
     } catch (error) {
-      console.error("Error updating status:", error);
       alert(
         "There was an error updating the donation status. Please try again."
       );
@@ -101,7 +118,7 @@ const DonationDetailsView: React.FC<DonationDetailsViewProps> = ({
             Amount: ₹ {donation.donationAmount}
           </p>
           <p className="text-lg font-medium">
-            Date: {formatDate(donation.date)}
+            Date: {formatDateTime(donation.date)}
           </p>
           <p className="text-lg font-medium">Name: {donation.donorName}</p>
           <p className="text-lg font-medium">Email: {donation.donorEmail}</p>
@@ -117,10 +134,28 @@ const DonationDetailsView: React.FC<DonationDetailsViewProps> = ({
           <p className="text-lg font-medium">PAN: XXXXXXXXXX</p>
         </div>
         {donation.status !== "Pending" && (
-          <p className="text-lg col-span-2 font-semibold">
-            PAYMENT STATUS:{" "}
-            {donation.status === "Verified" ? "VERIFIED ✅" : "REJECTED ❌"}
-          </p>
+          <div className="flex flex-col col-span-2 gap-1 rounded-lg shadow-blue-500 shadow-lg p-4">
+            <h2 className="font-bold text-lg">
+              Payment Status:{" "}
+              {donation.status === "Verified" ? (
+                <span className="text-green-600">VERIFIED</span>
+              ) : (
+                <span className="text-red-600">REJECTED</span>
+              )}
+            </h2>
+            <p className="font-bold text-lg">
+              {donation.status} by:{" "}
+              {donation.statusUpdatedBy
+                ? `${donation.statusUpdatedBy?.name} | ${donation.statusUpdatedBy?.email}`
+                : "N/A"}
+            </p>
+            <p className="font-bold text-lg">
+              {donation.status} on:{" "}
+              {donation.statusUpdatedAt
+                ? formatDateTime(donation.statusUpdatedAt)
+                : "N/A"}
+            </p>
+          </div>
         )}
         {donation.status !== "Verified" && (
           <>

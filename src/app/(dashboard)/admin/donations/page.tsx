@@ -19,9 +19,7 @@ const Page = () => {
         setLoading(true);
         const response = await adminApi.get("/donations");
         setData(response.data.donations);
-        console.log("Donations data:", response.data.donations);
       } catch (error) {
-        console.error("Error fetching donations:", error);
       } finally {
         setLoading(false);
       }
@@ -29,12 +27,29 @@ const Page = () => {
     fetchData();
   }, []);
 
-  const handleParentChange = (newStatus: string) => {
+  const handleParentChange = (updatedDetails: {
+    status: string;
+    statusUpdatedBy: {
+      name: string;
+      email: string;
+    };
+    statusUpdatedAt: Date;
+  }) => {
     setData((prevData: any) =>
       prevData.map((donation: any) => {
         if (selectedDonation._id === donation._id) {
-          setSelectedDonation({ ...donation, status: newStatus });
-          return { ...donation, status: newStatus };
+          setSelectedDonation({
+            ...donation,
+            status: updatedDetails.status,
+            statusUpdatedBy: updatedDetails.statusUpdatedBy,
+            statusUpdatedAt: updatedDetails.statusUpdatedAt,
+          });
+          return {
+            ...donation,
+            status: updatedDetails.status,
+            statusUpdatedBy: updatedDetails.statusUpdatedBy,
+            statusUpdatedAt: updatedDetails.statusUpdatedAt,
+          };
         }
         return donation;
       })
