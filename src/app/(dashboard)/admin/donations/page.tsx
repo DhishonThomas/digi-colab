@@ -7,7 +7,7 @@ import DonationDetailsView from "./components/DonationDetailsView";
 
 const Page = () => {
   const [loading, setLoading] = useState<boolean>(true);
-  const [data, setData] = useState<any>([]);
+  const [data, setData] = useState<any[]>([]);
   const [status, setStatus] = useState<string>("Pending");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedDonation, setSelectedDonation] = useState<any>(null);
@@ -20,6 +20,7 @@ const Page = () => {
         const response = await adminApi.get("/donations");
         setData(response.data.donations);
       } catch (error) {
+        console.error("Error fetching donations", error);
       } finally {
         setLoading(false);
       }
@@ -29,27 +30,23 @@ const Page = () => {
 
   const handleParentChange = (updatedDetails: {
     status: string;
-    statusUpdatedBy: {
+    statusUpdatedBy?: {
       name: string;
       email: string;
     };
-    statusUpdatedAt: Date;
+    statusUpdatedAt?: Date;
   }) => {
-    setData((prevData: any) =>
-      prevData.map((donation: any) => {
+    setData((prevData) =>
+      prevData.map((donation) => {
         if (selectedDonation._id === donation._id) {
-          setSelectedDonation({
-            ...donation,
-            status: updatedDetails.status,
-            statusUpdatedBy: updatedDetails.statusUpdatedBy,
-            statusUpdatedAt: updatedDetails.statusUpdatedAt,
-          });
-          return {
+          const updated = {
             ...donation,
             status: updatedDetails.status,
             statusUpdatedBy: updatedDetails.statusUpdatedBy,
             statusUpdatedAt: updatedDetails.statusUpdatedAt,
           };
+          setSelectedDonation(updated);
+          return updated;
         }
         return donation;
       })
@@ -57,7 +54,7 @@ const Page = () => {
   };
 
   const filteredData = data.filter(
-    (donation: any) => donation.status === status
+    (donation) => donation.status === status
   );
 
   const itemsPerPage = 5;
@@ -71,13 +68,16 @@ const Page = () => {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4 text-center">Donations</h1>
-      {loading && (
+
+      {loading ? (
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-teal-600"></div>
         </div>
-      )}
-      {!loading && data.length > 0 && (
+      ) : data.length === 0 ? (
+        <div className="text-center text-gray-500">No donations found.</div>
+      ) : (
         <div className="flex flex-col">
+          {/* Status Filter Buttons */}
           <div className="flex gap-8 items-center mb-4">
             {["Pending", "Verified", "Rejected"].map((statusOption) => (
               <button
@@ -94,6 +94,7 @@ const Page = () => {
             ))}
           </div>
 
+          {/* Donation Table */}
           <div className="overflow-x-auto">
             <table className="min-w-full bg-white">
               <thead>
@@ -107,7 +108,7 @@ const Page = () => {
                 </tr>
               </thead>
               <tbody>
-                {paginatedData.map((donation: any, index: number) => (
+                {paginatedData.map((donation, index) => (
                   <tr key={donation._id} className="text-center">
                     <td className="px-4 py-2 border-b">{index + 1}</td>
                     <td className="px-4 py-2 border-b">
@@ -133,6 +134,8 @@ const Page = () => {
                 ))}
               </tbody>
             </table>
+
+            {/* Pagination */}
             {filteredData.length > 0 ? (
               <div className="flex justify-center items-center mt-6 space-x-4">
                 <button
@@ -149,9 +152,7 @@ const Page = () => {
                   Previous
                 </button>
                 <span className="text-sm font-medium">
-                  {totalPages > 0
-                    ? `Page ${currentPage} of ${totalPages}`
-                    : "Page 0 of 0"}
+                  Page {currentPage} of {totalPages}
                 </span>
                 <button
                   onClick={() =>
@@ -178,6 +179,7 @@ const Page = () => {
             )}
           </div>
 
+          {/* Modal */}
           <Modal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
@@ -193,9 +195,6 @@ const Page = () => {
             )}
           </Modal>
         </div>
-      )}
-      {!loading && data.length === 0 && (
-        <div className="text-center text-gray-500">No donations found.</div>
       )}
     </div>
   );
