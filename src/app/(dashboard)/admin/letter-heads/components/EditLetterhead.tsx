@@ -4,6 +4,7 @@ import Modal from "@/components/ui/Modal";
 import adminApi from "@/utils/axios_Interceptors/adminApiService";
 import Image from "next/image";
 import { FiX } from "react-icons/fi";
+import TextareaAutosize from 'react-textarea-autosize';
 import {
   FileLinkItem,
   LetterHeadData,
@@ -255,26 +256,21 @@ const [loading,setLoading] = useState<boolean>(false);
 
         {/* Right Column */}
         <div className="col-span-7">
-          {/* Subject Field */}
-          <div
-            contentEditable
-            suppressContentEditableWarning
-            onInput={(e) => setLetterSubject(e.currentTarget.innerText)}
-            className="mb-4 p-2 border border-gray-300 rounded text-sm outline-none"
-          >
-            {letterSubject}
-          </div>
 
-          {/* Content Field */}
-          <div
-            contentEditable
-            suppressContentEditableWarning
-            onInput={(e) => setLetterContent(e.currentTarget.innerText)}
-            className="p-4 border border-gray-300 rounded text-sm outline-none min-h-[200px]"
-          >
-            {letterContent}
-          </div>
-
+         <input
+                      type="text"
+                      value={letterSubject}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setLetterSubject(e.target.value)
+                      }
+                      className="mb-4 p-2 border w-full border-gray-300 rounded text-sm outline-none"
+                    />
+                    <TextareaAutosize
+                      value={letterContent}
+                      onChange={(e) => setLetterContent(e.target.value)}
+                      minRows={8}
+                      className="p-4 border border-gray-300 rounded text-sm outline-none w-full"
+                    />
           {/* Uploaded Files Display */}
           {file.length > 0 && (
             <div className="mt-6">
