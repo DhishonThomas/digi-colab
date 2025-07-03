@@ -6,7 +6,7 @@ import Image from "next/image";
 import { FiX } from "react-icons/fi";
 import { handleCreatePdf } from "./CreatePdf";
 import NoData from "@/components/ui/NoData";
-
+import TextareaAutosize from "react-textarea-autosize";
 export interface signature {
   _id: string;
   userId: string;
@@ -242,23 +242,23 @@ const LetterHeadButton = ({
             {/* Right Column */}
             <div className="col-span-7">
               <div>
-                <div
-                  contentEditable
-                  suppressContentEditableWarning
-                  onInput={(e) => setLetterSubject(e.currentTarget.innerText)}
-                  className="mb-4 p-2 border border-gray-300 rounded text-sm outline-none"
-                >
-                  Subject: Type your subject here...
-                </div>
+                <input
+    type="text"
+    value={letterSubject}
+    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+      setLetterSubject(e.target.value)
+    }
+    placeholder="Subject: Type your subject here..."
+    className="mb-4 p-2 border w-full border-gray-300 rounded text-sm outline-none"
+  />
+  <TextareaAutosize
+    value={letterContent}
+    onChange={(e) => setLetterContent(e.target.value)}
+    minRows={8}
+    placeholder="Type your letter content here..."
+    className="p-4 border border-gray-300 rounded text-sm outline-none w-full"
+  />
 
-                <div
-                  contentEditable
-                  suppressContentEditableWarning
-                  onInput={(e) => setLetterContent(e.currentTarget.innerText)}
-                  className="p-4 border border-gray-300 rounded text-sm outline-none min-h-[200px]"
-                >
-                  Type your letter content here...
-                </div>
 
                {/* Uploaded Files Display */}
                     {uploadedFiles.length > 0 && (
