@@ -21,16 +21,17 @@ type DonationDetailsViewProps = {
       email: string;
     };
     statusUpdatedAt?: Date;
-    status: "Pending" | "Verified" | "Rejected";
-  };
-  handleParentChange: (updatedDetails: {
     status: string;
-    statusUpdatedBy?: {
-      name: string;
-      email: string;
-    };
-    statusUpdatedAt?: Date;
-  }) => void;
+  };
+ handleParentChange: (updatedDetails: {
+  status: string;
+  statusUpdatedBy: {
+    name: string;
+    email: string;
+  };
+  statusUpdatedAt: Date;
+}) => void;
+
 };
 
 const formatDateTime = (date: Date | string) => {
@@ -51,8 +52,6 @@ const DonationDetailsView: React.FC<DonationDetailsViewProps> = ({
   donation,
   handleParentChange,
 }) => {
-  const [confirmationStatus, setConfirmationStatus] = useState<string>("");
-
   const handleStatusChange = async (newStatus: string) => {
     try {
       const response = await adminApi.post(
@@ -71,6 +70,7 @@ const DonationDetailsView: React.FC<DonationDetailsViewProps> = ({
     }
   };
 
+  const [confirmationStatus, setConfirmationStatus] = useState<string>("");
   return (
     <div className="p-6">
       <ConfirmationModal
@@ -92,9 +92,7 @@ const DonationDetailsView: React.FC<DonationDetailsViewProps> = ({
             : "bg-red-600 hover:bg-red-700"
         }
       />
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 rounded-lg p-4 shadow-lg">
-        {/* Payment Proof */}
         <div className="flex flex-col gap-4 border-4 border-gray-600 rounded-lg p-4 h-96 overflow-auto">
           <h1 className="text-xl text-blue-600 font-bold mb-4">
             PAYMENT PROOF
@@ -113,23 +111,29 @@ const DonationDetailsView: React.FC<DonationDetailsViewProps> = ({
             />
           </Link>
         </div>
-
-        {/* Submitted Details */}
         <div className="flex flex-col gap-4 border-4 border-gray-600 h-96 overflow-auto rounded-lg p-4">
           <h2 className="text-xl text-blue-600 font-bold mb-4">
             SUBMITTED DETAILS
           </h2>
-          <p className="text-xl font-bold">Amount: ₹ {donation.donationAmount}</p>
-          <p className="text-lg font-medium">Date: {formatDateTime(donation.date)}</p>
+          <p className="text-xl font-bold">
+            Amount: ₹ {donation.donationAmount}
+          </p>
+          <p className="text-lg font-medium">
+            Date: {formatDateTime(donation.date)}
+          </p>
           <p className="text-lg font-medium">Name: {donation.donorName}</p>
           <p className="text-lg font-medium">Email: {donation.donorEmail}</p>
-          <p className="text-lg font-medium">Phone: +91 {donation.donorPhone}</p>
-          <p className="text-lg font-medium">Address: {donation.donorAddress}</p>
-          <p className="text-lg font-medium">ASF Transaction ID: {donation.transactionId}</p>
+          <p className="text-lg font-medium">
+            Phone: +91 {donation.donorPhone}
+          </p>
+          <p className="text-lg font-medium">
+            Address: {donation.donorAddress}
+          </p>
+          <p className="text-lg font-medium">
+            ASF Transaction ID: {donation.transactionId}{" "}
+          </p>
           <p className="text-lg font-medium">PAN: XXXXXXXXXX</p>
         </div>
-
-        {/* Status Display */}
         {donation.status !== "Pending" && (
           <div className="flex flex-col col-span-2 gap-1 rounded-lg shadow-blue-500 shadow-lg p-4">
             <h2 className="font-bold text-lg">
@@ -143,7 +147,7 @@ const DonationDetailsView: React.FC<DonationDetailsViewProps> = ({
             <p className="font-bold text-lg">
               {donation.status} by:{" "}
               {donation.statusUpdatedBy
-                ? `${donation.statusUpdatedBy.name} | ${donation.statusUpdatedBy.email}`
+                ? `${donation.statusUpdatedBy?.name} | ${donation.statusUpdatedBy?.email}`
                 : "N/A"}
             </p>
             <p className="font-bold text-lg">
@@ -154,18 +158,16 @@ const DonationDetailsView: React.FC<DonationDetailsViewProps> = ({
             </p>
           </div>
         )}
-
-        {/* Action Buttons */}
         {donation.status !== "Verified" && (
           <>
             <button
               onClick={() => setConfirmationStatus("Verified")}
+              disabled={donation.status === "Verified"}
               className={`${
-                donation.status === "Rejected"
-                  ? "bg-gray-300 cursor-not-allowed"
+                donation.status === "Verified"
+                  ? "bg-gray-300"
                   : "bg-teal-600 hover:bg-teal-700"
               } text-white px-4 py-4 font-semibold rounded transition`}
-              disabled={donation.status === "Rejected"}
             >
               VERIFY PAYMENT
             </button>
@@ -174,7 +176,7 @@ const DonationDetailsView: React.FC<DonationDetailsViewProps> = ({
               disabled={donation.status === "Rejected"}
               className={`${
                 donation.status === "Rejected"
-                  ? "bg-gray-300 cursor-not-allowed"
+                  ? "bg-gray-300"
                   : "bg-red-600 hover:bg-red-700"
               } text-white px-4 py-4 font-semibold rounded transition`}
             >
