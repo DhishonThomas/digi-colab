@@ -341,10 +341,59 @@ const [loading,setLoading] = useState<boolean>(false);
               <p className="mt-2 text-xs text-gray-400">
                 You can select multiple files
               </p>
-            </div>
-            
+            </div> 
           </div>
-          
+          {/* List of Selected Files */}
+                      {selectedFiles.length > 0 && (
+                        <div>
+                          <h3 className="text-sm font-semibold mb-2">
+                            Selected Files:
+                          </h3>
+                          <ul className="space-y-3">
+                            {selectedFiles.map((item, index) => (
+                              <li
+                                key={index}
+                                className="flex items-center gap-3"
+                              >
+                                <span className="flex items-center gap-2 text-sm text-gray-600">
+                                  {item.file.name}
+                                  <button
+                                    onClick={() => handleRemoveFile(index)}
+                                    className="text-red-500 hover:underline text-xs"
+                                  >
+                                    Remove
+                                  </button>
+                                </span>
+
+                                <span>
+                                  <label
+                                    htmlFor="filename"
+                                    className="font-semibold"
+                                  >
+                                    Filename
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={item.customName}
+                                    onChange={(e) =>
+                                      handleNameChange(index, e.target.value)
+                                    }
+                                    className="border border-gray-300 rounded px-2 py-1 text-sm my-1"
+                                    placeholder="Enter custom name"
+                                  />
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+
+                          <button
+                            onClick={handleUpload}
+                            className="mt-3 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                          >
+                            Upload
+                          </button>
+                        </div>
+                      )}
           {/* Signature Section */}
           {selectedSignature && (
             <div className="mt-6 flex flex-col items-center">
