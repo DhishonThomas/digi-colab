@@ -107,7 +107,7 @@ const [loading,setLoading] = useState<boolean>(false);
     try {
       // Make the API call using await
       const response = await adminApi.put(
-        `/uploads/edit-file/${letterhead._id}`,
+        `/uploads/edit-letterhead/${letterhead._id}`,
         formData,
         {
           headers: {

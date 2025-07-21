@@ -88,7 +88,7 @@ const LetterHeadButton = ({
 
     try {
       // Make the API call using await
-      const response = await adminApi.post("/uploads/file-upload", formData, {
+      const response = await adminApi.post("/uploads/create-letterhead", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
